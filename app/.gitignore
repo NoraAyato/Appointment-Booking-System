@@ -29,9 +29,7 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-# YAML Configuration Files (Environment-specific)
-src/main/resources/application-local.yaml
-src/main/resources/application-prod.yaml
+#Configuration Files (Environment-specific)
 .env
 
 ### VS Code ###
