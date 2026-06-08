@@ -1,5 +1,6 @@
 spring:
-    application:
-        name: booking-appointment
-    profiles:
-        active: ${SPRING_PROFILES_ACTIVE:local}
+  config:
+    import:
+      - optional:file:.env[.properties]
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:local}
