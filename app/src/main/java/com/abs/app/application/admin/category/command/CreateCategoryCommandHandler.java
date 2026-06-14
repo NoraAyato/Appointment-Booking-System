@@ -1,4 +1,4 @@
-package com.abs.app.application.category.command;
+package com.abs.app.application.admin.category.command;
 
 import com.abs.app.common.constant.CategoryConstant;
 import com.abs.app.common.exception.DuplicateResourceException;

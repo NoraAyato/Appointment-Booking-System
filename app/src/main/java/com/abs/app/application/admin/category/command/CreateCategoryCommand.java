@@ -1,4 +1,4 @@
-package com.abs.app.application.category.command;
+package com.abs.app.application.admin.category.command;
 
 import lombok.Data;
 
