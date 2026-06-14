@@ -1,5 +1,6 @@
 package com.abs.app.domain.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.abs.app.domain.entity.enums.ServiceStatus;
@@ -11,7 +12,7 @@ import lombok.*;
 @Setter
 @Entity
 @Table(name = "services")
-public class Services {
+public class Service {
     @Id
     @Column(name = "service_id", columnDefinition = "VARCHAR(20)")
     private String id;
@@ -30,13 +31,13 @@ public class Services {
     @Enumerated(EnumType.STRING)
     private ServiceStatus status = ServiceStatus.ACTIVE;
 
-    @Column(name = "image_url")
-    private String imageUrl;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
 
     @OneToMany(mappedBy = "service", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<StaffService> staffServices;
+    private List<StaffService> staffServices = new ArrayList<>();
+
+    @OneToMany(mappedBy = "service", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ServiceImage> serviceImage = new ArrayList<>();
 }

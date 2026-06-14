@@ -20,27 +20,31 @@ public class User {
     private String userId;
     @Column(name = "user_name", nullable = false, columnDefinition = "VARCHAR(20)")
     private String userName;
-    @Column(name = "password", nullable = false, columnDefinition = "VARCHAR(20)")
+    @Column(name = "pass_word", nullable = false)
     private String passWord;
-    @Column(name = "full_name", nullable = false, columnDefinition = "VARCHAR(100)")
-    private String fullName;
+    @Column(length = 20, columnDefinition = "nvarchar(20)")
+    private String firstName;
+    @Column(length = 20, columnDefinition = "nvarchar(20)")
+    private String lastName;
     @Column(name = "email", nullable = false, columnDefinition = "VARCHAR(100)")
     private String email;
-    @Column(name = "picture", columnDefinition = "TEXT")
+    @Column(name = "picture", nullable = true, columnDefinition = "TEXT")
     private String picture;
-    @Column(name = "phone_number", columnDefinition = "VARCHAR(20)")
+    @Column(name = "phone_number", nullable = true, columnDefinition = "VARCHAR(20)")
     private String phoneNumber;
     @Column(name = "is_receive_email")
-    private boolean isRecieveEmail;
+    private boolean isRecieveEmail = false;
     @Enumerated(EnumType.STRING)
     private RoleEnum role = RoleEnum.CUSTOMER;
     @Column(name = "gender")
-    private boolean gender;// true for male and false for female
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt;
+    private boolean gender = true;// true for male and false for female
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(name = "update_at", nullable = false)
+    private LocalDateTime updateAt;
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
-    private UserStatus status;
+    private UserStatus status = UserStatus.ACTIVE;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserLogin> userLogins = new ArrayList<>();
