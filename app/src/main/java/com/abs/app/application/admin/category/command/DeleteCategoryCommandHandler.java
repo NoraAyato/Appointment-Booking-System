@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 public class DeleteCategoryCommandHandler {
     private final CategoryRepository categoryRepository;
 
-    public void handler(String id) {
+    public void handle(String id) {
         if(categoryRepository.findById(id).isPresent())
         {
             categoryRepository.deleteById(id);

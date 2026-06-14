@@ -47,7 +47,7 @@ public class CategoryManagerController {
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteById(@PathVariable String id) {
-        deleteCategoryCommandHandler.handler(id);
+        deleteCategoryCommandHandler.handle(id);
         return ResponseEntity.ok(new ApiResponse<>(true, CategoryConstant.DELETE_SUCCESS, null));
     }
 }
