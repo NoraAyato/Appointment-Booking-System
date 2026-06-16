@@ -2,6 +2,8 @@ package com.abs.app.infrastructure.email;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import jakarta.mail.internet.MimeMessage;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -9,9 +11,9 @@ import org.springframework.stereotype.Service;
 import com.abs.app.domain.service.EmailService;
 
 @Service
+@RequiredArgsConstructor
 public class EmailServiceImpl implements EmailService {
 
-    @Autowired
     private JavaMailSender mailSender;
 
     @Override
