@@ -27,11 +27,9 @@ public class LoginUserCommandHandler {
         }
         String accessToken = jwtTokenProvider.generateToken(user.getUserId(), user.getRole().toString());
         if (command.isRememberMe()) {
-            // String refreshToken =
-            // jwtTokenProvider.generateRefreshToken(user.getUserId());
-            // Lưu refresh token vào database hoặc cache nếu cần thiết
-            // triển khai sau nếu có yêu cầu
-            return new AuthResponseDto(accessToken, "");
+            String refreshToken = jwtTokenProvider.generateRefreshToken(user.getUserId());
+
+            return new AuthResponseDto(accessToken, refreshToken);
         }
         return new AuthResponseDto(accessToken, null);
     }
