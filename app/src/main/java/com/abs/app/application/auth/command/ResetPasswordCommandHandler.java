@@ -1,0 +1,50 @@
+package com.abs.app.application.auth.command;
+
+import com.abs.app.application.auth.dto.AuthResponseDto;
+import com.abs.app.common.exception.BusinessException;
+import com.abs.app.domain.entity.User;
+import com.abs.app.domain.repository.UserRepository;
+import com.abs.app.domain.service.OtpTokenService;
+import com.abs.app.infrastructure.security.JwtTokenProvider;
+
+import lombok.RequiredArgsConstructor;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+
+import java.util.Optional;
+
+@Service
+@RequiredArgsConstructor
+public class ResetPasswordCommandHandler {
+
+    private final JwtTokenProvider jwtTokenProvider;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final OtpTokenService otpTokenService;
+
+    public void handle(ResetPasswordCommand command) {
+        String userId;
+        try {
+            userId = jwtTokenProvider.getUserIdFromResetToken(command.getToken());
+        } catch (Exception e) {
+            throw new BusinessException("Token reset mật khẩu không hợp lệ hoặc đã hết hạn!");
+        }
+
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isEmpty()) {
+            throw new BusinessException("Người dùng không tồn tại!");
+        }
+
+        User user = userOptional.get();
+        boolean isValid = otpTokenService.verifyOtp(user.getEmail(), command.getToken());
+        if (!isValid) {
+            throw new BusinessException("Token reset mật khẩu không hợp lệ hoặc đã hết hạn!");
+        }
+        otpTokenService.invalidateOtp(user.getEmail());
+        String encodedPassword = passwordEncoder.encode(command.getNewPassword());
+        user.setPassWord(encodedPassword);
+        userRepository.save(user);
+    }
+}
