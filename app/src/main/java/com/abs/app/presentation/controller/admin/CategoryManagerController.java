@@ -10,6 +10,7 @@ import com.abs.app.common.constant.CategoryConstant;
 import com.abs.app.common.response.ApiResponse;
 import com.abs.app.common.response.PageResponse;
 import com.abs.app.domain.entity.Category;
+import com.abs.app.infrastructure.mapper.CategoryMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -34,15 +35,17 @@ public class CategoryManagerController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<Category>> create(@Valid @RequestBody CreateCategoryRequestDto request) {
+    public ResponseEntity<ApiResponse<CategoryResponseDto>> create(@Valid @RequestBody CreateCategoryRequestDto request) {
         Category category = createCategoryCommandHandler.handle(new CreateCategoryCommand(request.getName(), request.getDescription()));
-        return ResponseEntity.ok(new ApiResponse<>(true, CategoryConstant.CREATE_SUCCESS, category));
+        CategoryResponseDto responseDto = CategoryMapper.toCategoryResponse(category);
+        return ResponseEntity.ok(new ApiResponse<>(true, CategoryConstant.CREATE_SUCCESS, responseDto));
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<ApiResponse<Category>> update(@PathVariable String id, @Valid @RequestBody UpdateCategoryRequestDto request) {
+    public ResponseEntity<ApiResponse<CategoryResponseDto>> update(@PathVariable String id, @Valid @RequestBody UpdateCategoryRequestDto request) {
         Category category = updateCategoryCommandHandler.handle(new UpdateCategoryCommand(id, request.getName(), request.getDescription()));
-        return ResponseEntity.ok(new ApiResponse<>(true, CategoryConstant.UPDATE_SUCCESS, category));
+        CategoryResponseDto responseDto = CategoryMapper.toCategoryResponse(category);
+        return ResponseEntity.ok(new ApiResponse<>(true, CategoryConstant.UPDATE_SUCCESS, responseDto));
     }
 
     @DeleteMapping(value = "/{id}")
