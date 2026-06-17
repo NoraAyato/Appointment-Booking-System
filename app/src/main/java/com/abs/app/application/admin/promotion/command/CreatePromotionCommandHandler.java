@@ -19,7 +19,7 @@ public class CreatePromotionCommandHandler {
 
     public PromotionResponseDto handle(CreatePromotionCommand command) {
         Promotion promotion = new Promotion();
-        promotion.setId(UUID.randomUUID().toString());
+        promotion.setId(com.abs.app.common.util.GenerateIdUtil.GenerateId(com.abs.app.common.constant.PromotionConstant.SALT_TAG, com.abs.app.common.constant.PromotionConstant.STRING_LIMIT));
         promotion.setDescription(command.getDescription());
         promotion.setDiscountAmount(command.getDiscountAmount());
         promotion.setDiscountType(command.getDiscountType());
@@ -28,7 +28,7 @@ public class CreatePromotionCommandHandler {
         promotion.setEndDate(command.getEndDate());
 
         if (command.getImage() != null && !command.getImage().isEmpty()) {
-            String imagePath = fileStorageService.storePromotion(command.getImage(), com.abs.app.common.constant.PromotionConstant.SALT_TAG + "_" + promotion.getId());
+            String imagePath = fileStorageService.storePromotion(command.getImage(), promotion.getId());
             promotion.setImage(imagePath);
         }
 

@@ -27,7 +27,7 @@ public class UpdatePromotionCommandHandler {
         if (command.getEndDate() != null) promotion.setEndDate(command.getEndDate());
 
         if (command.getImage() != null && !command.getImage().isEmpty()) {
-            String imagePath = fileStorageService.storePromotion(command.getImage(), com.abs.app.common.constant.PromotionConstant.SALT_TAG + "_" + promotion.getId());
+            String imagePath = fileStorageService.storePromotion(command.getImage(), promotion.getId());
             promotion.setImage(imagePath);
         }
 
