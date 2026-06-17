@@ -1,10 +1,7 @@
 package com.abs.app.application.admin.promotion.dto;
 
 import com.abs.app.domain.entity.enums.DiscountType;
-<<<<<<< HEAD
-=======
 import jakarta.validation.constraints.*;
->>>>>>> 2f17173 (feat: Fix Promotion)
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 

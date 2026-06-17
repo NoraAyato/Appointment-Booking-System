@@ -15,4 +15,5 @@ public class CreatePromotionCommand {
     private final MultipartFile image;
     private final LocalDate startDate;
     private final LocalDate endDate;
+    private final String userId;
 }

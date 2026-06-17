@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class GetPromotionListQuery {
     private String keyword;
-    private Integer active;
+    private Boolean active;
     private LocalDate fromDate;
     private LocalDate toDate;
     private int page;

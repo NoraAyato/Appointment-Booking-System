@@ -15,7 +15,7 @@ public interface PromotionRepository {
 
     void deleteById(String id);
 
-    List<Promotion> findByActive(Integer active);
+    List<Promotion> findByActive(Boolean active);
 
     List<Promotion> findByUserId(String userId);
 

@@ -20,9 +20,17 @@ public class GetPromotionListQueryHandler {
         List<Promotion> promotionList = promotionRepository.findAll();
         List<Promotion> filteredList = promotionList.stream()
                 .filter(promotion -> query.getKeyword() == null || promotion.getDescription().toLowerCase().contains(query.getKeyword().toLowerCase()))
-                .filter(promotion -> query.getActive() == null || promotion.getActive().equals(query.getActive() == 1))
-                .filter(promotion -> query.getFromDate() == null || !promotion.getStartDate().isBefore(query.getFromDate()))
-                .filter(promotion -> query.getToDate() == null || !promotion.getEndDate().isAfter(query.getToDate()))
+                .filter(promotion -> query.getActive() == null || promotion.getActive().equals(query.getActive()))
+                .filter(promotion -> {
+                    if (query.getFromDate() == null && query.getToDate() == null) return true;
+                    if (query.getFromDate() == null) {
+                        return !promotion.getStartDate().isAfter(query.getToDate());
+                    }
+                    if (query.getToDate() == null) {
+                        return !promotion.getEndDate().isBefore(query.getFromDate());
+                    }
+                    return !promotion.getEndDate().isBefore(query.getFromDate()) && !promotion.getStartDate().isAfter(query.getToDate());
+                })
                 .toList();
 
         int total = filteredList.size();
