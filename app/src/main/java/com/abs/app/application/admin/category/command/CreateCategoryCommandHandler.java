@@ -1,10 +1,12 @@
 package com.abs.app.application.admin.category.command;
 
+import com.abs.app.application.admin.category.dto.CategoryResponseDto;
 import com.abs.app.common.constant.CategoryConstant;
 import com.abs.app.common.exception.DuplicateResourceException;
 import com.abs.app.common.util.GenerateIdUtil;
 import com.abs.app.domain.entity.Category;
 import com.abs.app.domain.repository.CategoryRepository;
+import com.abs.app.infrastructure.mapper.CategoryMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +17,7 @@ import java.util.ArrayList;
 public class CreateCategoryCommandHandler {
     private final CategoryRepository categoryRepository;
 
-    public Category handle(CreateCategoryCommand command) {
+    public CategoryResponseDto handle(CreateCategoryCommand command) {
         if(categoryRepository.findByName(command.getName()).isPresent())
         {
             throw new DuplicateResourceException(CategoryConstant.DUPLICATE_RESOURCE);
@@ -26,6 +28,8 @@ public class CreateCategoryCommandHandler {
         newCategory.setDescription(command.getDescription());
         newCategory.setServices(new ArrayList<>());
 
-        return categoryRepository.save(newCategory);
+        categoryRepository.save(newCategory);
+
+        return CategoryMapper.toCategoryResponse(newCategory);
     }
 }

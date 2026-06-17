@@ -1,10 +1,12 @@
 package com.abs.app.application.admin.category.command;
 
+import com.abs.app.application.admin.category.dto.CategoryResponseDto;
 import com.abs.app.common.constant.CategoryConstant;
 import com.abs.app.common.exception.DuplicateResourceException;
 import com.abs.app.common.exception.ResourceNotFoundException;
 import com.abs.app.domain.entity.Category;
 import com.abs.app.domain.repository.CategoryRepository;
+import com.abs.app.infrastructure.mapper.CategoryMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +15,7 @@ import org.springframework.stereotype.Service;
 public class UpdateCategoryCommandHandler {
     private final CategoryRepository categoryRepository;
 
-    public Category handle(UpdateCategoryCommand command) {
+    public CategoryResponseDto handle(UpdateCategoryCommand command) {
         Category categoryEdit = categoryRepository.findById(command.getId())
                 .orElseThrow(() -> new ResourceNotFoundException(CategoryConstant.NOT_EXIST));
 
@@ -25,7 +27,8 @@ public class UpdateCategoryCommandHandler {
 
         categoryEdit.setName(command.getName());
         categoryEdit.setDescription(command.getDescription());
+        categoryRepository.save(categoryEdit);
 
-        return categoryRepository.save(categoryEdit);
+        return CategoryMapper.toCategoryResponse(categoryEdit);
     }
 }
