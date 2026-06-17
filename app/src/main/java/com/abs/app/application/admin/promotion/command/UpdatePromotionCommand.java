@@ -16,4 +16,5 @@ public class UpdatePromotionCommand {
     private final MultipartFile image;
     private final LocalDate startDate;
     private final LocalDate endDate;
+    private final String userId;
 }

@@ -1,13 +1,11 @@
 package com.abs.app.application.admin.promotion.dto;
 
 import com.abs.app.domain.entity.enums.DiscountType;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.time.LocalDate;
 
-@Getter
-@Setter
+@Data
 public class PromotionResponseDto {
     private String id;
     private String description;
@@ -17,4 +15,5 @@ public class PromotionResponseDto {
     private String image;
     private LocalDate startDate;
     private LocalDate endDate;
+    private String userId;
 }

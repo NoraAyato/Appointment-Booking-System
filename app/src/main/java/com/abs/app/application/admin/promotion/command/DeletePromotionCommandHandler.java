@@ -8,12 +8,12 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class DeletePromotionCommandHandler {
-
     private final PromotionRepository promotionRepository;
 
     public void handle(String id) {
-        Promotion promotion = promotionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Promotion not found with id: " + id));
-        promotionRepository.deleteById(promotion.getId());
+        if (!promotionRepository.findById(id).isPresent()) {
+            throw new ResourceNotFoundException(PromotionConstant.NOT_EXIST);
+        }
+        promotionRepository.deleteById(id);
     }
 }

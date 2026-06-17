@@ -14,6 +14,7 @@ public class PromotionMapper {
         dto.setImage(promotion.getImage());
         dto.setStartDate(promotion.getStartDate());
         dto.setEndDate(promotion.getEndDate());
+        dto.setUserId(promotion.getUser() != null ? promotion.getUser().getId() : null);
         return dto;
     }
 }

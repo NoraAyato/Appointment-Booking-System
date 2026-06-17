@@ -1,10 +1,19 @@
 package com.abs.app.application.admin.promotion.query;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class GetPromotionListQuery {
-    private final int page;
-    private final int size;
-    private final String keyword;
+    private String keyword;
+    private Integer active;
+    private LocalDate fromDate;
+    private LocalDate toDate;
+    private int page;
+    private int size;
 }

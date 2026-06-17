@@ -28,11 +28,16 @@ public class CreatePromotionCommandHandler {
         promotion.setEndDate(command.getEndDate());
 
         if (command.getImage() != null && !command.getImage().isEmpty()) {
-            String imagePath = fileStorageService.storePromotion(command.getImage(), "promo_" + promotion.getId());
-            promotion.setImage(imagePath);
+            String headString = command.getUserId() != null ? command.getUserId() : "promo";
+            String storedImagePath = fileStorageService.storePromotion(command.getImage(), headString);
+            promotion.setImage(storedImagePath);
         }
 
-        Promotion saved = promotionRepository.save(promotion);
-        return PromotionMapper.toPromotionResponse(saved);
+        User user = userRepository.findById(command.getUserId())
+                .orElseThrow(() -> new ResourceNotFoundException(PromotionConstant.USER_NOT_EXIST));
+        promotion.setUser(user);
+
+        promotionRepository.save(promotion);
+        return PromotionMapper.toPromotionResponse(promotion);
     }
 }
