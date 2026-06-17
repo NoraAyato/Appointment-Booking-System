@@ -4,10 +4,9 @@ import com.abs.app.domain.entity.Promotion;
 import com.abs.app.domain.repository.PromotionRepository;
 import com.abs.app.infrastructure.persistence.jpa.PromotionJpaRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,13 +21,8 @@ public class PromotionRepositoryImpl implements PromotionRepository {
     }
 
     @Override
-    public Page<Promotion> findAll(Pageable pageable) {
-        return promotionJpaRepository.findAll(pageable);
-    }
-
-    @Override
-    public Page<Promotion> findByDescriptionContaining(String keyword, Pageable pageable) {
-        return promotionJpaRepository.findByDescriptionContaining(keyword, pageable);
+    public List<Promotion> searchPromotions(String keyword, LocalDate startDate, LocalDate endDate, Boolean active) {
+        return promotionJpaRepository.searchPromotions(keyword, startDate, endDate, active);
     }
 
     @Override
