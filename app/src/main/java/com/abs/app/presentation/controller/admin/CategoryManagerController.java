@@ -36,15 +36,13 @@ public class CategoryManagerController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<CategoryResponseDto>> create(@Valid @RequestBody CreateCategoryRequestDto request) {
-        Category category = createCategoryCommandHandler.handle(new CreateCategoryCommand(request.getName(), request.getDescription()));
-        CategoryResponseDto responseDto = CategoryMapper.toCategoryResponse(category);
+        CategoryResponseDto responseDto = createCategoryCommandHandler.handle(new CreateCategoryCommand(request.getName(), request.getDescription()));
         return ResponseEntity.ok(new ApiResponse<>(true, CategoryConstant.CREATE_SUCCESS, responseDto));
     }
 
     @PutMapping(value = "/{id}")
     public ResponseEntity<ApiResponse<CategoryResponseDto>> update(@PathVariable String id, @Valid @RequestBody UpdateCategoryRequestDto request) {
-        Category category = updateCategoryCommandHandler.handle(new UpdateCategoryCommand(id, request.getName(), request.getDescription()));
-        CategoryResponseDto responseDto = CategoryMapper.toCategoryResponse(category);
+        CategoryResponseDto responseDto = updateCategoryCommandHandler.handle(new UpdateCategoryCommand(id, request.getName(), request.getDescription()));
         return ResponseEntity.ok(new ApiResponse<>(true, CategoryConstant.UPDATE_SUCCESS, responseDto));
     }
 
