@@ -9,7 +9,7 @@ public class PromotionMapper {
         dto.setId(promotion.getId());
         dto.setDescription(promotion.getDescription());
         dto.setDiscountAmount(promotion.getDiscountAmount());
-        dto.setDiscountType(promotion.getDiscountType());
+        dto.setDiscountType(promotion.getDiscountType().toString());
         dto.setStatus(promotion.getStatus().toString());
         dto.setImage(promotion.getImage());
         dto.setStartDate(promotion.getStartDate());
