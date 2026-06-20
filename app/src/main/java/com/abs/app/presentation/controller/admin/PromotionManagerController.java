@@ -32,28 +32,29 @@ public class PromotionManagerController {
     @GetMapping
     public ResponseEntity<ApiResponse<PageResponse<PromotionResponseDto>>> getPromotions(
             @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) Boolean active,
+            @RequestParam(required = false) String status,
             @RequestParam(required = false) LocalDate fromDate,
             @RequestParam(required = false) LocalDate toDate,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
         PageResponse<PromotionResponseDto> pageResponse = getPromotionListQueryHandler.handle(
-                new GetPromotionListQuery(keyword, active, fromDate, toDate, page, size));
+                new GetPromotionListQuery(keyword, status, fromDate, toDate, page, size));
         return ResponseEntity.ok(new ApiResponse<>(true, PromotionConstant.GET_SUCCESS, pageResponse));
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ApiResponse<PromotionResponseDto>> create(@Valid @ModelAttribute CreatePromotionRequestDto request) {
+    public ResponseEntity<ApiResponse<PromotionResponseDto>> create(
+            @Valid @ModelAttribute CreatePromotionRequestDto request) {
         PromotionResponseDto responseDto = createPromotionCommandHandler.handle(
-            new CreatePromotionCommand(
-                request.getDescription(),
-                request.getDiscountAmount(),
-                request.getDiscountType(),
-                request.getActive(),
-                request.getImage(),
-                request.getStartDate(),
-                request.getEndDate(),
-                request.getUserId()));
+                new CreatePromotionCommand(
+                        request.getPromotionCode(),
+                        request.getDescription(),
+                        request.getDiscountAmount(),
+                        request.getDiscountType(),
+                        request.getImage(),
+                        request.getStartDate(),
+                        request.getEndDate(),
+                        request.getUserId()));
         return ResponseEntity.ok(new ApiResponse<>(true, PromotionConstant.CREATE_SUCCESS, responseDto));
     }
 
@@ -62,16 +63,16 @@ public class PromotionManagerController {
             @PathVariable String id,
             @Valid @ModelAttribute UpdatePromotionRequestDto request) {
         PromotionResponseDto responseDto = updatePromotionCommandHandler.handle(
-            new UpdatePromotionCommand(
-                id,
-                request.getDescription(),
-                request.getDiscountAmount(),
-                request.getDiscountType(),
-                request.getActive(),
-                request.getImage(),
-                request.getStartDate(),
-                request.getEndDate(),
-                request.getUserId()));
+                new UpdatePromotionCommand(
+                        id,
+                        request.getDescription(),
+                        request.getDiscountAmount(),
+                        request.getDiscountType(),
+                        request.getStatus(),
+                        request.getImage(),
+                        request.getStartDate(),
+                        request.getEndDate(),
+                        request.getUserId()));
         return ResponseEntity.ok(new ApiResponse<>(true, PromotionConstant.UPDATE_SUCCESS, responseDto));
     }
 
