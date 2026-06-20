@@ -11,7 +11,7 @@ public class PromotionResponseDto {
     private String description;
     private Double discountAmount;
     private DiscountType discountType;
-    private Boolean active;
+    private String status;
     private String image;
     private LocalDate startDate;
     private LocalDate endDate;

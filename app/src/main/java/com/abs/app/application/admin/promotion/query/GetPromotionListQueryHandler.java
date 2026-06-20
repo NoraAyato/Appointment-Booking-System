@@ -19,17 +19,21 @@ public class GetPromotionListQueryHandler {
     public PageResponse<PromotionResponseDto> handle(GetPromotionListQuery query) {
         List<Promotion> promotionList = promotionRepository.findAll();
         List<Promotion> filteredList = promotionList.stream()
-                .filter(promotion -> query.getKeyword() == null || promotion.getDescription().toLowerCase().contains(query.getKeyword().toLowerCase()))
-                .filter(promotion -> query.getActive() == null || promotion.getActive().equals(query.getActive()))
+                .filter(promotion -> query.getKeyword() == null
+                        || promotion.getDescription().toLowerCase().contains(query.getKeyword().toLowerCase()))
+                .filter(promotion -> query.getStatus() == null
+                        || promotion.getStatus().toString().equals(query.getStatus()))
                 .filter(promotion -> {
-                    if (query.getFromDate() == null && query.getToDate() == null) return true;
+                    if (query.getFromDate() == null && query.getToDate() == null)
+                        return true;
                     if (query.getFromDate() == null) {
                         return !promotion.getStartDate().isAfter(query.getToDate());
                     }
                     if (query.getToDate() == null) {
                         return !promotion.getEndDate().isBefore(query.getFromDate());
                     }
-                    return !promotion.getEndDate().isBefore(query.getFromDate()) && !promotion.getStartDate().isAfter(query.getToDate());
+                    return !promotion.getEndDate().isBefore(query.getFromDate())
+                            && !promotion.getStartDate().isAfter(query.getToDate());
                 })
                 .toList();
 

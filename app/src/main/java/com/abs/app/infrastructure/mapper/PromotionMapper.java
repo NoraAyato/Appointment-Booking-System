@@ -10,11 +10,11 @@ public class PromotionMapper {
         dto.setDescription(promotion.getDescription());
         dto.setDiscountAmount(promotion.getDiscountAmount());
         dto.setDiscountType(promotion.getDiscountType());
-        dto.setActive(promotion.getActive());
+        dto.setStatus(promotion.getStatus().toString());
         dto.setImage(promotion.getImage());
         dto.setStartDate(promotion.getStartDate());
         dto.setEndDate(promotion.getEndDate());
-        dto.setUserId(promotion.getUser() != null ? promotion.getUser().getId() : null);
+        dto.setUserId(promotion.getUser().getUserId());
         return dto;
     }
 }
