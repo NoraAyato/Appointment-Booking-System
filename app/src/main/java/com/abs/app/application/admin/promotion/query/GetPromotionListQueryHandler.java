@@ -14,16 +14,36 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class GetPromotionListQueryHandler {
-
     private final PromotionRepository promotionRepository;
 
     public PageResponse<PromotionResponseDto> handle(GetPromotionListQuery query) {
-        List<Promotion> promotions = promotionRepository.searchPromotions(query.getKeyword(), query.getStartDate(), query.getEndDate(), query.getActive());
-        
-        List<Promotion> paginatedPromotions = PaginationUtil.paginate(promotions, query.getPage(), query.getSize());
-        
-        List<PromotionResponseDto> items = paginatedPromotions.stream().map(PromotionMapper::toPromotionResponse).toList();
-        
-        return new PageResponse<>(items, promotions.size(), query.getPage(), query.getSize());
+        List<Promotion> promotionList = promotionRepository.findAll();
+        List<Promotion> filteredList = promotionList.stream()
+                .filter(promotion -> query.getKeyword() == null
+                        || promotion.getDescription().toLowerCase().contains(query.getKeyword().toLowerCase()))
+                .filter(promotion -> query.getStatus() == null
+                        || promotion.getStatus().toString().equals(query.getStatus()))
+                .filter(promotion -> {
+                    if (query.getFromDate() == null && query.getToDate() == null)
+                        return true;
+                    if (query.getFromDate() == null) {
+                        return !promotion.getStartDate().isAfter(query.getToDate());
+                    }
+                    if (query.getToDate() == null) {
+                        return !promotion.getEndDate().isBefore(query.getFromDate());
+                    }
+                    return !promotion.getEndDate().isBefore(query.getFromDate())
+                            && !promotion.getStartDate().isAfter(query.getToDate());
+                })
+                .toList();
+
+        int total = filteredList.size();
+        List<Promotion> pageFilterList = PaginationUtil.paginate(filteredList, query.getPage(), query.getSize());
+
+        List<PromotionResponseDto> items = pageFilterList.stream()
+                .map(PromotionMapper::toPromotionResponse)
+                .toList();
+
+        return new PageResponse<>(items, total, query.getPage(), query.getSize());
     }
 }
