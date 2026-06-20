@@ -27,7 +27,7 @@ public class ServiceManagerController {
     private final UpdateServiceCommandHandler updateServiceCommandHandler;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<PageResponse>> getServices(@RequestParam(required = false) String keyword,
+    public ResponseEntity<ApiResponse<PageResponse<ServiceResponseDto>>> getServices(@RequestParam(required = false) String keyword,
                                                                  @RequestParam(defaultValue = "1") int page,
                                                                  @RequestParam(defaultValue = "5") int size) {
         PageResponse<ServiceResponseDto> pageResponse = getServiceListQueryHandler.handle(new GetServiceListQuery(keyword, page, size));
