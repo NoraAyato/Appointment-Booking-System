@@ -9,6 +9,12 @@ import java.time.LocalDate;
 
 @Data
 public class CreatePromotionRequestDto {
+
+    @NotBlank
+    @NotNull
+    @Size(min = 6, max = 13)
+    private String promotionCode;
+
     @NotBlank
     private String description;
 
@@ -18,9 +24,6 @@ public class CreatePromotionRequestDto {
 
     @NotNull
     private DiscountType discountType;
-
-    @NotNull
-    private Boolean active;
 
     private MultipartFile image;
 
