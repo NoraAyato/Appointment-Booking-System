@@ -20,7 +20,7 @@ public class UpdatePromotionRequestDto {
     private DiscountType discountType;
 
     @NotNull
-    private Boolean active;
+    private String status;
 
     private MultipartFile image;
 

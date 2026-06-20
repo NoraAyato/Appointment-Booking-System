@@ -12,7 +12,7 @@ public class UpdatePromotionCommand {
     private final String description;
     private final Double discountAmount;
     private final DiscountType discountType;
-    private final Boolean active;
+    private final String status;
     private final MultipartFile image;
     private final LocalDate startDate;
     private final LocalDate endDate;
