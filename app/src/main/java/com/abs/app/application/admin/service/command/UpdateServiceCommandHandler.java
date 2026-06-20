@@ -8,7 +8,7 @@ import com.abs.app.domain.entity.ServiceEntity;
 import com.abs.app.domain.entity.ServiceImage;
 import com.abs.app.domain.entity.enums.ServiceStatus;
 import com.abs.app.domain.repository.ServiceRepository;
-import com.abs.app.domain.service.HandleServiceStatus;
+import com.abs.app.domain.service.ServiceManagementDomainService;
 import com.abs.app.infrastructure.file.FileStorageService;
 import com.abs.app.infrastructure.mapper.ServiceMapper;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ import java.util.List;
 public class UpdateServiceCommandHandler {
     private final ServiceRepository serviceRepository;
     private final FileStorageService fileStorageService;
-    private final HandleServiceStatus handleServiceStatus;
+    private final ServiceManagementDomainService handleServiceStatus;
 
     @Transactional
     public ServiceResponseDto handle(UpdateServiceCommand command) {
@@ -42,7 +42,7 @@ public class UpdateServiceCommandHandler {
         serviceEdit.setDurationMinutes(command.getDurationMinutes());
         serviceEdit.setPrice(command.getPrice());
 
-        ServiceStatus status = handleServiceStatus.handleStatus(command.getStatus());
+        ServiceStatus status = handleServiceStatus.convertServiceStatusStringToEnum(command.getStatus());
         serviceEdit.setStatus(status);
 
         if (command.getImages() != null && !command.getImages().isEmpty()) {
