@@ -14,6 +14,7 @@ import com.abs.app.common.constant.PromotionConstant;
 import java.time.LocalDate;
 import com.abs.app.common.response.ApiResponse;
 import com.abs.app.common.response.PageResponse;
+import com.abs.app.infrastructure.security.SecurityUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -45,6 +46,7 @@ public class PromotionManagerController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<PromotionResponseDto>> create(
             @Valid @ModelAttribute CreatePromotionRequestDto request) {
+        String userId = SecurityUtils.getCurrentUserId();
         PromotionResponseDto responseDto = createPromotionCommandHandler.handle(
                 new CreatePromotionCommand(
                         request.getPromotionCode(),
@@ -54,7 +56,7 @@ public class PromotionManagerController {
                         request.getImage(),
                         request.getStartDate(),
                         request.getEndDate(),
-                        request.getUserId()));
+                        userId));
         return ResponseEntity.ok(new ApiResponse<>(true, PromotionConstant.CREATE_SUCCESS, responseDto));
     }
 
@@ -62,9 +64,12 @@ public class PromotionManagerController {
     public ResponseEntity<ApiResponse<PromotionResponseDto>> update(
             @PathVariable String id,
             @Valid @ModelAttribute UpdatePromotionRequestDto request) {
+        String userId = SecurityUtils.getCurrentUserId();
         PromotionResponseDto responseDto = updatePromotionCommandHandler.handle(
+
                 new UpdatePromotionCommand(
                         id,
+                        request.getPromotionCode(),
                         request.getDescription(),
                         request.getDiscountAmount(),
                         request.getDiscountType(),
@@ -72,7 +77,7 @@ public class PromotionManagerController {
                         request.getImage(),
                         request.getStartDate(),
                         request.getEndDate(),
-                        request.getUserId()));
+                        userId));
         return ResponseEntity.ok(new ApiResponse<>(true, PromotionConstant.UPDATE_SUCCESS, responseDto));
     }
 
