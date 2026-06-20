@@ -55,8 +55,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public Optional<User> findByIdWithRole(String userId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findByIdWithRole'");
+      return userJpaRepository.findById(userId);
     }
 
     @Override
