@@ -1,7 +1,11 @@
 package com.abs.app.domain.service;
 
 import java.time.LocalDate;
+import java.util.List;
 
+import com.abs.app.domain.entity.Promotion;
+import com.abs.app.domain.entity.enums.DiscountType;
+import com.abs.app.domain.repository.PromotionRepository;
 import org.springframework.stereotype.Service;
 
 import com.abs.app.common.constant.PromotionConstant;
@@ -10,22 +14,14 @@ import com.abs.app.domain.entity.enums.PromotionStatus;
 
 @Service
 public class PromotionService {
-    public PromotionStatus handlePromotionStatus(String status) {
-        PromotionStatus result = null;
-        switch (status) {
-            case "ACTIVE":
-                result = PromotionStatus.ACTIVE;
-                break;
-            case "INACTIVE":
-                result = PromotionStatus.INACTIVE;
-                break;
-            case "DELETED":
-                result = PromotionStatus.DELETED;
-                break;
-            default:
-                throw new BusinessException(PromotionConstant.INVALID_PROMOTION_STATUS);
-        }
-        return result;
+    private PromotionRepository promotionRepository;
+    public PromotionStatus convertPromotionStatusToEnum(String status) {
+        return switch (status) {
+            case "ACTIVE" -> PromotionStatus.ACTIVE;
+            case "INACTIVE" -> PromotionStatus.INACTIVE;
+            case "DELETED" -> PromotionStatus.DELETED;
+            default -> throw new BusinessException(PromotionConstant.INVALID_PROMOTION_STATUS);
+        };
     }
 
     public boolean handlePromotionDate(LocalDate startDate, LocalDate endDate) {
@@ -33,5 +29,21 @@ public class PromotionService {
             return false;
         }
         return false;
+    }
+
+    public boolean handlePromotionDuplicateValid(List<Promotion> promotionList, LocalDate startDate, LocalDate endDate) {
+        return promotionList.stream().anyMatch(oldPromotion ->
+                !oldPromotion.getStartDate().isAfter(endDate) &&
+                        !oldPromotion.getEndDate().isBefore(startDate));
+
+    }
+    
+
+    public DiscountType convertDiscountTypeStringToEnum(String discountType) {
+        return switch (discountType) {
+            case "PERCENTAGE" -> DiscountType.PERCENTAGE;
+            case "FIXED_AMOUNT" -> DiscountType.FIXED_AMOUNT;
+            default -> throw new BusinessException(PromotionConstant.INVALID_PROMOTION_STATUS);
+        };
     }
 }
