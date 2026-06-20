@@ -1,5 +1,6 @@
 package com.abs.app.infrastructure.persistence.adapter;
 
+import com.abs.app.infrastructure.persistence.jpa.JpaUserLoginRepository;
 import java.util.List;
 import java.util.Optional;
 
