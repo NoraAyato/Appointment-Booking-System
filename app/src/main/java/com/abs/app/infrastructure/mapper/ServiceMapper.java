@@ -16,6 +16,7 @@ public class ServiceMapper {
         dto.setDescription(service.getDescription());
         dto.setDurationMinutes(service.getDurationMinutes());
         dto.setPrice(service.getPrice());
+        dto.setStatus(service.getStatus().toString());
 
         if (service.getCategory() != null) {
             dto.setCategoryName(service.getCategory().getName());

@@ -56,6 +56,7 @@ public class ServiceManagerController {
                 request.getDescription(),
                 request.getDurationMinutes(),
                 request.getPrice(),
+                request.getStatus(),
                 request.getImages()
         );
         ServiceResponseDto responseDto = updateServiceCommandHandler.handle(command);
