@@ -17,7 +17,12 @@ public class UpdatePromotionRequestDto {
     private Double discountAmount;
 
     @NotNull
-    private DiscountType discountType;
+    private String discountType;
+
+    @NotNull
+    @Min(5)
+    @Max(20)
+    private String promotionCode;
 
     @NotNull
     private String status;
@@ -30,5 +35,4 @@ public class UpdatePromotionRequestDto {
     @NotNull
     private LocalDate endDate;
 
-    private String userId;
 }
