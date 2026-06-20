@@ -12,5 +12,6 @@ public class UpdateServiceCommand {
     private final String description;
     private final int durationMinutes;
     private final double price;
+    private final String status;
     private final List<MultipartFile> images;
 }

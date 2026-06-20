@@ -14,6 +14,7 @@ public class ServiceResponseDto {
     private String description;
     private int durationMinutes;
     private double price;
+    private String status;
     private String categoryName;
     private List<ServiceImageDto> serviceImageList;
 }

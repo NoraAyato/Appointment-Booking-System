@@ -22,6 +22,9 @@ public class UpdateServiceRequestDto {
     @Min(value = 0)
     private double price;
 
+    @NotNull
+    private String status;
+
     private String categoryName;
 
     @Size(max = 5)
