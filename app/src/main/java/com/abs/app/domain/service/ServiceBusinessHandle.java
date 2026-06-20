@@ -6,8 +6,9 @@ import com.abs.app.domain.entity.enums.ServiceStatus;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ServiceManagementDomainService {
-    public ServiceStatus convertServiceStatusStringToEnum(String status) {
+
+public class ServiceBusinessHandle {
+    public ServiceStatus handleStatus(String status) {
         return switch (status) {
             case "ACTIVE" -> ServiceStatus.ACTIVE;
             case "INACTIVE" -> ServiceStatus.INACTIVE;

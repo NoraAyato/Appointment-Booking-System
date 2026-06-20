@@ -8,12 +8,11 @@ import com.abs.app.domain.entity.ServiceEntity;
 import com.abs.app.domain.entity.ServiceImage;
 import com.abs.app.domain.entity.enums.ServiceStatus;
 import com.abs.app.domain.repository.ServiceRepository;
-import com.abs.app.domain.service.ServiceManagementDomainService;
+import com.abs.app.domain.service.ServiceBusinessHandle;
 import com.abs.app.infrastructure.file.FileStorageService;
 import com.abs.app.infrastructure.mapper.ServiceMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
@@ -24,9 +23,8 @@ import java.util.List;
 public class UpdateServiceCommandHandler {
     private final ServiceRepository serviceRepository;
     private final FileStorageService fileStorageService;
-    private final ServiceManagementDomainService handleServiceStatus;
+    private final ServiceBusinessHandle serviceBusinessHandle;
 
-    @Transactional
     public ServiceResponseDto handle(UpdateServiceCommand command) {
         ServiceEntity serviceEdit = serviceRepository.findById(command.getId())
                 .orElseThrow(() -> new ResourceNotFoundException(ServiceEntityConstant.NOT_EXIST));
@@ -36,18 +34,16 @@ public class UpdateServiceCommandHandler {
                 .ifPresent(existing -> {
                     throw new DuplicateResourceException(ServiceEntityConstant.DUPLICATE_RESOURCE);
                 });
-
+        ServiceStatus status = serviceBusinessHandle.handleStatus(command.getStatus());
         serviceEdit.setName(command.getName());
         serviceEdit.setDescription(command.getDescription());
         serviceEdit.setDurationMinutes(command.getDurationMinutes());
         serviceEdit.setPrice(command.getPrice());
-
-        ServiceStatus status = handleServiceStatus.convertServiceStatusStringToEnum(command.getStatus());
         serviceEdit.setStatus(status);
 
         if (command.getImages() != null && !command.getImages().isEmpty()) {
             List<ServiceImage> imageList = new ArrayList<>();
-            for (int i = 0; i<command.getImages().size(); i++) {
+            for (int i = 0; i < command.getImages().size(); i++) {
                 MultipartFile file = command.getImages().get(i);
                 String savePublicPath = fileStorageService.storeService(file, ServiceEntityConstant.SALT_TAG);
                 // tạo ServiceImage để lưu vào db
