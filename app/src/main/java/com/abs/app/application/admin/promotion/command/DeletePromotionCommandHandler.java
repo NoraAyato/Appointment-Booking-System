@@ -3,6 +3,7 @@ package com.abs.app.application.admin.promotion.command;
 import com.abs.app.common.constant.PromotionConstant;
 import com.abs.app.common.exception.ResourceNotFoundException;
 import com.abs.app.domain.entity.Promotion;
+import com.abs.app.domain.entity.enums.PromotionStatus;
 import com.abs.app.domain.repository.PromotionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,9 +14,9 @@ public class DeletePromotionCommandHandler {
     private final PromotionRepository promotionRepository;
 
     public void handle(String id) {
-        if (!promotionRepository.findById(id).isPresent()) {
-            throw new ResourceNotFoundException(PromotionConstant.NOT_EXIST);
-        }
-        promotionRepository.deleteById(id);
+        Promotion promotion = promotionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(PromotionConstant.NOT_EXIST));
+        promotion.setStatus(PromotionStatus.DELETED);
+        promotionRepository.save(promotion);
     }
 }
