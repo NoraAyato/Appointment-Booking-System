@@ -8,6 +8,7 @@ public class ServiceEntityConstant {
     public static final String NOT_EXIST = "Service không tồn tại";
     public static final String DUPLICATE_RESOURCE = "Service cùng tên đã tồn tại";
     public static final String DUPLICATE_CATEGORY_RESOURCE = "Tên Service đã tồn tại trong Category này";
+    public static final String STATUS_NOT_EXIST = "Status không tồn tại";
 
     public static final String SALT_TAG = "ser";
     public static final int STRING_LIMIT = 10;
