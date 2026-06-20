@@ -11,6 +11,8 @@ public final class Messages {
     public static final String GOOGLE_PROVIDER = "Google";
     public static final String SEND_OTP_SUCCESS = "Gửi OTP thành công";
 
+    public static final String INVALID_DATE = "Ngày bắt đầu hoặc ngày kết thúc không hợp lệ";
+
     private Messages() {
         // Private constructor để ngăn khởi tạo instance
     }

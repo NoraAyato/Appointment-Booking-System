@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.abs.app.domain.entity.enums.DiscountType;
+import com.abs.app.domain.entity.enums.PromotionStatus;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -27,8 +28,8 @@ public class Promotion {
     @Column(name = "discount_type", nullable = false)
     private DiscountType discountType;
 
-    @Column(name = "active", nullable = false)
-    private Boolean active = true;
+    @Enumerated(EnumType.STRING)
+    private PromotionStatus status = PromotionStatus.ACTIVE;
 
     @Column(name = "image", columnDefinition = "TEXT")
     private String image;
