@@ -23,7 +23,7 @@ public class CreatePromotionRequestDto {
     private Double discountAmount;
 
     @NotNull
-    private DiscountType discountType;
+    private String discountType;
 
     private MultipartFile image;
 
@@ -32,6 +32,4 @@ public class CreatePromotionRequestDto {
 
     @NotNull
     private LocalDate endDate;
-
-    private String userId;
 }

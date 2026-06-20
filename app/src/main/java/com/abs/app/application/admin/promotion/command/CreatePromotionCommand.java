@@ -11,7 +11,7 @@ public class CreatePromotionCommand {
     private final String promotionCode;
     private final String description;
     private final Double discountAmount;
-    private final DiscountType discountType;
+    private final String discountType;
     private final MultipartFile image;
     private final LocalDate startDate;
     private final LocalDate endDate;
