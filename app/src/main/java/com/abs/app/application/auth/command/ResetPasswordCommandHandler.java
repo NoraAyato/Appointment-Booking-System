@@ -1,7 +1,11 @@
 package com.abs.app.application.auth.command;
 
 import com.abs.app.application.auth.dto.AuthResponseDto;
+import com.abs.app.common.constant.Messages;
+import com.abs.app.common.constant.UserConstant;
 import com.abs.app.common.exception.BusinessException;
+import com.abs.app.common.exception.ResourceNotFoundException;
+import com.abs.app.common.exception.UnauthorizedException;
 import com.abs.app.domain.entity.User;
 import com.abs.app.domain.repository.UserRepository;
 import com.abs.app.domain.service.OtpTokenService;
@@ -10,7 +14,6 @@ import com.abs.app.infrastructure.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -29,18 +32,18 @@ public class ResetPasswordCommandHandler {
         try {
             userId = jwtTokenProvider.getUserIdFromResetToken(command.getToken());
         } catch (Exception e) {
-            throw new BusinessException("Token reset mật khẩu không hợp lệ hoặc đã hết hạn!");
+            throw new UnauthorizedException(Messages.INVALID_TOKEN);
         }
 
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isEmpty()) {
-            throw new BusinessException("Người dùng không tồn tại!");
+            throw new ResourceNotFoundException(UserConstant.USER_NOT_EXIST);
         }
 
         User user = userOptional.get();
         boolean isValid = otpTokenService.verifyOtp(user.getEmail(), command.getToken());
         if (!isValid) {
-            throw new BusinessException("Token reset mật khẩu không hợp lệ hoặc đã hết hạn!");
+            throw new BusinessException(Messages.INVALID_TOKEN);
         }
         otpTokenService.invalidateOtp(user.getEmail());
         String encodedPassword = passwordEncoder.encode(command.getNewPassword());

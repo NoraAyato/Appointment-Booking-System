@@ -1,6 +1,9 @@
 package com.abs.app.application.auth.command;
 
 import com.abs.app.application.auth.dto.AuthResponseDto;
+import com.abs.app.common.constant.Messages;
+import com.abs.app.common.constant.UserConstant;
+import com.abs.app.common.exception.ResourceNotFoundException;
 import com.abs.app.common.exception.UnauthorizedException;
 import com.abs.app.domain.entity.User;
 import com.abs.app.domain.repository.UserRepository;
@@ -10,7 +13,6 @@ import com.abs.app.infrastructure.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Optional;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -27,27 +29,24 @@ public class RefreshTokenCommandHandler {
         try {
             userId = jwtTokenProvider.getUserId(refreshToken);
         } catch (Exception e) {
-            throw new UnauthorizedException("Token không hợp lệ hoặc sai định dạng");
+            throw new UnauthorizedException(Messages.INVALID_TOKEN);
         }
 
         Optional<User> userRecent = userRepository.findById(userId);
 
         if (!refreshTokenService.isValid(userRecent.get().getUserId(), refreshToken)) {
-            throw new UnauthorizedException("Refresh token không hợp lệ");
+            throw new UnauthorizedException(Messages.INVALID_TOKEN);
         }
 
         String newAccessToken = jwtTokenProvider.generateToken(
                 userId,
-                userRecent.orElseThrow(() -> new UnauthorizedException("User không tồn tại")).getRole().toString());
+                userRecent.orElseThrow(() -> new ResourceNotFoundException(UserConstant.USER_NOT_EXIST)).getRole()
+                        .getRoleName()
+                        .toString());
 
         // refreshTokenService.invalidate(userId);
         String newRefreshToken = jwtTokenProvider.generateRefreshToken(userId);
         refreshTokenService.save(userId, newRefreshToken, 60 * 24 * 3);
-        System.out.println("RefreshToken: " + refreshToken);
-        System.out.println("UserId from token: " + userId);
-        System.out.println("Token tồn tại trong Redis: " + refreshTokenService.get(userId));
-        System.out.println("Token so sánh: " + refreshToken.equals(refreshTokenService.get(userId)));
-
         return new AuthResponseDto(newAccessToken, newRefreshToken);
     }
 }
