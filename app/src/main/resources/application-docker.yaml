@@ -5,19 +5,18 @@ spring:
     password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+  data:
+    redis:
+      host: redis
+      port: 6379
+
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: false
+    show-sql: true
     properties:
       hibernate:
         format_sql: true
-        dialect: org.hibernate.dialect.MySQLDialect
-    database-platform: org.hibernate.dialect.MySQLDialect
-
-  devtools:
-    restart:
-      enabled: true
 
   mail:
     host: ${SPRING_MAIL_HOST}
@@ -32,7 +31,7 @@ spring:
             enable: true
 
 server:
-  port: 8083
+  port: 8080
   servlet:
     context-path: /api
 
@@ -41,11 +40,3 @@ google:
     client-id: ${GOOGLE_OAUTH_CLIENT_ID}
     client-secret: ${GOOGLE_OAUTH_CLIENT_SECRET}
     redirect-uri: ${GOOGLE_OAUTH_REDIRECT_URI}
-
-springdoc:
-  api-docs:
-    path: /v3/api-docs
-  swagger-ui:
-    path: /swagger-ui.html
-    operations-sorter: method
-    tags-sorter: alpha

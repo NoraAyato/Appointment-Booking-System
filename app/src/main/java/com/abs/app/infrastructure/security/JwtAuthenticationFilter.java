@@ -3,6 +3,8 @@ package com.abs.app.infrastructure.security;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.*;
@@ -16,13 +18,21 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
+    private static final Logger log = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
     private final JwtTokenProvider jwtTokenProvider;
     private final CustomUserDetailsService userDetailsService;
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI().toLowerCase();
-        return path.startsWith("/api/auth");
+        boolean skip = path.startsWith("/api/auth")
+                || path.startsWith("/api/swagger-ui")
+                || path.startsWith("/api/v3/api-docs")
+                || path.startsWith("/api/swagger-resources")
+                || path.startsWith("/api/webjars");
+
+        log.debug("shouldNotFilter? path='{}' -> {}", path, skip);
+        return skip;
     }
 
     @Override
@@ -31,53 +41,49 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain)
             throws ServletException, IOException {
 
-        String authHeader = request.getHeader("Authorization");
+        String path = request.getRequestURI().toLowerCase();
+        log.debug("doFilterInternal start for path='{}'", path);
 
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.substring(7);
-
-            if (jwtTokenProvider.validateToken(token)) {
-                String userId = jwtTokenProvider.getUserId(token);
-                System.out.println("JWT Filter - UserId from token: " + userId);
-
-                try {
-                    UserDetails userDetails = userDetailsService.loadUserByUsername(userId);
-                    System.out.println("JWT Filter - UserDetails loaded: " + userDetails.getClass().getSimpleName());
-
-                    if (userDetails instanceof CustomUserPrincipal) {
-                        CustomUserPrincipal principal = (CustomUserPrincipal) userDetails;
-                        System.out.println("JWT Filter - CustomUserPrincipal: userId=" + principal.getUserId() +
-                                ", userName=" + principal.getUserName() +
-                                ", email=" + principal.getEmail());
-                    }
-
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                            userDetails,
-                            null,
-                            userDetails.getAuthorities());
-
-                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                    System.out.println("JWT Filter - Authentication set in SecurityContext");
-                } catch (Exception e) {
-                    System.err.println("JWT Filter - Error loading user: " + e.getMessage());
-                    e.printStackTrace();
-                }
-                filterChain.doFilter(request, response);
-                return;
-            } else {
-                System.err.println("JWT Filter - Invalid token");
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.setContentType("application/json");
-                response.getWriter().write("{\"error\": \"Invalid or expired token\"}");
-                return;
-            }
-        } else {
-            System.out.println("JWT Filter - No Authorization header or not Bearer token");
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json");
-            response.getWriter().write("{\"error\": \"No Authorization header or not Bearer token\"}");
+        // extra safety
+        if (path.startsWith("/api/auth")
+                || path.startsWith("/api/swagger-ui")
+                || path.startsWith("/api/v3/api-docs")) {
+            log.debug("Skipping JWT processing for swagger/auth path '{}'", path);
+            filterChain.doFilter(request, response);
             return;
         }
+
+        String authHeader = request.getHeader("Authorization");
+        log.trace("Authorization header: {}", authHeader);
+
+        // NO TOKEN -> allow through
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        String token = authHeader.substring(7);// bearer
+
+        try {
+            if (jwtTokenProvider.validateToken(token)) {
+                String userId = jwtTokenProvider.getUserId(token);
+                UserDetails userDetails = userDetailsService.loadUserByUsername(userId);
+
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                        userDetails, null, userDetails.getAuthorities());
+
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                log.debug("Authentication set for userId='{}'", userId);
+            } else {
+                log.debug("Invalid/expired token");
+            }
+        } catch (Exception e) {
+            // log full stacktrace (safer than System.out.println)
+            log.error("JWT error while processing request to '{}': {}", path, e.getMessage(), e);
+        }
+
+        filterChain.doFilter(request, response);
     }
 }

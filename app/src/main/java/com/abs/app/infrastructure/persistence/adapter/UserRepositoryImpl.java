@@ -1,5 +1,6 @@
 package com.abs.app.infrastructure.persistence.adapter;
 
+import com.abs.app.infrastructure.persistence.jpa.JpaUserLoginRepository;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,8 +56,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public Optional<User> findByIdWithRole(String userId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findByIdWithRole'");
+        return userJpaRepository.findById(userId);
     }
 
     @Override

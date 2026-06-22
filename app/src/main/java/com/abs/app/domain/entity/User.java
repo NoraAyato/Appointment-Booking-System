@@ -6,7 +6,6 @@ import java.util.List;
 
 import com.abs.app.domain.entity.enums.RoleEnum;
 import com.abs.app.domain.entity.enums.UserStatus;
-
 import jakarta.persistence.*;
 import lombok.*;
 
