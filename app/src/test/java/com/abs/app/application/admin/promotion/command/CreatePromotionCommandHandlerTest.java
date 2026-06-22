@@ -2,6 +2,7 @@ package com.abs.app.application.admin.promotion.command;
 
 import com.abs.app.application.admin.promotion.dto.PromotionResponseDto;
 import com.abs.app.common.constant.Messages;
+import com.abs.app.common.constant.PromotionConstant;
 import com.abs.app.common.constant.UserConstant;
 import com.abs.app.common.exception.BusinessException;
 import com.abs.app.common.exception.DuplicateResourceException;
@@ -110,10 +111,11 @@ public class CreatePromotionCommandHandlerTest {
         existingPromotion.setEndDate(LocalDate.now().plusDays(5));
 
         when(promotionRepository.findAll()).thenReturn(List.of(existingPromotion));
+        when(promotionService.handlePromotionDuplicateValid(any(), any(), any())).thenReturn(true);
 
         // Act & Assert
         DuplicateResourceException exception = assertThrows(DuplicateResourceException.class, () -> handler.handle(validCommand));
-        assertEquals(Messages.PROMOTION_DATE_OVERLAPPED, exception.getMessage());
+        assertEquals(PromotionConstant.PROMOTION_DATE_OVERLAPPED, exception.getMessage());
         verify(promotionRepository, never()).save(any(Promotion.class));
     }
 
