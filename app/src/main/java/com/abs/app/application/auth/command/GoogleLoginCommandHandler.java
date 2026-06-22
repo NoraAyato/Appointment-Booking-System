@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import com.abs.app.application.auth.dto.AuthResponseDto;
 import com.abs.app.common.constant.Messages;
+import com.abs.app.common.exception.UnauthorizedException;
 
 import java.util.Optional;
 
@@ -38,11 +39,11 @@ public class GoogleLoginCommandHandler {
         try {
             idToken = googleVerifier.verify(idTokenStr);
         } catch (Exception e) {
-            throw new RuntimeException("Xác thực token với Google thất bại.");
+            throw new UnauthorizedException("Xác thực token với Google thất bại.");
         }
 
         if (idToken == null) {
-            throw new RuntimeException("ID Token không hợp lệ.");
+            throw new UnauthorizedException("ID Token không hợp lệ.");
         }
 
         Payload payload = idToken.getPayload();
@@ -54,7 +55,6 @@ public class GoogleLoginCommandHandler {
         Optional<UserLogin> optionalUserLogin = userLoginRepository.findByProviderAndProviderId(LoginProvider.GOOGLE,
                 providerId);
         User user;
-
         if (optionalUserLogin.isPresent()) {
             user = optionalUserLogin.get().getUser();
         } else {
@@ -68,9 +68,9 @@ public class GoogleLoginCommandHandler {
             userLoginRepository.save(userLogin);
         }
         if (!user.getStatus().equals(UserStatus.ACTIVE)) {
-            throw new RuntimeException("Tài khoản của bạn đã bị vô hiệu hóa.");
+            throw new UnauthorizedException(Messages.PROHIBIT_ACCOUNT_MESSAGE);
         }
-        String accessToken = jwtTokenProvider.generateToken(user.getUserId(), user.getRole().toString());
+        String accessToken = jwtTokenProvider.generateToken(user.getUserId(), user.getRole().getRoleName().toString());
         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getUserId());
         refreshTokenService.save(user.getUserId(), refreshToken, 60 * 24 * 3);
         // activityLogHelper.logUserLogin(user.getUserName(), user.getUserId());

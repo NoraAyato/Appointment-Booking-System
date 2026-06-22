@@ -33,8 +33,6 @@ public class User {
     private String phoneNumber;
     @Column(name = "is_receive_email")
     private boolean isRecieveEmail = false;
-    @Enumerated(EnumType.STRING)
-    private RoleEnum role = RoleEnum.CUSTOMER;
     @Column(name = "gender")
     private boolean gender = true;// true for male and false for female
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -44,7 +42,9 @@ public class User {
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private UserStatus status = UserStatus.ACTIVE;
-
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id")
+    private Role role;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserLogin> userLogins = new ArrayList<>();
     @OneToMany(mappedBy = "staff", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -64,12 +64,7 @@ public class User {
         this.userName = userName;
         this.email = email;
         this.status = UserStatus.ACTIVE;
-        this.setRole();
         this.createdAt = LocalDateTime.now();
-    }
-
-    private void setRole() {
-        this.role = RoleEnum.CUSTOMER; // Set default role to CUSTOMER
     }
 
 }
