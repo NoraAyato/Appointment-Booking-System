@@ -20,11 +20,11 @@ public class UpdateServiceRequestDto {
     @NotNull(message = ServiceEntityConstant.VALID_DURATION_NOT_NULL)
     @Min(value = 5, message = ServiceEntityConstant.VALID_DURATION_MIN)
     @Max(value = 480, message = ServiceEntityConstant.VALID_DURATION_MAX)
-    private int durationMinutes;
+    private Integer durationMinutes;
 
     @NotNull(message = ServiceEntityConstant.VALID_PRICE_NOT_NULL)
     @Min(value = 0, message = ServiceEntityConstant.VALID_PRICE_MIN)
-    private double price;
+    private Double price;
 
     @NotBlank(message = ServiceEntityConstant.VALID_STATUS_NOT_BLANK)
     private String status;
