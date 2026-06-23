@@ -1,6 +1,5 @@
 package com.abs.app.infrastructure.email;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 
@@ -14,7 +13,7 @@ import com.abs.app.domain.service.EmailService;
 @RequiredArgsConstructor
 public class EmailServiceImpl implements EmailService {
 
-    private JavaMailSender mailSender;
+    private final JavaMailSender mailSender;
 
     @Override
     public void sendResetPasswordEmail(String to, String resetToken) {
