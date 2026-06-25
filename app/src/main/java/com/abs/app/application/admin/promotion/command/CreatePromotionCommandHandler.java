@@ -35,7 +35,7 @@ public class CreatePromotionCommandHandler {
     private final PromotionService promotionService;
 
     public PromotionResponseDto handle(CreatePromotionCommand command) {
-        if (promotionService.handlePromotionDate(command.getStartDate(), command.getEndDate())) {
+        if (promotionService.isInvalidPromotionDate(command.getStartDate(), command.getEndDate())) {
             throw new BusinessException(Messages.INVALID_DATE);
         }
 
@@ -43,7 +43,7 @@ public class CreatePromotionCommandHandler {
 
         List<Promotion> promotionList = promotionRepository.findAll().stream()
                 .filter(exist -> exist.getCode().equals(command.getPromotionCode())).toList();
-        if (promotionService.handlePromotionDuplicateValid(promotionList, command.getStartDate(), command.getEndDate())) {
+        if (promotionService.isPromotionDateOverlapped(promotionList, command.getStartDate(), command.getEndDate())) {
             throw new DuplicateResourceException(PromotionConstant.PROMOTION_DATE_OVERLAPPED);
         }
 

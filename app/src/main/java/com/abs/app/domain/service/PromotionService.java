@@ -24,11 +24,11 @@ public class PromotionService {
         };
     }
 
-    public boolean handlePromotionDate(LocalDate startDate, LocalDate endDate) {
+    public boolean isInvalidPromotionDate(LocalDate startDate, LocalDate endDate) {
         return startDate.isAfter(endDate);
     }
 
-    public boolean handlePromotionDuplicateValid(List<Promotion> promotionList, LocalDate startDate, LocalDate endDate) {
+    public boolean isPromotionDateOverlapped(List<Promotion> promotionList, LocalDate startDate, LocalDate endDate) {
         return promotionList.stream().anyMatch(oldPromotion ->
                 !oldPromotion.getStartDate().isAfter(endDate) &&
                         !oldPromotion.getEndDate().isBefore(startDate));
