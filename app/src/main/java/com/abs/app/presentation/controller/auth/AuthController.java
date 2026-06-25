@@ -12,6 +12,7 @@ import com.abs.app.application.auth.dto.VerifyOtpRequestDto;
 
 import java.io.IOException;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,9 +44,11 @@ import com.abs.app.application.auth.dto.GoogleLoginRequestDto;
 import com.abs.app.application.auth.dto.LoginRequestDto;
 import com.abs.app.application.auth.dto.RefreshTokenRequestDto;
 import com.abs.app.common.constant.Messages;
+import com.abs.app.common.exception.UnauthorizedException;
 import com.abs.app.common.response.ApiResponse;
 import com.abs.app.infrastructure.security.SecurityUtils;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -64,19 +67,24 @@ public class AuthController {
     private final GenerateOtpCommandHandler generateOtpCommandHandler;
     private final VerifyOtpCommandHandler verifyOtpCommandHandler;
     private final GoogleCallbackCommandHandler googleCallbackCommandHandler;
+    private final AuthCookieHelper authCookieHelper;
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<AuthResponseDto>> login(@Valid @RequestBody LoginRequestDto dto) {
         AuthResponseDto response = loginHandler
                 .handle(new LoginUserCommand(dto.getEmail(), dto.getPassword(), dto.isRememberMe()));
-        return ResponseEntity.ok(new ApiResponse<>(true, Messages.LOGIN_SUCCESS, response));
+        return ResponseEntity.ok()
+                .headers(authCookieHelper.createAuthCookieHeaders(response))
+                .body(new ApiResponse<>(true, Messages.LOGIN_SUCCESS, response));
     }
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<AuthResponseDto>> register(@Valid @RequestBody RegisterRequestDto dto) {
         AuthResponseDto responseDto = registerHandler.handle(
                 new RegisterUserCommand(dto.getEmail(), dto.getPassword(), dto.getFirstName(), dto.getLastName()));
-        return ResponseEntity.ok(new ApiResponse<>(true, Messages.REGISTER_SUCCESS, responseDto));
+        return ResponseEntity.ok()
+                .headers(authCookieHelper.createAuthCookieHeaders(responseDto))
+                .body(new ApiResponse<>(true, Messages.REGISTER_SUCCESS, responseDto));
     }
 
     @PostMapping("/change-password")
@@ -95,9 +103,20 @@ public class AuthController {
     }
 
     @PostMapping("/refresh-token")
-    public ResponseEntity<ApiResponse<AuthResponseDto>> refreshToken(@RequestBody RefreshTokenRequestDto dto) {
-        AuthResponseDto response = refreshTokenCommandHandler.handle(new RefreshTokenCommand(dto.getRefreshToken()));
-        return ResponseEntity.ok(new ApiResponse<>(true, Messages.REFRESH_TOKEN_SUCCESS, response));
+    public ResponseEntity<ApiResponse<AuthResponseDto>> refreshToken(
+            @RequestBody(required = false) RefreshTokenRequestDto dto,
+            HttpServletRequest request) {
+        String refreshToken = authCookieHelper.getRefreshToken(request)
+                .orElse(dto != null ? dto.getRefreshToken() : null);
+
+        if (refreshToken == null || refreshToken.isBlank()) {
+            throw new UnauthorizedException(Messages.INVALID_TOKEN);
+        }
+
+        AuthResponseDto response = refreshTokenCommandHandler.handle(new RefreshTokenCommand(refreshToken));
+        return ResponseEntity.ok()
+                .headers(authCookieHelper.createAuthCookieHeaders(response))
+                .body(new ApiResponse<>(true, Messages.REFRESH_TOKEN_SUCCESS, response));
     }
 
     @PostMapping("/google")
@@ -105,7 +124,9 @@ public class AuthController {
             @Valid @RequestBody GoogleLoginRequestDto dto) {
         AuthResponseDto response = googleLoginCommandHandler.handle(
                 new GoogleLoginCommand(dto.getIdToken()));
-        return ResponseEntity.ok(new ApiResponse<>(true, Messages.GOOGLE_LOGIN_SUCCESS, response));
+        return ResponseEntity.ok()
+                .headers(authCookieHelper.createAuthCookieHeaders(response))
+                .body(new ApiResponse<>(true, Messages.GOOGLE_LOGIN_SUCCESS, response));
     }
 
     @GetMapping("/google/callback")
@@ -113,10 +134,11 @@ public class AuthController {
         var result = googleCallbackCommandHandler.handle(new GoogleCallbackCommand(code));
 
         if (result.isSuccess()) {
-            String redirectUrl = "http://localhost:5173/auth/google-callback" +
-                    "?accessToken="
-                    + result.getAuthResponse().getAccessToken()
-                    + "&refreshToken=" + result.getAuthResponse().getRefreshToken();
+            authCookieHelper.createAuthCookieHeaders(result.getAuthResponse())
+                    .get(HttpHeaders.SET_COOKIE)
+                    .forEach(cookie -> response.addHeader(HttpHeaders.SET_COOKIE, cookie));
+
+            String redirectUrl = "http://localhost:5173/auth/google-callback?success=true";
             response.sendRedirect(redirectUrl);
         } else {
             String redirectUrl = "http://localhost:5173/auth/google-callback?error="
@@ -142,5 +164,12 @@ public class AuthController {
     public ResponseEntity<ApiResponse<Void>> verifyOtp(@Valid @RequestBody VerifyOtpRequestDto dto) {
         verifyOtpCommandHandler.handle(new VerifyOtpCommand(dto.getEmail(), dto.getOtp()));
         return ResponseEntity.ok(new ApiResponse<>(true, Messages.VERIFY_OTP_SUCCESS, null));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<Void>> logout() {
+        return ResponseEntity.ok()
+                .headers(authCookieHelper.clearAuthCookieHeaders())
+                .body(new ApiResponse<>(true, "Logout success", null));
     }
 }
