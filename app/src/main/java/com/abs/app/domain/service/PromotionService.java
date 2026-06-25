@@ -25,10 +25,7 @@ public class PromotionService {
     }
 
     public boolean handlePromotionDate(LocalDate startDate, LocalDate endDate) {
-        if (startDate.isAfter(endDate) || endDate.isBefore(startDate)) {
-            return false;
-        }
-        return false;
+        return startDate.isAfter(endDate);
     }
 
     public boolean handlePromotionDuplicateValid(List<Promotion> promotionList, LocalDate startDate, LocalDate endDate) {

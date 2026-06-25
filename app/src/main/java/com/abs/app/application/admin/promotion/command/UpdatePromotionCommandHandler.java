@@ -39,7 +39,8 @@ public class UpdatePromotionCommandHandler {
                 .orElseThrow(() -> new ResourceNotFoundException(PromotionConstant.NOT_EXIST));
 
         List<Promotion> promotionList = promotionRepository.findAll().stream()
-                .filter(exist -> exist.getCode().equals(command.getPromotionCode())).toList();
+                .filter(exist -> exist.getCode().equals(command.getPromotionCode()) && !exist.getId().equals(command.getId()))
+                .toList();
         if (promotionService.handlePromotionDuplicateValid(promotionList, command.getStartDate(), command.getEndDate())) {
             throw new DuplicateResourceException(PromotionConstant.PROMOTION_DATE_OVERLAPPED);
         }
