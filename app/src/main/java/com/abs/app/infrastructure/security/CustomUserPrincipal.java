@@ -21,7 +21,7 @@ public class CustomUserPrincipal implements UserDetails {
         this.email = user.getEmail();
         this.password = user.getPassWord();
         this.authorities = Collections.singletonList(
-                new SimpleGrantedAuthority("ROLE_" + user.getRole()));
+                new SimpleGrantedAuthority("ROLE_" + user.getRole().getRoleName().name()));
     }
 
     public String getUserId() {
