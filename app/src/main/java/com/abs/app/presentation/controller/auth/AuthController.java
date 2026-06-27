@@ -103,16 +103,12 @@ public class AuthController {
     }
 
     @PostMapping("/refresh-token")
-    public ResponseEntity<ApiResponse<AuthResponseDto>> refreshToken(
-            @RequestBody(required = false) RefreshTokenRequestDto dto,
-            HttpServletRequest request) {
+    public ResponseEntity<ApiResponse<AuthResponseDto>> refreshToken(HttpServletRequest request) {
         String refreshToken = authCookieHelper.getRefreshToken(request)
-                .orElse(dto != null ? dto.getRefreshToken() : null);
-
+                .orElseThrow(() -> new UnauthorizedException(Messages.INVALID_TOKEN));
         if (refreshToken == null || refreshToken.isBlank()) {
             throw new UnauthorizedException(Messages.INVALID_TOKEN);
         }
-
         AuthResponseDto response = refreshTokenCommandHandler.handle(new RefreshTokenCommand(refreshToken));
         return ResponseEntity.ok()
                 .headers(authCookieHelper.createAuthCookieHeaders(response))
