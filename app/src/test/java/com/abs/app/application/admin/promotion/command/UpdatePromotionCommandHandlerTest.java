@@ -82,10 +82,10 @@ public class UpdatePromotionCommandHandlerTest {
     void handle_ValidCommand_UpdatesPromotionSuccessfully() {
         when(promotionService.convertPromotionStatusToEnum(anyString())).thenReturn(PromotionStatus.ACTIVE);
         when(promotionService.convertDiscountTypeStringToEnum(anyString())).thenReturn(DiscountType.PERCENTAGE);
-        when(promotionService.handlePromotionDate(any(), any())).thenReturn(false);
+        when(promotionService.isInvalidPromotionDate(any(), any())).thenReturn(false);
         when(promotionRepository.findById("promo-id-1")).thenReturn(Optional.of(mockPromotion));
         when(promotionRepository.findAll()).thenReturn(Collections.emptyList());
-        when(promotionService.handlePromotionDuplicateValid(anyList(), any(), any())).thenReturn(false);
+        when(promotionService.isPromotionDateOverlapped(anyList(), any(), any())).thenReturn(false);
         when(userRepository.findById("user123")).thenReturn(Optional.of(mockUser));
         when(promotionRepository.save(any(Promotion.class))).thenAnswer(i -> i.getArguments()[0]);
 
@@ -99,7 +99,7 @@ public class UpdatePromotionCommandHandlerTest {
     void handle_InvalidDate_ThrowsBusinessException() {
         when(promotionService.convertPromotionStatusToEnum(anyString())).thenReturn(PromotionStatus.ACTIVE);
         when(promotionService.convertDiscountTypeStringToEnum(anyString())).thenReturn(DiscountType.PERCENTAGE);
-        when(promotionService.handlePromotionDate(any(), any())).thenReturn(true);
+        when(promotionService.isInvalidPromotionDate(any(), any())).thenReturn(true);
 
         BusinessException exception = assertThrows(BusinessException.class, () -> handler.handle(validCommand));
         assertEquals(Messages.INVALID_DATE, exception.getMessage());
@@ -109,7 +109,7 @@ public class UpdatePromotionCommandHandlerTest {
     void handle_PromotionNotFound_ThrowsResourceNotFoundException() {
         when(promotionService.convertPromotionStatusToEnum(anyString())).thenReturn(PromotionStatus.ACTIVE);
         when(promotionService.convertDiscountTypeStringToEnum(anyString())).thenReturn(DiscountType.PERCENTAGE);
-        when(promotionService.handlePromotionDate(any(), any())).thenReturn(false);
+        when(promotionService.isInvalidPromotionDate(any(), any())).thenReturn(false);
         when(promotionRepository.findById(anyString())).thenReturn(Optional.empty());
 
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> handler.handle(validCommand));
@@ -120,10 +120,10 @@ public class UpdatePromotionCommandHandlerTest {
     void handle_OverlappingPromotionDate_ThrowsDuplicateResourceException() {
         when(promotionService.convertPromotionStatusToEnum(anyString())).thenReturn(PromotionStatus.ACTIVE);
         when(promotionService.convertDiscountTypeStringToEnum(anyString())).thenReturn(DiscountType.PERCENTAGE);
-        when(promotionService.handlePromotionDate(any(), any())).thenReturn(false);
+        when(promotionService.isInvalidPromotionDate(any(), any())).thenReturn(false);
         when(promotionRepository.findById("promo-id-1")).thenReturn(Optional.of(mockPromotion));
         when(promotionRepository.findAll()).thenReturn(List.of(mockPromotion));
-        when(promotionService.handlePromotionDuplicateValid(anyList(), any(), any())).thenReturn(true);
+        when(promotionService.isPromotionDateOverlapped(anyList(), any(), any())).thenReturn(true);
 
         DuplicateResourceException exception = assertThrows(DuplicateResourceException.class, () -> handler.handle(validCommand));
         assertEquals(PromotionConstant.PROMOTION_DATE_OVERLAPPED, exception.getMessage());
@@ -133,10 +133,10 @@ public class UpdatePromotionCommandHandlerTest {
     void handle_UserNotFound_ThrowsResourceNotFoundException() {
         when(promotionService.convertPromotionStatusToEnum(anyString())).thenReturn(PromotionStatus.ACTIVE);
         when(promotionService.convertDiscountTypeStringToEnum(anyString())).thenReturn(DiscountType.PERCENTAGE);
-        when(promotionService.handlePromotionDate(any(), any())).thenReturn(false);
+        when(promotionService.isInvalidPromotionDate(any(), any())).thenReturn(false);
         when(promotionRepository.findById("promo-id-1")).thenReturn(Optional.of(mockPromotion));
         when(promotionRepository.findAll()).thenReturn(Collections.emptyList());
-        when(promotionService.handlePromotionDuplicateValid(anyList(), any(), any())).thenReturn(false);
+        when(promotionService.isPromotionDateOverlapped(anyList(), any(), any())).thenReturn(false);
         when(userRepository.findById(anyString())).thenReturn(Optional.empty());
 
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> handler.handle(validCommand));
@@ -161,10 +161,10 @@ public class UpdatePromotionCommandHandlerTest {
 
         when(promotionService.convertPromotionStatusToEnum(anyString())).thenReturn(PromotionStatus.ACTIVE);
         when(promotionService.convertDiscountTypeStringToEnum(anyString())).thenReturn(DiscountType.PERCENTAGE);
-        when(promotionService.handlePromotionDate(any(), any())).thenReturn(false);
+        when(promotionService.isInvalidPromotionDate(any(), any())).thenReturn(false);
         when(promotionRepository.findById("promo-id-1")).thenReturn(Optional.of(mockPromotion));
         when(promotionRepository.findAll()).thenReturn(Collections.emptyList());
-        when(promotionService.handlePromotionDuplicateValid(anyList(), any(), any())).thenReturn(false);
+        when(promotionService.isPromotionDateOverlapped(anyList(), any(), any())).thenReturn(false);
         when(fileStorageService.storePromotion(any(), anyString())).thenReturn("path/to/image.jpg");
         when(userRepository.findById("user123")).thenReturn(Optional.of(mockUser));
         when(promotionRepository.save(any(Promotion.class))).thenAnswer(i -> i.getArguments()[0]);

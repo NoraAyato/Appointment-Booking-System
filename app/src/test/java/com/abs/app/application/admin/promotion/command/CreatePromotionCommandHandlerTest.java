@@ -73,7 +73,7 @@ public class CreatePromotionCommandHandlerTest {
     @Test
     void handle_ValidCommand_CreatesPromotionSuccessfully() {
         // Arrange
-        when(promotionService.handlePromotionDate(any(), any())).thenReturn(false);
+        when(promotionService.isInvalidPromotionDate(any(), any())).thenReturn(false);
         when(promotionService.convertDiscountTypeStringToEnum(anyString())).thenReturn(DiscountType.PERCENTAGE);
         when(promotionRepository.findAll()).thenReturn(Collections.emptyList());
         when(userRepository.findById(anyString())).thenReturn(Optional.of(mockUser));
@@ -91,7 +91,7 @@ public class CreatePromotionCommandHandlerTest {
     @Test
     void handle_InvalidDate_ThrowsBusinessException() {
         // Arrange
-        when(promotionService.handlePromotionDate(any(), any())).thenReturn(true);
+        when(promotionService.isInvalidPromotionDate(any(), any())).thenReturn(true);
 
         // Act & Assert
         BusinessException exception = assertThrows(BusinessException.class, () -> handler.handle(validCommand));
@@ -102,7 +102,7 @@ public class CreatePromotionCommandHandlerTest {
     @Test
     void handle_OverlappingPromotion_ThrowsDuplicateResourceException() {
         // Arrange
-        when(promotionService.handlePromotionDate(any(), any())).thenReturn(false);
+        when(promotionService.isInvalidPromotionDate(any(), any())).thenReturn(false);
         when(promotionService.convertDiscountTypeStringToEnum(anyString())).thenReturn(DiscountType.PERCENTAGE);
 
         Promotion existingPromotion = new Promotion();
@@ -111,7 +111,7 @@ public class CreatePromotionCommandHandlerTest {
         existingPromotion.setEndDate(LocalDate.now().plusDays(5));
 
         when(promotionRepository.findAll()).thenReturn(List.of(existingPromotion));
-        when(promotionService.handlePromotionDuplicateValid(any(), any(), any())).thenReturn(true);
+        when(promotionService.isPromotionDateOverlapped(any(), any(), any())).thenReturn(true);
 
         // Act & Assert
         DuplicateResourceException exception = assertThrows(DuplicateResourceException.class, () -> handler.handle(validCommand));
@@ -122,7 +122,7 @@ public class CreatePromotionCommandHandlerTest {
     @Test
     void handle_UserNotFound_ThrowsResourceNotFoundException() {
         // Arrange
-        when(promotionService.handlePromotionDate(any(), any())).thenReturn(false);
+        when(promotionService.isInvalidPromotionDate(any(), any())).thenReturn(false);
         when(promotionService.convertDiscountTypeStringToEnum(anyString())).thenReturn(DiscountType.PERCENTAGE);
         when(promotionRepository.findAll()).thenReturn(Collections.emptyList());
         when(userRepository.findById(anyString())).thenReturn(Optional.empty());
@@ -148,7 +148,7 @@ public class CreatePromotionCommandHandlerTest {
                 "user123"
         );
 
-        when(promotionService.handlePromotionDate(any(), any())).thenReturn(false);
+        when(promotionService.isInvalidPromotionDate(any(), any())).thenReturn(false);
         when(promotionService.convertDiscountTypeStringToEnum(anyString())).thenReturn(DiscountType.PERCENTAGE);
         when(promotionRepository.findAll()).thenReturn(Collections.emptyList());
         when(fileStorageService.storePromotion(any(), anyString())).thenReturn("path/to/image.jpg");
