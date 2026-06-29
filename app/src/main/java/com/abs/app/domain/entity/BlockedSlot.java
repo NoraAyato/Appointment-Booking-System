@@ -1,6 +1,7 @@
 package com.abs.app.domain.entity;
 
-import java.sql.Date;
+import java.util.Date;
+import java.time.LocalDate;
 import java.time.LocalTime;
 
 import com.abs.app.domain.entity.enums.BlockedSlotStatus;
@@ -18,7 +19,7 @@ public class BlockedSlot {
     private Long id;
 
     @Column(name = "blocked_date", nullable = false)
-    private Date blockedDate;
+    private LocalDate blockedDate;
 
     @Column(name = "start_time", nullable = false)
     private LocalTime startTime;
