@@ -40,7 +40,7 @@ public class CreateBlockedSlotCommandHandler {
         if (!blockedSlotService.isValidDateTimeRange(command.getBlockedDate(), command.getStartTime(),
                 command.getEndTime(),
                 user.getBlockedSlots())) {
-            throw new BusinessException(BlockedSlotConstant.INVALID_TIME_RANGE);
+            throw new BusinessException(BlockedSlotConstant.OVERLAP_BLOCKED_SLOT);
         }
         BlockedSlot blockedSlot = new BlockedSlot();
         blockedSlot.setStaff(user);
