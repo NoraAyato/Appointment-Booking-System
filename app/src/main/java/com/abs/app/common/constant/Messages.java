@@ -30,6 +30,7 @@ public final class Messages {
     public static final String PHONE_NUMBER_REQUIRED = "Số điện thoại là bắt buộc";
     public static final String INVALID_PHONE_NUMBER = "Số điện thoại không hợp lệ";
     public static final String INVALID_DATE = "Ngày bắt đầu hoặc ngày kết thúc không hợp lệ";
+    public static final String INVALID_TIME = "Thời gian bắt đầu hoặc thời gian kết thúc không hợp lệ";
 
     private Messages() {
         // Private constructor để ngăn khởi tạo instance

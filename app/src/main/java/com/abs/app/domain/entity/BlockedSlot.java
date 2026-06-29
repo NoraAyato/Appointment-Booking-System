@@ -1,7 +1,10 @@
 package com.abs.app.domain.entity;
 
-import java.sql.Date;
+import java.util.Date;
+import java.time.LocalDate;
 import java.time.LocalTime;
+
+import com.abs.app.domain.entity.enums.BlockedSlotStatus;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -16,7 +19,7 @@ public class BlockedSlot {
     private Long id;
 
     @Column(name = "blocked_date", nullable = false)
-    private Date blockedDate;
+    private LocalDate blockedDate;
 
     @Column(name = "start_time", nullable = false)
     private LocalTime startTime;
@@ -26,6 +29,10 @@ public class BlockedSlot {
 
     @Column(name = "reason", columnDefinition = "TEXT")
     private String reason;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private BlockedSlotStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

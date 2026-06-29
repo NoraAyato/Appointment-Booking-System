@@ -53,6 +53,8 @@ public class User {
     private List<StaffShift> staffShifts = new ArrayList<>();
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Appointment> appointments = new ArrayList<>();
+    @OneToMany(mappedBy = "staff", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BlockedSlot> blockedSlots = new ArrayList<>();
 
     public User() {
         this.createdAt = LocalDateTime.now();
