@@ -10,7 +10,7 @@ public interface BlockedSlotRepository {
 
     List<BlockedSlot> findAll();
 
-    BlockedSlot save(BlockedSlot blockedSlot);
+    void save(BlockedSlot blockedSlot);
 
     void deleteById(Long id);
 }

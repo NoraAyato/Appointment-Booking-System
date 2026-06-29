@@ -29,8 +29,8 @@ public class BlockedSlotRepositoryImpl implements BlockedSlotRepository {
     }
 
     @Override
-    public BlockedSlot save(BlockedSlot blockedSlot) {
-        return blockedSlotJpaRepository.save(blockedSlot);
+    public void save(BlockedSlot blockedSlot) {
+        blockedSlotJpaRepository.save(blockedSlot);
     }
 
     @Override
