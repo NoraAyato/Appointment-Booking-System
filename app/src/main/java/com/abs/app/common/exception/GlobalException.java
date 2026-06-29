@@ -1,10 +1,12 @@
 package com.abs.app.common.exception;
 
+import java.time.format.DateTimeParseException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -16,50 +18,68 @@ import com.abs.app.common.response.ValidationErrorResponse;
 @RestControllerAdvice
 public class GlobalException {
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ValidationErrorResponse> handleValidationException(
-            MethodArgumentNotValidException ex) {
+        @ExceptionHandler(MethodArgumentNotValidException.class)
+        public ResponseEntity<ValidationErrorResponse> handleValidationException(
+                        MethodArgumentNotValidException ex) {
 
-        Map<String, String> errors = new LinkedHashMap<>();
+                Map<String, String> errors = new LinkedHashMap<>();
 
-        for (FieldError error : ex.getBindingResult().getFieldErrors()) {
-            errors.put(error.getField(), error.getDefaultMessage());
+                for (FieldError error : ex.getBindingResult().getFieldErrors()) {
+                        errors.put(error.getField(), error.getDefaultMessage());
+                }
+
+                return ResponseEntity.badRequest()
+                                .body(new ValidationErrorResponse(
+                                                false,
+                                                "Validation failed",
+                                                errors));
         }
 
-        return ResponseEntity.badRequest()
-                .body(new ValidationErrorResponse(
-                        false,
-                        "Validation failed",
-                        errors));
-    }
+        @ExceptionHandler(HttpMessageNotReadableException.class)
+        public ResponseEntity<ErrorResponse> handle(HttpMessageNotReadableException ex) {
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(
-            IllegalArgumentException ex) {
+                Throwable cause = ex.getMostSpecificCause();
 
-        return ResponseEntity.badRequest()
-                .body(new ErrorResponse(
-                        false,
-                        ex.getMessage()));
-    }
+                if (cause instanceof DateTimeParseException) {
+                        return ResponseEntity.badRequest().body(
+                                        new ErrorResponse(
+                                                        false,
+                                                        "Ngày không tồn tại hoặc sai định dạng."));
+                }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ErrorResponse> handleRuntimeException(
-            RuntimeException ex) {
+                return ResponseEntity.badRequest().body(
+                                new ErrorResponse(
+                                                false,
+                                                "Dữ liệu không hợp lệ."));
+        }
 
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse(
-                        false,
-                        ex.getMessage()));
-    }
+        @ExceptionHandler(IllegalArgumentException.class)
+        public ResponseEntity<ErrorResponse> handleIllegalArgumentException(
+                        IllegalArgumentException ex) {
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleException(
-            Exception ex) {
+                return ResponseEntity.badRequest()
+                                .body(new ErrorResponse(
+                                                false,
+                                                ex.getMessage()));
+        }
 
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse(
-                        false,
-                        "Internal server error"));
-    }
+        @ExceptionHandler(RuntimeException.class)
+        public ResponseEntity<ErrorResponse> handleRuntimeException(
+                        RuntimeException ex) {
+
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                .body(new ErrorResponse(
+                                                false,
+                                                ex.getMessage()));
+        }
+
+        @ExceptionHandler(Exception.class)
+        public ResponseEntity<ErrorResponse> handleException(
+                        Exception ex) {
+
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                .body(new ErrorResponse(
+                                                false,
+                                                "Internal server error"));
+        }
 }
