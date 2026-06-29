@@ -1,5 +1,6 @@
 package com.abs.app.application.staff.blockedslot.dto;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Date;
 
@@ -10,7 +11,7 @@ public class BlockedSlotResponseDto {
     private Long id;
     private String reason;
     private String status;
-    private Date blockedDate;
+    private LocalDate blockedDate;
     private LocalTime startTime;
     private LocalTime endTime;
 }
