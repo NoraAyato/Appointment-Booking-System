@@ -20,5 +20,4 @@ public class ReviewsResponseDto {
     private ReviewsStatus status;
     private LocalDateTime createAt;
     private String customerName;
-
 }
