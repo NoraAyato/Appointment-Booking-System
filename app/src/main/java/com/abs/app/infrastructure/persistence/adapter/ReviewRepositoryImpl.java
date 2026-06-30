@@ -14,21 +14,14 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class ReviewRepositoryImpl implements ReviewRepository {
-
-    private final ReviewJpaRepository reviewJpaRepository;
-
-    @Override
-    public List<Reviews> findAll() {
-        return reviewJpaRepository.findAll();
+    private final ReviewJpaRepository reviewsJpaRepository;
+    public List<Reviews> findAll(){
+        return reviewsJpaRepository.findAll();
     }
-
-    @Override
-    public Optional<Reviews> findById(String id) {
-        return reviewJpaRepository.findById(id);
+    public Optional<Reviews> findById(String id){
+        return reviewsJpaRepository.findById(id);
     }
-
-    @Override
-    public Reviews save(Reviews review) {
-        return reviewJpaRepository.save(review);
+    public void save(Reviews reviews){
+        reviewsJpaRepository.save(reviews);
     }
 }

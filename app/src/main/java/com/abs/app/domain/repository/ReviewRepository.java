@@ -10,5 +10,5 @@ public interface ReviewRepository {
     
     Optional<Reviews> findById(String id);
     
-    Reviews save(Reviews review);
+    void save(Reviews review);
 }
