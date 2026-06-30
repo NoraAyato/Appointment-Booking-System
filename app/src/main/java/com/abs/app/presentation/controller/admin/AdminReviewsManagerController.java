@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.abs.app.application.admin.reviewmanager.command.ChangeReviewStatusCommand;
-import com.abs.app.application.admin.reviewmanager.command.ChangeReviewStatusCommandHandler;
-import com.abs.app.application.admin.reviewmanager.dto.ChangeReviewStatusRequest;
-import com.abs.app.application.admin.reviewmanager.dto.ReviewResponseDto;
-import com.abs.app.application.admin.reviewmanager.query.GetReviewListQuery;
-import com.abs.app.application.admin.reviewmanager.query.GetReviewListQueryHandler;
-import com.abs.app.common.constant.ReviewConstant;
+import com.abs.app.application.admin.reviews.command.ChangeReviewsStatusCommand;
+import com.abs.app.application.admin.reviews.command.ChangeReviewsStatusCommandHandler;
+import com.abs.app.application.admin.reviews.dto.ChangeReviewsStatusRequest;
+import com.abs.app.application.admin.reviews.dto.ReviewsResponseDto;
+import com.abs.app.application.admin.reviews.query.GetReviewsListQuery;
+import com.abs.app.application.admin.reviews.query.GetReviewsListQueryHandler;
+import com.abs.app.common.constant.ReviewsConstant;
 import com.abs.app.common.response.ApiResponse;
 import com.abs.app.common.response.PageResponse;
 
@@ -26,25 +26,25 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/admin/reviews")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
-public class AdminReviewManagerController {
-    private final GetReviewListQueryHandler getReviewListQueryHandler;
-    private final ChangeReviewStatusCommandHandler changeReviewStatusCommandHandler;
+public class AdminReviewsManagerController {
+    private final GetReviewsListQueryHandler getReviewListQueryHandler;
+    private final ChangeReviewsStatusCommandHandler changeReviewStatusCommandHandler;
     @GetMapping
-    public ResponseEntity<ApiResponse<PageResponse<ReviewResponseDto>>> getReviews(
+    public ResponseEntity<ApiResponse<PageResponse<ReviewsResponseDto>>> getReviews(
             @RequestParam(required = false) String keyWord,
             @RequestParam(required = false) String status,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int limit) {
-        PageResponse<ReviewResponseDto> reviews = getReviewListQueryHandler
-                .handle(new GetReviewListQuery(keyWord, status, page, limit));
-        return ResponseEntity.ok(new ApiResponse<>(true, ReviewConstant.GET_REVIEW_SLOTS_SUCCESS,
+        PageResponse<ReviewsResponseDto> reviews = getReviewListQueryHandler
+                .handle(new GetReviewsListQuery(keyWord, status, page, limit));
+        return ResponseEntity.ok(new ApiResponse<>(true, ReviewsConstant.GET_REVIEW_SLOTS_SUCCESS,
                 reviews));
     }
 
     @PutMapping("update/{id}")
     public ResponseEntity<ApiResponse<Void>> updateReviews(@PathVariable String id,
-                                                           @RequestBody ChangeReviewStatusRequest request){
-        changeReviewStatusCommandHandler.handle(new ChangeReviewStatusCommand(id, request.getStatus()));
-        return ResponseEntity.ok(new ApiResponse<>(true, ReviewConstant.UPDATE_REVIEW_SUCCESS, null));
+                                                           @RequestBody ChangeReviewsStatusRequest request){
+        changeReviewStatusCommandHandler.handle(new ChangeReviewsStatusCommand(id, request.getStatus()));
+        return ResponseEntity.ok(new ApiResponse<>(true, ReviewsConstant.UPDATE_REVIEW_SUCCESS, null));
     }
 }

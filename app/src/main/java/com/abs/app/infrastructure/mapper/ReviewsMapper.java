@@ -1,12 +1,11 @@
 package com.abs.app.infrastructure.mapper;
 
-import com.abs.app.application.admin.reviewmanager.dto.ReviewResponseDto;
+import com.abs.app.application.admin.reviews.dto.ReviewsResponseDto;
 import com.abs.app.domain.entity.Reviews;
-import com.abs.app.domain.entity.User;
 
-public class ReviewMapper {
-    public static ReviewResponseDto toAdminReviewResponseDto(Reviews reviews){
-        ReviewResponseDto responseDto = new ReviewResponseDto();
+public class ReviewsMapper {
+    public static ReviewsResponseDto toAdminReviewResponseDto(Reviews reviews){
+        ReviewsResponseDto responseDto = new ReviewsResponseDto();
         responseDto.setId(reviews.getId());
         responseDto.setPicture(reviews.getPicture());
         responseDto.setDescription(reviews.getDescription());
