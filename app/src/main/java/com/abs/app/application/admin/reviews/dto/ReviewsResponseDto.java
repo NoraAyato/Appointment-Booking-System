@@ -5,13 +5,13 @@ import java.time.LocalDateTime;
 
 import com.abs.app.domain.entity.enums.ReviewStatus;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Getter
-@Setter
-@Builder
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class ReviewResponseDto {
     private String id;
     private String picture;
@@ -20,4 +20,5 @@ public class ReviewResponseDto {
     private ReviewStatus status;
     private LocalDateTime createAt;
     private String customerName;
+
 }

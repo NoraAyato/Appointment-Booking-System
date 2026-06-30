@@ -2,11 +2,13 @@ package com.abs.app.application.admin.reviewmanager.dto;
 
 import com.abs.app.domain.entity.enums.ReviewStatus;
 
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 public class ChangeReviewStatusRequest {
+    @NotBlank
+    @NotNull
     private ReviewStatus status;
 }

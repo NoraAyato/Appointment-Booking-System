@@ -27,31 +27,24 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminReviewManagerController {
-
     private final GetReviewListQueryHandler getReviewListQueryHandler;
     private final ChangeReviewStatusCommandHandler changeReviewStatusCommandHandler;
-
     @GetMapping
-    public ResponseEntity<ApiResponse<PageResponse<ReviewResponseDto>>> getReviewList(
+    public ResponseEntity<ApiResponse<PageResponse<ReviewResponseDto>>> getReviews(
+            @RequestParam(required = false) String keyWord,
+            @RequestParam(required = false) String status,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int limit,
-            @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) String status) {
-        
-        GetReviewListQuery query = new GetReviewListQuery(page, limit, keyword, status);
-        PageResponse<ReviewResponseDto> reviewList = getReviewListQueryHandler.handle(query);
-        
-        return ResponseEntity.ok(new ApiResponse<>(true, ReviewConstant.GET_REVIEW_LIST_SUCCESS, reviewList));
+            @RequestParam(defaultValue = "10") int limit) {
+        PageResponse<ReviewResponseDto> reviews = getReviewListQueryHandler
+                .handle(new GetReviewListQuery(keyWord, status, page, limit));
+        return ResponseEntity.ok(new ApiResponse<>(true, ReviewConstant.GET_REVIEW_SLOTS_SUCCESS,
+                reviews));
     }
 
-    @PutMapping("/{id}/status")
-    public ResponseEntity<ApiResponse<Void>> updateReviewStatus(
-            @PathVariable String id,
-            @RequestBody ChangeReviewStatusRequest request) {
-        
-        ChangeReviewStatusCommand command = new ChangeReviewStatusCommand(id, request.getStatus());
-        changeReviewStatusCommandHandler.handle(command);
-        
-        return ResponseEntity.ok(new ApiResponse<>(true, ReviewConstant.UPDATE_REVIEW_STATUS_SUCCESS, null));
+    @PutMapping("update/{id}")
+    public ResponseEntity<ApiResponse<Void>> updateReviews(@PathVariable String id,
+                                                           @RequestBody ChangeReviewStatusRequest request){
+        changeReviewStatusCommandHandler.handle(new ChangeReviewStatusCommand(id, request.getStatus()));
+        return ResponseEntity.ok(new ApiResponse<>(true, ReviewConstant.UPDATE_REVIEW_SUCCESS, null));
     }
 }
