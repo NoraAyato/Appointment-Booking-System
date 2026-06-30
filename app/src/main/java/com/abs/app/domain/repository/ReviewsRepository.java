@@ -5,7 +5,7 @@ import java.util.Optional;
 
 import com.abs.app.domain.entity.Reviews;
 
-public interface ReviewRepository {
+public interface ReviewsRepository {
     List<Reviews> findAll();
     
     Optional<Reviews> findById(String id);

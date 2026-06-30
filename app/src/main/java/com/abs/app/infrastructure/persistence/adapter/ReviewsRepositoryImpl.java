@@ -6,15 +6,15 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.abs.app.domain.entity.Reviews;
-import com.abs.app.domain.repository.ReviewRepository;
-import com.abs.app.infrastructure.persistence.jpa.ReviewJpaRepository;
+import com.abs.app.domain.repository.ReviewsRepository;
+import com.abs.app.infrastructure.persistence.jpa.ReviewsJpaRepository;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class ReviewRepositoryImpl implements ReviewRepository {
-    private final ReviewJpaRepository reviewsJpaRepository;
+public class ReviewsRepositoryImpl implements ReviewsRepository {
+    private final ReviewsJpaRepository reviewsJpaRepository;
     public List<Reviews> findAll(){
         return reviewsJpaRepository.findAll();
     }

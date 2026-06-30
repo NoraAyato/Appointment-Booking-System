@@ -4,5 +4,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.abs.app.domain.entity.Reviews;
 
-public interface ReviewJpaRepository extends JpaRepository<Reviews, String> {
+public interface ReviewsJpaRepository extends JpaRepository<Reviews, String> {
 }
