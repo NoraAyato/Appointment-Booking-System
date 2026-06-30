@@ -1,6 +1,6 @@
 package com.abs.app.domain.entity.enums;
 
-public enum ReviewStatus {
+public enum ReviewsStatus {
     PENDING,
     APPROVED,
     DROPPED

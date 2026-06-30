@@ -3,7 +3,6 @@ package com.abs.app.domain.entity;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -13,7 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import com.abs.app.domain.entity.enums.ReviewStatus;
+import com.abs.app.domain.entity.enums.ReviewsStatus;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -39,7 +38,7 @@ public class Reviews {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private ReviewStatus status = ReviewStatus.PENDING;
+    private ReviewsStatus status = ReviewsStatus.PENDING;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "appointment_id")
