@@ -26,17 +26,13 @@ import java.util.Optional;
 public class CreateStaffServiceCommandHandler {
     private final StaffServiceRepository staffServiceRepository;
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
     private final ServiceRepository serviceRepository;
 
     public void handle(CreateStaffServiceCommand command) {
         User staff = userRepository.findById(command.getStaffId())
                 .orElseThrow(() -> new ResourceNotFoundException(UserConstant.USER_NOT_EXIST));
 
-        Role staffRole = roleRepository.findByRoleName(RoleEnum.STAFF)
-                .orElseThrow(() -> new ResourceNotFoundException(RoleConstant.INVALID_USER_ROLE));
-
-        if (!staff.getRole().equals(staffRole)) {
+        if (!staff.getRole().getRoleName().equals(RoleEnum.STAFF)) {
             throw new BusinessException(StaffServiceConstant.USER_NOT_STAFF);
         }
 
