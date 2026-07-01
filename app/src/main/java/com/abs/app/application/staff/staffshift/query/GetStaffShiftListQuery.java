@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class GetStaffShiftQuery {
+public class GetStaffShiftListQuery {
     private String userId;
     private String keyWord;
     private String status;
