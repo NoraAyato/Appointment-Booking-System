@@ -1,5 +1,6 @@
 package com.abs.app.domain.entity;
 
+import com.abs.app.domain.entity.enums.StaffServiceStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,4 +20,8 @@ public class StaffService {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "service_id")
     private ServiceEntity service;
+
+    @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    StaffServiceStatus status = StaffServiceStatus.ACTIVE;
 }
