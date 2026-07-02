@@ -11,6 +11,7 @@ import com.abs.app.application.staff.blockedslot.dto.BlockedSlotResponseDto;
 import com.abs.app.common.constant.UserConstant;
 import com.abs.app.common.exception.ResourceNotFoundException;
 import com.abs.app.common.response.PageResponse;
+import com.abs.app.common.util.PaginationUtil;
 import com.abs.app.domain.entity.BlockedSlot;
 import com.abs.app.domain.entity.User;
 import com.abs.app.domain.repository.BlockedSlotRepository;
@@ -42,8 +43,11 @@ public class GetBlockedSlotQueryHandler {
                 List<AdminBlockedSlotResponseDto> items = filteredBlockedSlots.stream()
                                 .map(BlockedSlotMapper::toAdminBlockedSlotResponseDto)
                                 .collect(Collectors.toList());
+                List<AdminBlockedSlotResponseDto> itemsPaginated = PaginationUtil.paginate(items, query.getPage(),
+                                query.getLimit());
+
                 int page = query.getPage();
                 int limit = query.getLimit();
-                return new PageResponse<>(items, total, page, limit);
+                return new PageResponse<>(itemsPaginated, total, page, limit);
         }
 }
