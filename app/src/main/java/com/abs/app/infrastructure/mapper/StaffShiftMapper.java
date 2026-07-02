@@ -16,6 +16,7 @@ public class StaffShiftMapper {
         dto.setWorkDate(staffShift.getWorkDate());
         dto.setStartTime(staffShift.getStartTime());
         dto.setEndTime(staffShift.getEndTime());
+        dto.setStatus(staffShift.getStatus().name());
 
         User staff = staffShift.getStaff();
         if (staff != null) {
@@ -42,6 +43,7 @@ public class StaffShiftMapper {
         dto.setWorkDate(staffShift.getWorkDate());
         dto.setStartTime(staffShift.getStartTime());
         dto.setEndTime(staffShift.getEndTime());
+        dto.setStatus(staffShift.getStatus().name());
 
         User staff = staffShift.getStaff();
         List<StaffService> staffServices = staff.getStaffServices();
