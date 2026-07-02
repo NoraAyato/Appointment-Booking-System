@@ -23,5 +23,5 @@ public class StaffService {
 
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
-    StaffServiceStatus status = StaffServiceStatus.ACTIVE;
+    private StaffServiceStatus status = StaffServiceStatus.ACTIVE;
 }
