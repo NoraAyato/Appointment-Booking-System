@@ -1,6 +1,7 @@
 package com.abs.app.application.staff.staffshift.query;
 
 import com.abs.app.application.staff.staffshift.dto.StaffShiftResponseDto;
+import com.abs.app.common.constant.StaffShiftConstant;
 import com.abs.app.common.constant.UserConstant;
 import com.abs.app.common.exception.BusinessException;
 import com.abs.app.common.exception.ResourceNotFoundException;
@@ -25,7 +26,7 @@ public class GetStaffShiftListQueryHandler {
                 .orElseThrow(() -> new ResourceNotFoundException(UserConstant.USER_NOT_EXIST));
 
         if (!staff.getRole().getRoleName().equals(RoleEnum.STAFF))
-            throw new BusinessException("Chức năng này chỉ dành cho nhân viên");
+            throw new BusinessException(StaffShiftConstant.ONLY_STAFF_ALLOWED);
 
         List<StaffShift> staffShift = staff.getStaffShifts();
 

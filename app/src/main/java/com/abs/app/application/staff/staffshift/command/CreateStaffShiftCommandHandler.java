@@ -33,11 +33,7 @@ public class CreateStaffShiftCommandHandler {
         if (!staff.getRole().getRoleName().equals(RoleEnum.STAFF))
             throw new BusinessException(StaffShiftConstant.ONLY_STAFF_ALLOWED);
 
-        if (!staffShiftService.isValidDateTimeRange(command.getWorkDate(), command.getStartTime(), command.getEndTime(), staff.getStaffShifts())) {
-            throw new BusinessException(StaffShiftConstant.WORK_TIME_OVERLAP);
-        }
-
-        if (!staffShiftService.isValidWorkDateOverlapWithBlockedSlot(command.getWorkDate(), command.getStartTime(), command.getEndTime(), staff.getBlockedSlots())) {
+        if (staffShiftService.isValidWorkDateOverlapWithBlockedSlot(command.getWorkDate(), command.getStartTime(), command.getEndTime(), staff.getBlockedSlots())) {
             throw new BusinessException(StaffShiftConstant.WORK_TIME_BLOCKED);
         }
 
@@ -47,6 +43,13 @@ public class CreateStaffShiftCommandHandler {
         if (!dateTimeService.isValidDate(
                 command.getWorkDate())) {
             throw new BusinessException(BlockedSlotConstant.INVALID_DATE);
+        }
+
+        if (staffShiftService.isOverlapWorkDate(
+                staff.getStaffShifts(),
+                command.getWorkDate(), command.getStartTime(), command.getEndTime(),
+                null)) {
+            throw new BusinessException(StaffShiftConstant.WORK_TIME_OVERLAP);
         }
 
         StaffShift staffShift = new StaffShift();
