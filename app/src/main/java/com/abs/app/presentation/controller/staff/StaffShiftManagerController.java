@@ -13,10 +13,12 @@ import com.abs.app.infrastructure.security.SecurityUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/staff/staff-shifts")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('STAFF')")
 public class StaffShiftManagerController {
     private final GetStaffShiftListQueryHandler getStaffShiftListQueryHandler;
     private final CreateStaffShiftCommandHandler createStaffShiftCommandHandler;
