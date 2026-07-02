@@ -34,27 +34,13 @@ public class UpdateStaffShiftCommandHandler {
         User staff = userRepository.findById(command.getStaffId())
                 .orElseThrow(() -> new ResourceNotFoundException(UserConstant.USER_NOT_EXIST));
 
-        if (!staff.getRole().getRoleName().equals(RoleEnum.STAFF)) {
-            throw new BusinessException(StaffShiftConstant.ONLY_STAFF_ALLOWED);
-        }
-
-        if (staffShiftService.isValidWorkDateOverlapWithBlockedSlot(command.getWorkDate(), command.getStartTime(), command.getEndTime(), staff.getBlockedSlots())) {
-            throw new BusinessException(StaffShiftConstant.WORK_TIME_BLOCKED);
-        }
-
-        if (!dateTimeService.isValidTimeRange(command.getStartTime(), command.getEndTime())) {
-            throw new BusinessException(Messages.INVALID_TIME);
-        }
-        if (!dateTimeService.isValidDate(command.getWorkDate())) {
-            throw new BusinessException(Messages.INVALID_DATE);
-        }
-
-        if (staffShiftService.isOverlapWorkDate(
-                staff.getStaffShifts(),
-                command.getWorkDate(), command.getStartTime(), command.getEndTime(),
-                staffShiftEdit.getId())) {
-            throw new BusinessException(StaffShiftConstant.WORK_TIME_OVERLAP);
-        }
+        staffShiftService.customValidateStaffShiftTime(
+                staff,
+                command.getWorkDate(),
+                command.getStartTime(),
+                command.getEndTime(),
+                staffShiftEdit.getId()
+        );
 
         StaffShiftStatus staffShiftStatus = staffShiftService.handleStaffShiftStatus(command.getStatus());
         staffShiftEdit.setWorkDate(command.getWorkDate());

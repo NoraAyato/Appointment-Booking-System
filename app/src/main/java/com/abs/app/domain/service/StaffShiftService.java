@@ -1,9 +1,11 @@
 package com.abs.app.domain.service;
 
+import com.abs.app.common.constant.Messages;
 import com.abs.app.common.constant.StaffShiftConstant;
 import com.abs.app.common.exception.BusinessException;
 import com.abs.app.domain.entity.BlockedSlot;
 import com.abs.app.domain.entity.StaffShift;
+import com.abs.app.domain.entity.User;
 import com.abs.app.domain.entity.enums.StaffShiftStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -55,5 +57,27 @@ public class StaffShiftService {
                 .anyMatch(shift -> shift.getWorkDate().equals(workDate) &&
                         shift.getStartTime().isBefore(endTime) &&
                         startTime.isBefore(shift.getEndTime()));
+    }
+
+    public void customValidateStaffShiftTime(User staff, LocalDate workDate, LocalTime startTime, LocalTime endTime, Long excludeShiftId) {
+        // Kiểm tra logic thời gian Start < End
+        if (!dateTimeService.isValidTimeRange(startTime, endTime)) {
+            throw new BusinessException(Messages.INVALID_TIME);
+        }
+
+        // Kiểm tra ngày làm việc không được ở quá khứ
+        if (!dateTimeService.isValidDate(workDate)) {
+            throw new BusinessException(Messages.INVALID_DATE);
+        }
+
+        // Kiểm tra xem nhân viên có đang xin nghỉ phép vào thời gian này không
+        if (isValidWorkDateOverlapWithBlockedSlot(workDate, startTime, endTime, staff.getBlockedSlots())) {
+            throw new BusinessException(StaffShiftConstant.WORK_TIME_BLOCKED);
+        }
+
+        // Kiểm tra xem có bị trùng với các ca làm việc khác không
+        if (isOverlapWorkDate(staff.getStaffShifts(), workDate, startTime, endTime, excludeShiftId)) {
+            throw new BusinessException(StaffShiftConstant.WORK_TIME_OVERLAP);
+        }
     }
 }
