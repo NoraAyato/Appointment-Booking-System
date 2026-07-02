@@ -1,4 +1,68 @@
 package com.abs.app.application.admin.staffshift.command;
 
+import com.abs.app.common.constant.Messages;
+import com.abs.app.common.constant.RoleConstant;
+import com.abs.app.common.constant.StaffShiftConstant;
+import com.abs.app.common.constant.UserConstant;
+import com.abs.app.common.exception.BusinessException;
+import com.abs.app.common.exception.ResourceNotFoundException;
+import com.abs.app.domain.entity.Role;
+import com.abs.app.domain.entity.StaffShift;
+import com.abs.app.domain.entity.User;
+import com.abs.app.domain.entity.enums.RoleEnum;
+import com.abs.app.domain.entity.enums.StaffShiftStatus;
+import com.abs.app.domain.repository.RoleRepository;
+import com.abs.app.domain.repository.StaffShiftRepository;
+import com.abs.app.domain.repository.UserRepository;
+import com.abs.app.domain.service.DateTimeService;
+import com.abs.app.domain.service.StaffShiftService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+@Service("adminUpdateStaffShift")
+@RequiredArgsConstructor
 public class UpdateStaffShiftCommandHandler {
+    private final StaffShiftRepository staffShiftRepository;
+    private final UserRepository userRepository;
+    private final DateTimeService dateTimeService;
+    private final StaffShiftService staffShiftService;
+
+    public void handle(UpdateStaffShiftCommand command) {
+        StaffShift staffShiftEdit = staffShiftRepository.findById(command.getId())
+                .orElseThrow(() -> new ResourceNotFoundException(StaffShiftConstant.STAFF_SHIFT_NOT_FOUND));
+
+        User staff = userRepository.findById(command.getStaffId())
+                .orElseThrow(() -> new ResourceNotFoundException(UserConstant.USER_NOT_EXIST));
+
+        if (!staff.getRole().getRoleName().equals(RoleEnum.STAFF)) {
+            throw new BusinessException(StaffShiftConstant.ONLY_STAFF_ALLOWED);
+        }
+
+        if (staffShiftService.isValidWorkDateOverlapWithBlockedSlot(command.getWorkDate(), command.getStartTime(), command.getEndTime(), staff.getBlockedSlots())) {
+            throw new BusinessException(StaffShiftConstant.WORK_TIME_BLOCKED);
+        }
+
+        if (!dateTimeService.isValidTimeRange(command.getStartTime(), command.getEndTime())) {
+            throw new BusinessException(Messages.INVALID_TIME);
+        }
+        if (!dateTimeService.isValidDate(command.getWorkDate())) {
+            throw new BusinessException(Messages.INVALID_DATE);
+        }
+
+        if (staffShiftService.isOverlapWorkDate(
+                staff.getStaffShifts(),
+                command.getWorkDate(), command.getStartTime(), command.getEndTime(),
+                staffShiftEdit.getId())) {
+            throw new BusinessException(StaffShiftConstant.WORK_TIME_OVERLAP);
+        }
+
+        StaffShiftStatus staffShiftStatus = staffShiftService.handleStaffShiftStatus(command.getStatus());
+        staffShiftEdit.setWorkDate(command.getWorkDate());
+        staffShiftEdit.setStartTime(command.getStartTime());
+        staffShiftEdit.setEndTime(command.getEndTime());
+        staffShiftEdit.setStaff(staff);
+        staffShiftEdit.setStatus(staffShiftStatus);
+
+        staffShiftRepository.save(staffShiftEdit);
+    }
 }
