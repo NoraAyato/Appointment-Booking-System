@@ -7,6 +7,9 @@ import lombok.Data;
 @Data
 public class StaffServiceResponseDto {
     private Long id;
-    private User staff;
-    private ServiceEntity service;
+    private String staffId;
+    private String staffName;
+    private String serviceId;
+    private String serviceName;
+    private String status;
 }
