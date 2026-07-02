@@ -7,9 +7,13 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @Data
-public class UpdateStaffShiftRequestDto {
+@Schema(name = "AdminCreateStaffShiftRequestDto")
+public class CreateStaffShiftRequestDto {
 
     @NotBlank(message = StaffShiftConstant.VALID_STAFF_ID)
     private String staffId;
@@ -22,7 +26,4 @@ public class UpdateStaffShiftRequestDto {
 
     @NotNull(message = StaffShiftConstant.VALID_END_TIME)
     private LocalTime endTime;
-
-    @NotBlank(message = StaffShiftConstant.VALID_STATUS)
-    private String status;
 }
