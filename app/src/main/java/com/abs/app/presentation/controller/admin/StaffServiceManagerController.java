@@ -23,6 +23,18 @@ import org.springframework.web.bind.annotation.*;
 public class StaffServiceManagerController {
     private final CreateStaffServiceCommandHandler createStaffServiceCommandHandler;
     private final DeleteStaffServiceCommandHandler deleteStaffServiceCommandHandler;
+    private final GetStaffServiceListQueryHandler getStaffServiceListQueryHandler;
+
+    @GetMapping()
+    public ResponseEntity<ApiResponse<PageResponse<StaffServiceResponseDto>>> getStaffServices(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String status,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int limit) {
+        PageResponse<StaffServiceResponseDto> pageResponse = getStaffServiceListQueryHandler.handle(new GetStaffServiceListQuery(keyword, status, page, limit));
+
+        return ResponseEntity.ok(new ApiResponse<>(true, StaffServiceConstant.GET_SUCCESS, pageResponse));
+    }
 
     @PostMapping()
     public ResponseEntity<ApiResponse<Void>> create(@Valid @RequestBody CreateStaffServiceRequestDto request) {

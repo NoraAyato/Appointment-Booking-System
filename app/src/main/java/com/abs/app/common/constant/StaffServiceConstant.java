@@ -1,6 +1,7 @@
 package com.abs.app.common.constant;
 
 public class StaffServiceConstant {
+    public static final String GET_SUCCESS = "Lấy danh sách ca làm việc thành công";
     public static final String CREATE_SUCCESS = "Tạo mới StaffService thành công";
     public static final String NOT_EXIST = "StaffService không tồn tại";
     public static final String DELETE_SUCCESS = "Xóa StaffService thành công";
