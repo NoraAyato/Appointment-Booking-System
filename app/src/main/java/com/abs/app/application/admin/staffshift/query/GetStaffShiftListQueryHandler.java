@@ -2,6 +2,8 @@ package com.abs.app.application.admin.staffshift.query;
 
 import com.abs.app.application.admin.staffshift.dto.AdminStaffShiftResponseDto;
 import com.abs.app.common.response.PageResponse;
+import com.abs.app.common.util.PaginationUtil;
+import com.abs.app.domain.entity.Category;
 import com.abs.app.domain.entity.StaffShift;
 import com.abs.app.domain.repository.StaffShiftRepository;
 import com.abs.app.infrastructure.mapper.StaffShiftMapper;
@@ -30,7 +32,9 @@ public class GetStaffShiftListQueryHandler {
                     })
                     .toList();
 
-            List<AdminStaffShiftResponseDto> items = filteredShifts.stream()
+            List<StaffShift> pageFilterList = PaginationUtil.paginate(filteredShifts, query.getPage(), query.getLimit());
+
+            List<AdminStaffShiftResponseDto> items = pageFilterList.stream()
                     .map(StaffShiftMapper::toAdminStaffShiftResponseDto)
                     .toList();
 

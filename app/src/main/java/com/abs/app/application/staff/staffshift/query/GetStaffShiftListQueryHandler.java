@@ -6,6 +6,7 @@ import com.abs.app.common.constant.UserConstant;
 import com.abs.app.common.exception.BusinessException;
 import com.abs.app.common.exception.ResourceNotFoundException;
 import com.abs.app.common.response.PageResponse;
+import com.abs.app.common.util.PaginationUtil;
 import com.abs.app.domain.entity.StaffShift;
 import com.abs.app.domain.entity.User;
 import com.abs.app.domain.entity.enums.RoleEnum;
@@ -35,7 +36,8 @@ public class GetStaffShiftListQueryHandler {
                         && (query.getStatus() == null || item.getStatus().name().equalsIgnoreCase(query.getStatus())))
                 .toList();
 
-        List<StaffShiftResponseDto> items = filteredStaffShift.stream()
+        List<StaffShift> pageFilterList = PaginationUtil.paginate(filteredStaffShift, query.getPage(), query.getLimit());
+        List<StaffShiftResponseDto> items = pageFilterList.stream()
                 .map(StaffShiftMapper::toStaffShiftResponseDto)
                 .toList();
 
