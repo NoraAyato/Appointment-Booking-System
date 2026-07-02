@@ -3,3 +3,9 @@
 .env.*
 !.env.example
 !.env.*.example
+
+# IDE
+.idea/
+
+# Local data
+app/images/
