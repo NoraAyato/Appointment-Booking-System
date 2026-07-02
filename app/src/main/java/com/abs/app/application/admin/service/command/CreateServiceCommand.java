@@ -9,8 +9,8 @@ import java.util.List;
 public class CreateServiceCommand {
     private final String name;
     private final String description;
-    private final int durationMinutes;
-    private final double price;
+    private final Integer durationMinutes;
+    private final Double price;
     private final String categoryId;
     private final List<MultipartFile> images;
 }
