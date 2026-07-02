@@ -9,9 +9,12 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Schema(name = "StaffCreateStaffShiftRequestDto")
 public class CreateStaffShiftRequestDto {
 
     @NotNull(message = StaffShiftConstant.VALID_WORK_DATE)
