@@ -14,9 +14,13 @@ import org.springframework.stereotype.Service;
 public class DeleteStaffServiceCommandHandler {
     private final StaffServiceRepository staffServiceRepository;
 
-    public void handle(DeleteStaffServiceCommand command) {
-        StaffService staffService = staffServiceRepository.findByStaffUserIdAndServiceId(command.getStaffId(), command.getServiceId())
+    public void handle(Long id) {
+
+        StaffService staffService = staffServiceRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(StaffServiceConstant.STAFF_NOT_ASSIGNED_SERVICE));
+
+//        StaffService staffService = staffServiceRepository.findByStaffUserIdAndServiceId(command.getStaffId(), command.getServiceId())
+//                .orElseThrow(() -> new ResourceNotFoundException(StaffServiceConstant.STAFF_NOT_ASSIGNED_SERVICE));
 
         if (staffService.getStatus() == StaffServiceStatus.BLOCKED) {
             throw new BusinessException(StaffServiceConstant.SERVICE_ALREADY_DELETED_FROM_STAFF);

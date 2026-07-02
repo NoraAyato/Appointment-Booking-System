@@ -2,11 +2,14 @@ package com.abs.app.presentation.controller.admin;
 
 import com.abs.app.application.admin.staffservice.command.CreateStaffServiceCommand;
 import com.abs.app.application.admin.staffservice.command.CreateStaffServiceCommandHandler;
-import com.abs.app.application.admin.staffservice.command.DeleteStaffServiceCommand;
 import com.abs.app.application.admin.staffservice.command.DeleteStaffServiceCommandHandler;
 import com.abs.app.application.admin.staffservice.dto.CreateStaffServiceRequestDto;
+import com.abs.app.application.admin.staffservice.dto.StaffServiceResponseDto;
+import com.abs.app.application.admin.staffservice.query.GetStaffServiceListQuery;
+import com.abs.app.application.admin.staffservice.query.GetStaffServiceListQueryHandler;
 import com.abs.app.common.constant.StaffServiceConstant;
 import com.abs.app.common.response.ApiResponse;
+import com.abs.app.common.response.PageResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -27,9 +30,9 @@ public class StaffServiceManagerController {
         return ResponseEntity.ok(new ApiResponse<>(true, StaffServiceConstant.CREATE_SUCCESS, null));
     }
 
-    @DeleteMapping("/{staffId}/{serviceId}")
-    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable String staffId, @PathVariable String serviceId) {
-        deleteStaffServiceCommandHandler.handle(new DeleteStaffServiceCommand(staffId, serviceId));
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
+        deleteStaffServiceCommandHandler.handle(id);
         return ResponseEntity.ok(new ApiResponse<>(true, StaffServiceConstant.DELETE_SUCCESS, null));
     }
 }
