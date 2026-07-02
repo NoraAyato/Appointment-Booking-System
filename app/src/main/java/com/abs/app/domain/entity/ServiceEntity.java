@@ -12,7 +12,7 @@ import lombok.*;
 @Setter
 @Entity
 @Table(name = "services")
-public class Service {
+public class ServiceEntity {
     @Id
     @Column(name = "service_id", columnDefinition = "VARCHAR(20)")
     private String id;
