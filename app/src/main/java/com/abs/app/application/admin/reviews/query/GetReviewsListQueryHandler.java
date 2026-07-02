@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.abs.app.application.admin.reviews.dto.ReviewsResponseDto;
 import com.abs.app.common.response.PageResponse;
+import com.abs.app.common.util.PaginationUtil;
 import com.abs.app.domain.entity.Reviews;
 import com.abs.app.domain.repository.ReviewsRepository;
 import com.abs.app.infrastructure.mapper.ReviewsMapper;
@@ -27,7 +28,13 @@ public class GetReviewsListQueryHandler {
                         item.getStatus().name().equalsIgnoreCase(query.getStatus())))
                 .collect(Collectors.toList());
         int total = filterReviews.size();
-        List<ReviewsResponseDto> items = filterReviews.stream()
+
+        List<Reviews> pageFilterList = PaginationUtil.paginate(
+        filterReviews,
+        query.getPage(),
+        query.getLimit());
+
+        List<ReviewsResponseDto> items = pageFilterList.stream()
                 .map(ReviewsMapper::toAdminReviewResponseDto)
                 .collect(Collectors.toList());
         int page = query.getPage();
