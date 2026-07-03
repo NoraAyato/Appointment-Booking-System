@@ -6,7 +6,7 @@ public final class PromotionConstant {
     public static final String UPDATE_SUCCESS = "Cập nhật khuyến mãi thành công";
     public static final String DELETE_SUCCESS = "Xóa khuyến mãi thành công";
     public static final String NOT_EXIST = "Khuyến mãi không tồn tại";
-    public static final String PROMOTION_DATE_OVERLAPPED= "Thời gian áp dụng của mã khuyến mãi này bị trùng lặp với khuyến mãi khác";
+    public static final String PROMOTION_DATE_OVERLAPPED = "Thời gian áp dụng của mã khuyến mãi này bị trùng lặp với khuyến mãi khác";
     public static final String SALT_TAG = "pr";
     public static final int STRING_LIMIT = 10;
     public static final String INVALID_PROMOTION_STATUS = "Trạng thái khuyến mãi không hợp lệ";
@@ -21,5 +21,6 @@ public final class PromotionConstant {
     public static final String PROMOTION_START_DATE_NOT_NULL = "Ngày bắt đầu không được để trống";
     public static final String PROMOTION_END_DATE_NOT_NULL = "Ngày kết thúc không được để trống";
     public static final String PROMOTION_STATUS_NOT_NULL = "Trạng thái khuyến mãi không được để trống";
+    public static final String INVALID_DISCOUNT_AMOUNT = "Giá trị giảm giá không hợp lệ";
 
 }
