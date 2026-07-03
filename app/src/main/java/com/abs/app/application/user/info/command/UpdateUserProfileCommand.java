@@ -1,4 +1,4 @@
-package com.abs.app.application.user.command;
+package com.abs.app.application.user.info.command;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
