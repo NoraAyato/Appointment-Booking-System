@@ -5,18 +5,25 @@ import com.abs.app.application.admin.service.command.CreateServiceCommandHandler
 import com.abs.app.application.admin.service.command.UpdateServiceCommand;
 import com.abs.app.application.admin.service.command.UpdateServiceCommandHandler;
 import com.abs.app.application.admin.service.dto.CreateServiceRequestDto;
+import com.abs.app.application.admin.service.dto.ServiceOptionResponseDto;
 import com.abs.app.application.admin.service.dto.ServiceResponseDto;
 import com.abs.app.application.admin.service.dto.UpdateServiceRequestDto;
 import com.abs.app.application.admin.service.query.GetServiceListQuery;
 import com.abs.app.application.admin.service.query.GetServiceListQueryHandler;
+import com.abs.app.application.admin.service.query.GetServiceOptionQueryHandler;
 import com.abs.app.common.constant.ServiceEntityConstant;
 import com.abs.app.common.response.ApiResponse;
 import com.abs.app.common.response.PageResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/admin/services")
@@ -25,31 +32,35 @@ public class ServiceManagerController {
     private final GetServiceListQueryHandler getServiceListQueryHandler;
     private final CreateServiceCommandHandler createServiceCommandHandler;
     private final UpdateServiceCommandHandler updateServiceCommandHandler;
+    private final GetServiceOptionQueryHandler getServiceOptionsQueryHandler;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<PageResponse<ServiceResponseDto>>> getServices(@RequestParam(required = false) String keyword,
-                                                                 @RequestParam(defaultValue = "1") int page,
-                                                                 @RequestParam(defaultValue = "5") int size) {
-        PageResponse<ServiceResponseDto> pageResponse = getServiceListQueryHandler.handle(new GetServiceListQuery(keyword, page, size));
+    public ResponseEntity<ApiResponse<PageResponse<ServiceResponseDto>>> getServices(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "5") int size) {
+        PageResponse<ServiceResponseDto> pageResponse = getServiceListQueryHandler
+                .handle(new GetServiceListQuery(keyword, page, size));
         return ResponseEntity.ok(new ApiResponse<>(true, ServiceEntityConstant.GET_SUCCESS, pageResponse));
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ApiResponse<ServiceResponseDto>> create(@Valid @ModelAttribute CreateServiceRequestDto request) {
+    public ResponseEntity<ApiResponse<ServiceResponseDto>> create(
+            @Valid @ModelAttribute CreateServiceRequestDto request) {
         CreateServiceCommand command = new CreateServiceCommand(
                 request.getName(),
                 request.getDescription(),
                 request.getDurationMinutes(),
                 request.getPrice(),
                 request.getCategoryId(),
-                request.getImages()
-        );
+                request.getImages());
         ServiceResponseDto responseDto = createServiceCommandHandler.handle(command);
         return ResponseEntity.ok(new ApiResponse<>(true, ServiceEntityConstant.CREATE_SUCCESS, responseDto));
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ApiResponse<ServiceResponseDto>> update(@PathVariable String id, @Valid @ModelAttribute UpdateServiceRequestDto request) {
+    public ResponseEntity<ApiResponse<ServiceResponseDto>> update(@PathVariable String id,
+            @Valid @ModelAttribute UpdateServiceRequestDto request) {
         UpdateServiceCommand command = new UpdateServiceCommand(
                 id,
                 request.getName(),
@@ -57,10 +68,17 @@ public class ServiceManagerController {
                 request.getDurationMinutes(),
                 request.getPrice(),
                 request.getStatus(),
-                request.getImages()
-        );
+                request.getImages());
         ServiceResponseDto responseDto = updateServiceCommandHandler.handle(command);
 
         return ResponseEntity.ok(new ApiResponse<>(true, ServiceEntityConstant.UPDATE_SUCCESS, responseDto));
     }
+
+    @GetMapping("/service-options")
+    public ResponseEntity<ApiResponse<List<ServiceOptionResponseDto>>> getServiceOptions() {
+        return ResponseEntity.ok(
+                new ApiResponse<List<ServiceOptionResponseDto>>(true, ServiceEntityConstant.GET_SERVICE_OPTIONS_SUCCESS,
+                        getServiceOptionsQueryHandler.handle()));
+    }
+
 }
