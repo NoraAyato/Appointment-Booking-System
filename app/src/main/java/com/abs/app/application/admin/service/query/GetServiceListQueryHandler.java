@@ -20,9 +20,14 @@ public class GetServiceListQueryHandler {
         List<ServiceEntity> serviceList = serviceRepository.findAll();
         List<ServiceEntity> serviceListFilter = serviceList.stream()
                 .filter(ser -> query.getKeyword() == null || ser.getName().toLowerCase().contains(query.getKeyword()))
+                .filter(ser -> query.getStatus() == null
+                        || ser.getStatus().toString().equalsIgnoreCase(query.getStatus()))
+                .filter(ser -> query.getCategoryId() == null
+                        || ser.getCategory().getId().equals(query.getCategoryId()))
                 .toList();
 
-        List<ServiceEntity> pageFilterList = PaginationUtil.paginate(serviceListFilter, query.getPage(), query.getSize());
+        List<ServiceEntity> pageFilterList = PaginationUtil.paginate(serviceListFilter, query.getPage(),
+                query.getSize());
         int total = serviceListFilter.size();
         int page = query.getPage();
         int limit = query.getSize();

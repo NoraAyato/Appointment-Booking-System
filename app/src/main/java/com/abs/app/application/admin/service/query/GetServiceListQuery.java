@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class GetServiceListQuery {
     private String keyword;
+    private String status;
+    private String categoryId;
     private int page;
     private int size;
 }
