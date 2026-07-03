@@ -27,29 +27,34 @@ public class ServiceManagerController {
     private final UpdateServiceCommandHandler updateServiceCommandHandler;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<PageResponse<ServiceResponseDto>>> getServices(@RequestParam(required = false) String keyword,
-                                                                 @RequestParam(defaultValue = "1") int page,
-                                                                 @RequestParam(defaultValue = "5") int size) {
-        PageResponse<ServiceResponseDto> pageResponse = getServiceListQueryHandler.handle(new GetServiceListQuery(keyword, page, size));
+    public ResponseEntity<ApiResponse<PageResponse<ServiceResponseDto>>> getServices(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String categoryId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "5") int size) {
+        PageResponse<ServiceResponseDto> pageResponse = getServiceListQueryHandler
+                .handle(new GetServiceListQuery(keyword, status, categoryId, page, size));
         return ResponseEntity.ok(new ApiResponse<>(true, ServiceEntityConstant.GET_SUCCESS, pageResponse));
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ApiResponse<ServiceResponseDto>> create(@Valid @ModelAttribute CreateServiceRequestDto request) {
+    public ResponseEntity<ApiResponse<ServiceResponseDto>> create(
+            @Valid @ModelAttribute CreateServiceRequestDto request) {
         CreateServiceCommand command = new CreateServiceCommand(
                 request.getName(),
                 request.getDescription(),
                 request.getDurationMinutes(),
                 request.getPrice(),
                 request.getCategoryId(),
-                request.getImages()
-        );
+                request.getImages());
         ServiceResponseDto responseDto = createServiceCommandHandler.handle(command);
         return ResponseEntity.ok(new ApiResponse<>(true, ServiceEntityConstant.CREATE_SUCCESS, responseDto));
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ApiResponse<ServiceResponseDto>> update(@PathVariable String id, @Valid @ModelAttribute UpdateServiceRequestDto request) {
+    public ResponseEntity<ApiResponse<ServiceResponseDto>> update(@PathVariable String id,
+            @Valid @ModelAttribute UpdateServiceRequestDto request) {
         UpdateServiceCommand command = new UpdateServiceCommand(
                 id,
                 request.getName(),
@@ -57,8 +62,7 @@ public class ServiceManagerController {
                 request.getDurationMinutes(),
                 request.getPrice(),
                 request.getStatus(),
-                request.getImages()
-        );
+                request.getImages());
         ServiceResponseDto responseDto = updateServiceCommandHandler.handle(command);
 
         return ResponseEntity.ok(new ApiResponse<>(true, ServiceEntityConstant.UPDATE_SUCCESS, responseDto));
