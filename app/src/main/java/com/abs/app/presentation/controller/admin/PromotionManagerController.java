@@ -34,12 +34,13 @@ public class PromotionManagerController {
     public ResponseEntity<ApiResponse<PageResponse<PromotionResponseDto>>> getPromotions(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) String status,
+            @RequestParam(required = false) String discountType,
             @RequestParam(required = false) LocalDate fromDate,
             @RequestParam(required = false) LocalDate toDate,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
         PageResponse<PromotionResponseDto> pageResponse = getPromotionListQueryHandler.handle(
-                new GetPromotionListQuery(keyword, status, fromDate, toDate, page, size));
+                new GetPromotionListQuery(keyword, status, discountType, fromDate, toDate, page, size));
         return ResponseEntity.ok(new ApiResponse<>(true, PromotionConstant.GET_SUCCESS, pageResponse));
     }
 

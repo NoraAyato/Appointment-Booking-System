@@ -12,6 +12,7 @@ import java.time.LocalDate;
 public class GetPromotionListQuery {
     private String keyword;
     private String status;
+    private String discountType;
     private LocalDate fromDate;
     private LocalDate toDate;
     private int page;
