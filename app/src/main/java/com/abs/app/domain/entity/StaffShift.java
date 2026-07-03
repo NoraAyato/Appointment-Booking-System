@@ -1,9 +1,9 @@
 package com.abs.app.domain.entity;
 
-import java.sql.Date;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.LocalTime;
 
+import com.abs.app.domain.entity.enums.StaffShiftStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -15,14 +15,19 @@ public class StaffShift {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(name = "work_date", nullable = false)
-    private Date workDate;
+    private LocalDate workDate;
 
     @Column(name = "start_time", nullable = false)
-    private LocalDateTime startTime;
+    private LocalTime startTime;
 
     @Column(name = "end_time", nullable = false)
-    private LocalDateTime endTime;
+    private LocalTime endTime;
+
+    @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private StaffShiftStatus status = StaffShiftStatus.PENDING;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
