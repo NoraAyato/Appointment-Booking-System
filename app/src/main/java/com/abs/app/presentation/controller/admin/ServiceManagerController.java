@@ -37,10 +37,12 @@ public class ServiceManagerController {
     @GetMapping
     public ResponseEntity<ApiResponse<PageResponse<ServiceResponseDto>>> getServices(
             @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String categoryId,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "5") int size) {
         PageResponse<ServiceResponseDto> pageResponse = getServiceListQueryHandler
-                .handle(new GetServiceListQuery(keyword, page, size));
+                .handle(new GetServiceListQuery(keyword, status, categoryId, page, size));
         return ResponseEntity.ok(new ApiResponse<>(true, ServiceEntityConstant.GET_SUCCESS, pageResponse));
     }
 
