@@ -7,9 +7,8 @@ import lombok.Data;
 @Data
 public class StaffServiceResponseDto {
     private Long id;
-    private String staffId;
     private String staffName;
-    private String serviceId;
+    private String staffAvatar;
     private String serviceName;
     private String status;
 }
