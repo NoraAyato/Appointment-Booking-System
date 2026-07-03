@@ -29,8 +29,10 @@ public class StaffShiftService {
         };
     }
 
-    public boolean isValidWorkDateOverlapWithBlockedSlot(LocalDate workDate, LocalTime startTime, LocalTime endTime, List<BlockedSlot> blockedSlots) {
-        if (blockedSlots == null || blockedSlots.isEmpty()) return false;
+    public boolean isValidWorkDateOverlapWithBlockedSlot(LocalDate workDate, LocalTime startTime, LocalTime endTime,
+            List<BlockedSlot> blockedSlots) {
+        if (blockedSlots == null || blockedSlots.isEmpty())
+            return false;
 
         for (BlockedSlot slot : blockedSlots) {
             if (workDate.equals(slot.getBlockedDate()) &&
@@ -42,10 +44,10 @@ public class StaffShiftService {
     }
 
     public boolean isOverlapWorkDate(List<StaffShift> existingShifts,
-                                     LocalDate workDate,
-                                     LocalTime startTime,
-                                     LocalTime endTime,
-                                     Long excludeShiftId) {
+            LocalDate workDate,
+            LocalTime startTime,
+            LocalTime endTime,
+            Long excludeShiftId) {
         if (existingShifts == null || existingShifts.isEmpty()) {
             return false;
         }
@@ -59,7 +61,8 @@ public class StaffShiftService {
                         startTime.isBefore(shift.getEndTime()));
     }
 
-    public void customValidateStaffShiftTime(User staff, LocalDate workDate, LocalTime startTime, LocalTime endTime, Long excludeShiftId) {
+    public void customValidateStaffShiftTime(User staff, LocalDate workDate, LocalTime startTime, LocalTime endTime,
+            Long excludeShiftId) {
         // Kiểm tra logic thời gian Start < End
         if (!dateTimeService.isValidTimeRange(startTime, endTime)) {
             throw new BusinessException(Messages.INVALID_TIME);
@@ -69,9 +72,11 @@ public class StaffShiftService {
         if (!dateTimeService.isValidDate(workDate)) {
             throw new BusinessException(Messages.INVALID_DATE);
         }
-
+        var blockedSlotsApproved = staff.getBlockedSlots().stream()
+                .filter(slot -> slot.getStatus().name().equals(StaffShiftStatus.APPROVED.name()))
+                .toList();
         // Kiểm tra xem nhân viên có đang xin nghỉ phép vào thời gian này không
-        if (isValidWorkDateOverlapWithBlockedSlot(workDate, startTime, endTime, staff.getBlockedSlots())) {
+        if (isValidWorkDateOverlapWithBlockedSlot(workDate, startTime, endTime, blockedSlotsApproved)) {
             throw new BusinessException(StaffShiftConstant.WORK_TIME_BLOCKED);
         }
 
