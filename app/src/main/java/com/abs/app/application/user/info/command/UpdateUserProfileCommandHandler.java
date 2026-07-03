@@ -1,4 +1,4 @@
-package com.abs.app.application.user.command;
+package com.abs.app.application.user.info.command;
 
 import org.springframework.stereotype.Service;
 

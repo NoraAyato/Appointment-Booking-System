@@ -1,4 +1,4 @@
-package com.abs.app.application.user.dto;
+package com.abs.app.application.user.info.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

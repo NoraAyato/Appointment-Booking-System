@@ -1,8 +1,8 @@
-package com.abs.app.application.user.query;
+package com.abs.app.application.user.info.query;
 
 import org.springframework.stereotype.Service;
 
-import com.abs.app.application.user.dto.UserInfoResponeDto;
+import com.abs.app.application.user.info.dto.UserInfoResponeDto;
 import com.abs.app.common.constant.UserConstant;
 import com.abs.app.common.exception.ResourceNotFoundException;
 import com.abs.app.domain.repository.UserRepository;

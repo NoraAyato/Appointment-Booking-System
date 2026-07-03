@@ -1,7 +1,7 @@
 package com.abs.app.infrastructure.mapper;
 
 import com.abs.app.application.admin.usermanager.dto.UserResponseDto;
-import com.abs.app.application.user.dto.UserInfoResponeDto;
+import com.abs.app.application.user.info.dto.UserInfoResponeDto;
 import com.abs.app.domain.entity.User;
 
 public class UserMapper {
