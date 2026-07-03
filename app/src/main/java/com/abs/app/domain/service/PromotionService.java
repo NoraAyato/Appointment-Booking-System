@@ -45,7 +45,7 @@ public class PromotionService {
     }
 
     private boolean isInvalidPromotionDate(LocalDate startDate, LocalDate endDate) {
-        return startDate.isAfter(endDate);
+        return startDate.isAfter(endDate) && !startDate.isEqual(endDate);
     }
 
     public boolean isPromotionDateOverlapped(List<Promotion> promotionList, LocalDate startDate, LocalDate endDate) {
