@@ -32,14 +32,14 @@ public class UpdatePromotionCommandHandler {
     public PromotionResponseDto handle(UpdatePromotionCommand command) {
         PromotionStatus promotionStatus = promotionService.convertPromotionStatusToEnum(command.getStatus());
         DiscountType promotionType = promotionService.convertDiscountTypeStringToEnum(command.getDiscountType());
-        if (promotionService.isInvalidPromotionDate(command.getStartDate(), command.getEndDate())) {
-            throw new BusinessException(Messages.INVALID_DATE);
-        }
+        promotionService.isValidDiscount(command.getDiscountAmount(), command.getDiscountType(), command.getStartDate(),
+                command.getEndDate());
         Promotion promotion = promotionRepository.findById(command.getId())
                 .orElseThrow(() -> new ResourceNotFoundException(PromotionConstant.NOT_EXIST));
 
         List<Promotion> promotionList = promotionRepository.findAll().stream()
-                .filter(exist -> exist.getCode().equals(command.getPromotionCode()) && !exist.getId().equals(command.getId()))
+                .filter(exist -> exist.getCode().equals(command.getPromotionCode())
+                        && !exist.getId().equals(command.getId()))
                 .toList();
         if (promotionService.isPromotionDateOverlapped(promotionList, command.getStartDate(), command.getEndDate())) {
             throw new DuplicateResourceException(PromotionConstant.PROMOTION_DATE_OVERLAPPED);

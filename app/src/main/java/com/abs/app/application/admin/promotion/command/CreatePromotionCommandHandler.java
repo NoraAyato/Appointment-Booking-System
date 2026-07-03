@@ -35,21 +35,18 @@ public class CreatePromotionCommandHandler {
     private final PromotionService promotionService;
 
     public PromotionResponseDto handle(CreatePromotionCommand command) {
-        if (promotionService.isInvalidPromotionDate(command.getStartDate(), command.getEndDate())) {
-            throw new BusinessException(Messages.INVALID_DATE);
-        }
 
         DiscountType promotionType = promotionService.convertDiscountTypeStringToEnum(command.getDiscountType());
-
+        promotionService.isValidDiscount(command.getDiscountAmount(), command.getDiscountType(), command.getStartDate(),
+                command.getEndDate());
         List<Promotion> promotionList = promotionRepository.findAll().stream()
                 .filter(exist -> exist.getCode().equals(command.getPromotionCode())).toList();
         if (promotionService.isPromotionDateOverlapped(promotionList, command.getStartDate(), command.getEndDate())) {
             throw new DuplicateResourceException(PromotionConstant.PROMOTION_DATE_OVERLAPPED);
         }
 
-
         Promotion promotion = new Promotion();
-        String id = GenerateIdUtil.GenerateId(PromotionConstant.SALT_TAG,PromotionConstant.STRING_LIMIT);
+        String id = GenerateIdUtil.GenerateId(PromotionConstant.SALT_TAG, PromotionConstant.STRING_LIMIT);
 
         promotion.setId(id);
         promotion.setCode(command.getPromotionCode());
