@@ -28,8 +28,8 @@ public class CreateCategoryCommandHandler {
         newCategory.setDescription(command.getDescription());
         newCategory.setServices(new ArrayList<>());
 
-        categoryRepository.save(newCategory);
+        Category saveCategory = categoryRepository.save(newCategory);
 
-        return CategoryMapper.toCategoryResponse(newCategory);
+        return CategoryMapper.toCategoryResponse(saveCategory);
     }
 }

@@ -25,9 +25,13 @@ public class BlockedSlotMapper {
         responseDto.setBlockedDate(blockedSlot.getBlockedDate());
         responseDto.setStartTime(blockedSlot.getStartTime());
         responseDto.setEndTime(blockedSlot.getEndTime());
-        responseDto.setStaffName(blockedSlot.getStaff().getFirstName() + " "
-                + blockedSlot.getStaff().getLastName());
-        responseDto.setAvatarUrl(blockedSlot.getStaff().getPicture());
+        var staff = blockedSlot.getStaff();
+        if (staff != null) {
+            String staffName = staff != null ? staff.getFirstName() + " " + staff.getLastName() : null;
+            responseDto.setStaffName(staffName);
+            responseDto
+                    .setAvatarUrl(staff != null && staff.getPicture() != null ? staff.getPicture() : null);
+        }
         return responseDto;
     }
 }

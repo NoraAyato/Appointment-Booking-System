@@ -12,11 +12,13 @@ public class DeleteCategoryCommandHandler {
     private final CategoryRepository categoryRepository;
 
     public void handle(String id) {
-        if(categoryRepository.findById(id).isPresent())
-        {
-            categoryRepository.deleteById(id);
-        } else throw new ResourceNotFoundException(CategoryConstant.NOT_EXIST);
+        var category = categoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(CategoryConstant.NOT_EXIST));
 
+        if (!category.getServices().isEmpty()) {
+            throw new ResourceNotFoundException(CategoryConstant.CATEGORY_HAS_SERVICE);
+        }
+        categoryRepository.deleteById(id);
     }
 
 }

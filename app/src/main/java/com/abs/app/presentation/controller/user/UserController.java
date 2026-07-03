@@ -5,13 +5,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.abs.app.application.user.command.UpdateUserImageCommand;
-import com.abs.app.application.user.command.UpdateUserImageCommandHandler;
-import com.abs.app.application.user.command.UpdateUserProfileCommand;
-import com.abs.app.application.user.command.UpdateUserProfileCommandHandler;
-import com.abs.app.application.user.dto.UpdateProfileRequestDto;
-import com.abs.app.application.user.dto.UserInfoResponeDto;
-import com.abs.app.application.user.query.GetCurrentUserQueryHandler;
+import com.abs.app.application.user.info.command.UpdateUserImageCommand;
+import com.abs.app.application.user.info.command.UpdateUserImageCommandHandler;
+import com.abs.app.application.user.info.command.UpdateUserProfileCommand;
+import com.abs.app.application.user.info.command.UpdateUserProfileCommandHandler;
+import com.abs.app.application.user.info.dto.UpdateProfileRequestDto;
+import com.abs.app.application.user.info.dto.UserInfoResponeDto;
+import com.abs.app.application.user.info.query.GetCurrentUserQueryHandler;
 import com.abs.app.common.constant.UserConstant;
 import com.abs.app.common.response.ApiResponse;
 import com.abs.app.infrastructure.security.SecurityUtils;
@@ -20,6 +20,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
+@PreAuthorize("isAuthenticated()")
 public class UserController {
     private final GetCurrentUserQueryHandler getCurrentUserQueryHandler;
     private final UpdateUserProfileCommandHandler updateUserProfileCommandHandler;

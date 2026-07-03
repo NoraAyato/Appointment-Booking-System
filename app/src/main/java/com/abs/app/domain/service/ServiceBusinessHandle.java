@@ -6,6 +6,7 @@ import com.abs.app.domain.entity.enums.ServiceStatus;
 import org.springframework.stereotype.Service;
 
 @Service
+
 public class ServiceBusinessHandle {
     public ServiceStatus handleStatus(String status) {
         return switch (status) {

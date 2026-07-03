@@ -1,4 +1,4 @@
-package com.abs.app.application.user.dto;
+package com.abs.app.application.user.info.dto;
 
 import com.abs.app.common.constant.Messages;
 

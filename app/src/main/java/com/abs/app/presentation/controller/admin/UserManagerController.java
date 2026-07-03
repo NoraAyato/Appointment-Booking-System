@@ -1,5 +1,7 @@
 package com.abs.app.presentation.controller.admin;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,8 +12,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.abs.app.application.admin.usermanager.command.UpdateUserInfoCommand;
 import com.abs.app.application.admin.usermanager.command.UpdateUserInfoCommandHandler;
 import com.abs.app.application.admin.usermanager.dto.UpdateUserInfoRequest;
+import com.abs.app.application.admin.usermanager.dto.UserOptionResponse;
 import com.abs.app.application.admin.usermanager.dto.UserResponseDto;
 import com.abs.app.application.admin.usermanager.dto.UserStatsResponseDto;
+import com.abs.app.application.admin.usermanager.query.GetStaffOptionListQueryHandler;
 import com.abs.app.application.admin.usermanager.query.GetUserListQuery;
 import com.abs.app.application.admin.usermanager.query.GetUserListQueryHandler;
 import com.abs.app.application.admin.usermanager.query.GetUserStatsQueryHandler;
@@ -32,6 +36,7 @@ public class UserManagerController {
     private final GetUserListQueryHandler getUserListQueryHandler;
     private final GetUserStatsQueryHandler getUserStatsQueryHandler;
     private final UpdateUserInfoCommandHandler updateUserInfoCommandHandler;
+    private final GetStaffOptionListQueryHandler getStaffOptionListQueryHandler;
 
     @GetMapping()
     public ResponseEntity<ApiResponse<PageResponse<UserResponseDto>>> getUserList(
@@ -58,4 +63,9 @@ public class UserManagerController {
         return ResponseEntity.ok(new ApiResponse<>(true, UserConstant.GET_USER_STATS_SUCCESS, userStats));
     }
 
+    @GetMapping("/staff-options")
+    public ResponseEntity<ApiResponse<List<UserOptionResponse>>> getStaffOptions() {
+        List<UserOptionResponse> staffOptions = getStaffOptionListQueryHandler.handle();
+        return ResponseEntity.ok(new ApiResponse<>(true, UserConstant.GET_STAFF_OPTIONS_SUCCESS, staffOptions));
+    }
 }
