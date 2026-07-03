@@ -4,10 +4,12 @@ import com.abs.app.application.admin.promotion.dto.PromotionResponseDto;
 import com.abs.app.common.constant.PromotionConstant;
 import com.abs.app.common.constant.UserConstant;
 import com.abs.app.common.exception.BusinessException;
+import com.abs.app.common.exception.DuplicateResourceException;
 import com.abs.app.common.exception.ResourceNotFoundException;
 import com.abs.app.common.util.GenerateIdUtil;
 import com.abs.app.domain.entity.Promotion;
 import com.abs.app.domain.entity.User;
+import com.abs.app.domain.entity.enums.DiscountType;
 import com.abs.app.domain.entity.enums.PromotionStatus;
 import com.abs.app.domain.repository.PromotionRepository;
 import com.abs.app.domain.repository.UserRepository;
@@ -18,6 +20,8 @@ import lombok.RequiredArgsConstructor;
 import com.abs.app.common.constant.Messages;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -31,14 +35,27 @@ public class CreatePromotionCommandHandler {
     private final PromotionService promotionService;
 
     public PromotionResponseDto handle(CreatePromotionCommand command) {
-        if (promotionService.handlePromotionDate(command.getStartDate(), command.getEndDate())) {
+        if (promotionService.isInvalidPromotionDate(command.getStartDate(), command.getEndDate())) {
             throw new BusinessException(Messages.INVALID_DATE);
         }
+
+        DiscountType promotionType = promotionService.convertDiscountTypeStringToEnum(command.getDiscountType());
+
+        List<Promotion> promotionList = promotionRepository.findAll().stream()
+                .filter(exist -> exist.getCode().equals(command.getPromotionCode())).toList();
+        if (promotionService.isPromotionDateOverlapped(promotionList, command.getStartDate(), command.getEndDate())) {
+            throw new DuplicateResourceException(PromotionConstant.PROMOTION_DATE_OVERLAPPED);
+        }
+
+
         Promotion promotion = new Promotion();
-        promotion.setId(PromotionConstant.SALT_TAG + command.getPromotionCode());
+        String id = GenerateIdUtil.GenerateId(PromotionConstant.SALT_TAG,PromotionConstant.STRING_LIMIT);
+
+        promotion.setId(id);
+        promotion.setCode(command.getPromotionCode());
         promotion.setDescription(command.getDescription());
         promotion.setDiscountAmount(command.getDiscountAmount());
-        promotion.setDiscountType(command.getDiscountType());
+        promotion.setDiscountType(promotionType);
         promotion.setStatus(PromotionStatus.ACTIVE);
         promotion.setStartDate(command.getStartDate());
         promotion.setEndDate(command.getEndDate());
@@ -57,5 +74,4 @@ public class CreatePromotionCommandHandler {
         promotionRepository.save(promotion);
         return PromotionMapper.toPromotionResponse(promotion);
     }
-
 }

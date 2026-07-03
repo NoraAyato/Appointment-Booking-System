@@ -17,7 +17,8 @@ public class Promotion {
     @Id
     @Column(name = "promotion_id", nullable = false, columnDefinition = "VARCHAR(20)")
     private String id;
-
+    @Column(name = "promotion_code", nullable = false, columnDefinition = "VARCHAR(20)")
+    private String code;
     @Column(name = "description", nullable = false, columnDefinition = "TEXT")
     private String description;
 

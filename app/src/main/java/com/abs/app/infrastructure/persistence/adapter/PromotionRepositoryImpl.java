@@ -33,4 +33,9 @@ public class PromotionRepositoryImpl implements PromotionRepository {
     public void deleteById(String id) {
         promotionJpaRepository.deleteById(id);
     }
+
+    @Override
+    public Optional<Promotion> findByCode(String code) {
+        return promotionJpaRepository.findByCode(code);
+    }
 }

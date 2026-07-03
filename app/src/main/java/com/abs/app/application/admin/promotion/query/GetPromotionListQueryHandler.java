@@ -23,6 +23,8 @@ public class GetPromotionListQueryHandler {
                         || promotion.getDescription().toLowerCase().contains(query.getKeyword().toLowerCase()))
                 .filter(promotion -> query.getStatus() == null
                         || promotion.getStatus().toString().equals(query.getStatus()))
+                .filter(promotion -> query.getDiscountType() == null
+                        || promotion.getDiscountType().toString().equals(query.getDiscountType()))
                 .filter(promotion -> {
                     if (query.getFromDate() == null && query.getToDate() == null)
                         return true;

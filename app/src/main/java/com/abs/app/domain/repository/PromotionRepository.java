@@ -15,4 +15,6 @@ public interface PromotionRepository {
 
     void deleteById(String id);
 
+    Optional<Promotion> findByCode(String code);
+
 }

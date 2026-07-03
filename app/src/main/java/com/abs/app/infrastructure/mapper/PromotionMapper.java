@@ -7,14 +7,14 @@ public class PromotionMapper {
     public static PromotionResponseDto toPromotionResponse(Promotion promotion) {
         PromotionResponseDto dto = new PromotionResponseDto();
         dto.setId(promotion.getId());
+        dto.setPromotionCode(promotion.getCode());
         dto.setDescription(promotion.getDescription());
         dto.setDiscountAmount(promotion.getDiscountAmount());
-        dto.setDiscountType(promotion.getDiscountType());
+        dto.setDiscountType(promotion.getDiscountType().toString());
         dto.setStatus(promotion.getStatus().toString());
         dto.setImage(promotion.getImage());
         dto.setStartDate(promotion.getStartDate());
         dto.setEndDate(promotion.getEndDate());
-        dto.setUserId(promotion.getUser().getUserId());
         return dto;
     }
 }

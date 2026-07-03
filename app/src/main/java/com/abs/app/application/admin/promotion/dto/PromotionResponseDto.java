@@ -8,12 +8,12 @@ import java.time.LocalDate;
 @Data
 public class PromotionResponseDto {
     private String id;
+    private String promotionCode;
     private String description;
     private Double discountAmount;
-    private DiscountType discountType;
+    private String discountType;
     private String status;
     private String image;
     private LocalDate startDate;
     private LocalDate endDate;
-    private String userId;
 }
