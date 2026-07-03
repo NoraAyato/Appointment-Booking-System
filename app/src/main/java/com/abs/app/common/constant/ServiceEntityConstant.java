@@ -10,6 +10,7 @@ public class ServiceEntityConstant {
     public static final String DUPLICATE_RESOURCE = "Service cùng tên đã tồn tại";
     public static final String DUPLICATE_CATEGORY_RESOURCE = "Tên Service đã tồn tại trong Category này";
     public static final String STATUS_NOT_EXIST = "Status không tồn tại";
+    public static final String GET_SERVICE_OPTIONS_SUCCESS = "Thành công danh sách tùy chọn Service";
 
     //
     public static final String SALT_TAG = "ser";

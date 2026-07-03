@@ -1,6 +1,7 @@
 package com.abs.app.infrastructure.mapper;
 
 import com.abs.app.application.admin.service.dto.ServiceImageDto;
+import com.abs.app.application.admin.service.dto.ServiceOptionResponseDto;
 import com.abs.app.application.admin.service.dto.ServiceResponseDto;
 import com.abs.app.domain.entity.ServiceEntity;
 import com.abs.app.domain.entity.ServiceImage;
@@ -31,6 +32,13 @@ public class ServiceMapper {
             dto.setServiceImageList(imageDtoList);
         }
 
+        return dto;
+    }
+
+    public static ServiceOptionResponseDto toServiceOptionResponse(ServiceEntity service) {
+        ServiceOptionResponseDto dto = new ServiceOptionResponseDto();
+        dto.setId(service.getId());
+        dto.setName(service.getName());
         return dto;
     }
 }
