@@ -1,7 +1,7 @@
 package com.abs.app.application.auth.command;
 
 import com.abs.app.application.auth.dto.AuthResponseDto;
-import com.abs.app.common.constant.Messages;
+import com.abs.app.common.constant.AuthConstant;
 import com.abs.app.common.constant.RoleConstant;
 import com.abs.app.common.exception.DuplicateResourceException;
 import com.abs.app.common.exception.ResourceNotFoundException;
@@ -12,7 +12,6 @@ import com.abs.app.domain.entity.enums.RoleEnum;
 import com.abs.app.domain.repository.RoleRepository;
 import com.abs.app.domain.repository.UserRepository;
 import com.abs.app.infrastructure.security.JwtTokenProvider;
-import lombok.Generated;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -29,7 +28,7 @@ public class RegisterUserCommandHandler {
 
     public AuthResponseDto handle(RegisterUserCommand command) {
         if (userRepository.existsByEmail(command.getEmail())) {
-            throw new DuplicateResourceException(Messages.EMAIL_EXIST);
+            throw new DuplicateResourceException(AuthConstant.EMAIL_EXIST);
         }
         Role role = roleRepository.findByRoleName(RoleEnum.CUSTOMER)
                 .orElseThrow(() -> new ResourceNotFoundException(RoleConstant.ROLE_NOT_EXIST));

@@ -1,7 +1,7 @@
 package com.abs.app.application.auth.command;
 
 import com.abs.app.application.auth.dto.AuthResponseDto;
-import com.abs.app.common.constant.Messages;
+import com.abs.app.common.constant.AuthConstant;
 import com.abs.app.common.constant.UserConstant;
 import com.abs.app.common.exception.BusinessException;
 import com.abs.app.common.exception.ResourceNotFoundException;
@@ -32,7 +32,7 @@ public class ResetPasswordCommandHandler {
         try {
             userId = jwtTokenProvider.getUserIdFromResetToken(command.getToken());
         } catch (Exception e) {
-            throw new UnauthorizedException(Messages.INVALID_TOKEN);
+            throw new UnauthorizedException(AuthConstant.INVALID_TOKEN);
         }
 
         Optional<User> userOptional = userRepository.findById(userId);
@@ -43,7 +43,7 @@ public class ResetPasswordCommandHandler {
         User user = userOptional.get();
         boolean isValid = otpTokenService.verifyOtp(user.getEmail(), command.getToken());
         if (!isValid) {
-            throw new BusinessException(Messages.INVALID_TOKEN);
+            throw new BusinessException(AuthConstant.INVALID_TOKEN);
         }
         otpTokenService.invalidateOtp(user.getEmail());
         String encodedPassword = passwordEncoder.encode(command.getNewPassword());

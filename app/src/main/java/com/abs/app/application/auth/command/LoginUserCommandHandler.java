@@ -2,8 +2,7 @@ package com.abs.app.application.auth.command;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import com.abs.app.common.constant.Messages;
+import com.abs.app.common.constant.AuthConstant;
 import com.abs.app.common.exception.UnauthorizedException;
 import com.abs.app.application.auth.dto.AuthResponseDto;
 import com.abs.app.domain.entity.User;
@@ -24,10 +23,10 @@ public class LoginUserCommandHandler {
 
     public AuthResponseDto handle(LoginUserCommand command) {
         User user = userRepository.findByEmail(command.getEmail())
-                .orElseThrow(() -> new UnauthorizedException(Messages.INVALID_USERNAME_OR_PASSWORD));
+                .orElseThrow(() -> new UnauthorizedException(AuthConstant.INVALID_USERNAME_OR_PASSWORD));
 
         if (!passwordEncoder.matches(command.getPassword(), user.getPassWord())) {
-            throw new UnauthorizedException(Messages.INVALID_USERNAME_OR_PASSWORD);
+            throw new UnauthorizedException(AuthConstant.INVALID_USERNAME_OR_PASSWORD);
         }
         String accessToken = jwtTokenProvider.generateToken(user.getUserId(), user.getRole().getRoleName().toString());
         if (command.isRememberMe()) {

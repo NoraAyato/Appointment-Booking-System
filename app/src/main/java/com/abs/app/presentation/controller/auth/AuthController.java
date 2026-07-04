@@ -43,7 +43,7 @@ import com.abs.app.application.auth.dto.GenerateOtpResponseDto;
 import com.abs.app.application.auth.dto.GoogleLoginRequestDto;
 import com.abs.app.application.auth.dto.LoginRequestDto;
 import com.abs.app.application.auth.dto.RefreshTokenRequestDto;
-import com.abs.app.common.constant.Messages;
+import com.abs.app.common.constant.AuthConstant;
 import com.abs.app.common.exception.UnauthorizedException;
 import com.abs.app.common.response.ApiResponse;
 import com.abs.app.infrastructure.security.SecurityUtils;
@@ -75,7 +75,7 @@ public class AuthController {
                 .handle(new LoginUserCommand(dto.getEmail(), dto.getPassword(), dto.isRememberMe()));
         return ResponseEntity.ok()
                 .headers(authCookieHelper.createAuthCookieHeaders(response))
-                .body(new ApiResponse<>(true, Messages.LOGIN_SUCCESS, response));
+                .body(new ApiResponse<>(true, AuthConstant.LOGIN_SUCCESS, response));
     }
 
     @PostMapping("/register")
@@ -84,7 +84,7 @@ public class AuthController {
                 new RegisterUserCommand(dto.getEmail(), dto.getPassword(), dto.getFirstName(), dto.getLastName()));
         return ResponseEntity.ok()
                 .headers(authCookieHelper.createAuthCookieHeaders(responseDto))
-                .body(new ApiResponse<>(true, Messages.REGISTER_SUCCESS, responseDto));
+                .body(new ApiResponse<>(true, AuthConstant.REGISTER_SUCCESS, responseDto));
     }
 
     @PostMapping("/change-password")
@@ -93,26 +93,26 @@ public class AuthController {
         String userId = SecurityUtils.getCurrentUserId();
         AuthResponseDto response = changePasswordHandler.handle(new ChangePasswordCommand(
                 userId, dto.getCurrentPassword(), dto.getNewPassword(), dto.getRePassword()));
-        return ResponseEntity.ok(new ApiResponse<>(true, Messages.CHANGE_PASSWORD_SUCCESS, response));
+        return ResponseEntity.ok(new ApiResponse<>(true, AuthConstant.CHANGE_PASSWORD_SUCCESS, response));
     }
 
     @PostMapping("/forgot-password")
     public ResponseEntity<ApiResponse<Void>> forgotPassword(@Valid @RequestBody ForgotPasswordRequestDto dto) {
         forgotPasswordCommandHandler.handle(new ForgotPasswordCommand(dto.getEmail()));
-        return ResponseEntity.ok(new ApiResponse<>(true, Messages.FORGOT_PASSWORD_SUCCESS, null));
+        return ResponseEntity.ok(new ApiResponse<>(true, AuthConstant.FORGOT_PASSWORD_SUCCESS, null));
     }
 
     @PostMapping("/refresh-token")
     public ResponseEntity<ApiResponse<AuthResponseDto>> refreshToken(HttpServletRequest request) {
         String refreshToken = authCookieHelper.getRefreshToken(request)
-                .orElseThrow(() -> new UnauthorizedException(Messages.INVALID_TOKEN));
+                .orElseThrow(() -> new UnauthorizedException(AuthConstant.INVALID_TOKEN));
         if (refreshToken == null || refreshToken.isBlank()) {
-            throw new UnauthorizedException(Messages.INVALID_TOKEN);
+            throw new UnauthorizedException(AuthConstant.INVALID_TOKEN);
         }
         AuthResponseDto response = refreshTokenCommandHandler.handle(new RefreshTokenCommand(refreshToken));
         return ResponseEntity.ok()
                 .headers(authCookieHelper.createAuthCookieHeaders(response))
-                .body(new ApiResponse<>(true, Messages.REFRESH_TOKEN_SUCCESS, response));
+                .body(new ApiResponse<>(true, AuthConstant.REFRESH_TOKEN_SUCCESS, response));
     }
 
     @PostMapping("/google")
@@ -122,7 +122,7 @@ public class AuthController {
                 new GoogleLoginCommand(dto.getIdToken()));
         return ResponseEntity.ok()
                 .headers(authCookieHelper.createAuthCookieHeaders(response))
-                .body(new ApiResponse<>(true, Messages.GOOGLE_LOGIN_SUCCESS, response));
+                .body(new ApiResponse<>(true, AuthConstant.GOOGLE_LOGIN_SUCCESS, response));
     }
 
     @GetMapping("/google/callback")
@@ -146,7 +146,7 @@ public class AuthController {
     @PostMapping("/reset-password")
     public ResponseEntity<ApiResponse<Void>> resetPassword(@Valid @RequestBody ResetPasswordRequestDto dto) {
         resetPasswordCommandHandler.handle(new ResetPasswordCommand(dto.getToken(), dto.getNewPassword()));
-        return ResponseEntity.ok(new ApiResponse<>(true, Messages.CHANGE_PASSWORD_SUCCESS, null));
+        return ResponseEntity.ok(new ApiResponse<>(true, AuthConstant.CHANGE_PASSWORD_SUCCESS, null));
     }
 
     @PostMapping("/send-otp")
@@ -159,13 +159,13 @@ public class AuthController {
     @PostMapping("/verify-otp")
     public ResponseEntity<ApiResponse<Void>> verifyOtp(@Valid @RequestBody VerifyOtpRequestDto dto) {
         verifyOtpCommandHandler.handle(new VerifyOtpCommand(dto.getEmail(), dto.getOtp()));
-        return ResponseEntity.ok(new ApiResponse<>(true, Messages.VERIFY_OTP_SUCCESS, null));
+        return ResponseEntity.ok(new ApiResponse<>(true, AuthConstant.VERIFY_OTP_SUCCESS, null));
     }
 
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse<Void>> logout() {
         return ResponseEntity.ok()
                 .headers(authCookieHelper.clearAuthCookieHeaders())
-                .body(new ApiResponse<>(true, "Logout success", null));
+                .body(new ApiResponse<>(true, AuthConstant.LOGOUT_SUCCESS, null));
     }
 }
