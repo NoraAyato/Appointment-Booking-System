@@ -1,7 +1,7 @@
 package com.abs.app.application.auth.command;
 
 import com.abs.app.application.auth.dto.AuthResponseDto;
-import com.abs.app.common.constant.Messages;
+import com.abs.app.common.constant.AuthConstant;
 import com.abs.app.common.constant.RoleConstant;
 import com.abs.app.common.exception.ResourceNotFoundException;
 import com.abs.app.application.auth.dto.AuthCallbackResult;
@@ -72,11 +72,11 @@ public class GoogleCallbackCommandHandler {
             try {
                 idToken = googleVerifier.verify(idTokenStr);
             } catch (Exception e) {
-                return AuthCallbackResult.failure(Messages.INVALID_TOKEN);
+                return AuthCallbackResult.failure(AuthConstant.INVALID_TOKEN);
             }
 
             if (idToken == null) {
-                return AuthCallbackResult.failure(Messages.INVALID_TOKEN);
+                return AuthCallbackResult.failure(AuthConstant.INVALID_TOKEN);
             }
 
             Payload payload = idToken.getPayload();
@@ -107,7 +107,7 @@ public class GoogleCallbackCommandHandler {
                 userLoginRepository.save(userLogin);
             }
             if (!user.getStatus().equals(UserStatus.ACTIVE)) {
-                return AuthCallbackResult.failure(Messages.PROHIBIT_ACCOUNT_MESSAGE);
+                return AuthCallbackResult.failure(AuthConstant.PROHIBIT_ACCOUNT_MESSAGE);
             }
             String accessToken = jwtTokenProvider.generateToken(user.getUserId(),
                     user.getRole().getRoleName().toString());
@@ -116,7 +116,8 @@ public class GoogleCallbackCommandHandler {
             // activityLogHelper.logUserLogin(user.getUserName(), user.getUserId());
             return AuthCallbackResult.success(new AuthResponseDto(accessToken, refreshToken));
         } catch (Exception e) {
-            return AuthCallbackResult.failure(e.getMessage() != null ? e.getMessage() : Messages.LOGIN_GOOGLE_FAILED);
+            return AuthCallbackResult
+                    .failure(e.getMessage() != null ? e.getMessage() : AuthConstant.LOGIN_GOOGLE_FAILED);
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.abs.app.application.auth.command;
 
 import com.abs.app.application.auth.dto.AuthResponseDto;
+import com.abs.app.common.constant.AuthConstant;
 import com.abs.app.common.constant.Messages;
 import com.abs.app.common.constant.UserConstant;
 import com.abs.app.common.exception.ResourceNotFoundException;
@@ -30,11 +31,11 @@ public class ChangePasswordCommandHandler {
                 .orElseThrow(() -> new ResourceNotFoundException(UserConstant.USER_NOT_EXIST));
 
         if (!passwordEncoder.matches(command.getCurrentPassword(), user.getPassWord())) {
-            throw new UnauthorizedException(Messages.INVALID_CURRENT_PASSWORD);
+            throw new UnauthorizedException(AuthConstant.INVALID_CURRENT_PASSWORD);
         }
 
         if (!command.getNewPassword().equals(command.getRePassword())) {
-            throw new UnauthorizedException(Messages.INVALID_RE_PASSWORD);
+            throw new UnauthorizedException(AuthConstant.INVALID_RE_PASSWORD);
         }
         user.setPassWord(passwordEncoder.encode(command.getNewPassword()));
         userRepo.save(user);

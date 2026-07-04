@@ -1,7 +1,7 @@
 package com.abs.app.application.auth.command;
 
 import com.abs.app.application.auth.dto.AuthResponseDto;
-import com.abs.app.common.constant.Messages;
+import com.abs.app.common.constant.AuthConstant;
 import com.abs.app.common.constant.UserConstant;
 import com.abs.app.common.exception.ResourceNotFoundException;
 import com.abs.app.common.exception.UnauthorizedException;
@@ -29,13 +29,13 @@ public class RefreshTokenCommandHandler {
         try {
             userId = jwtTokenProvider.getUserId(refreshToken);
         } catch (Exception e) {
-            throw new UnauthorizedException(Messages.INVALID_TOKEN);
+            throw new UnauthorizedException(AuthConstant.INVALID_TOKEN);
         }
 
         Optional<User> userRecent = userRepository.findById(userId);
 
         if (!refreshTokenService.isValid(userRecent.get().getUserId(), refreshToken)) {
-            throw new UnauthorizedException(Messages.INVALID_TOKEN);
+            throw new UnauthorizedException(AuthConstant.INVALID_TOKEN);
         }
 
         String newAccessToken = jwtTokenProvider.generateToken(

@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import com.abs.app.application.auth.dto.AuthResponseDto;
-import com.abs.app.common.constant.Messages;
+import com.abs.app.common.constant.AuthConstant;
 import com.abs.app.common.exception.UnauthorizedException;
 
 import java.util.Optional;
@@ -68,7 +68,7 @@ public class GoogleLoginCommandHandler {
             userLoginRepository.save(userLogin);
         }
         if (!user.getStatus().equals(UserStatus.ACTIVE)) {
-            throw new UnauthorizedException(Messages.PROHIBIT_ACCOUNT_MESSAGE);
+            throw new UnauthorizedException(AuthConstant.PROHIBIT_ACCOUNT_MESSAGE);
         }
         String accessToken = jwtTokenProvider.generateToken(user.getUserId(), user.getRole().getRoleName().toString());
         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getUserId());
