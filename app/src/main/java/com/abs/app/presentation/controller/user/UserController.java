@@ -10,7 +10,7 @@ import com.abs.app.application.user.info.command.UpdateUserImageCommandHandler;
 import com.abs.app.application.user.info.command.UpdateUserProfileCommand;
 import com.abs.app.application.user.info.command.UpdateUserProfileCommandHandler;
 import com.abs.app.application.user.info.dto.UpdateProfileRequestDto;
-import com.abs.app.application.user.info.dto.UserInfoResponeDto;
+import com.abs.app.application.user.info.dto.UserInfoResponseDto;
 import com.abs.app.application.user.info.query.GetCurrentUserQueryHandler;
 import com.abs.app.common.constant.UserConstant;
 import com.abs.app.common.response.ApiResponse;
@@ -24,7 +24,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
 @RequestMapping("/users")
@@ -36,9 +35,9 @@ public class UserController {
     private final UpdateUserImageCommandHandler updateUserImageCommandHandler;
 
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse<UserInfoResponeDto>> getCurrentUser() {
+    public ResponseEntity<ApiResponse<UserInfoResponseDto>> getCurrentUser() {
         String userId = SecurityUtils.getCurrentUserId();
-        UserInfoResponeDto userInfo = getCurrentUserQueryHandler.handle(userId);
+        UserInfoResponseDto userInfo = getCurrentUserQueryHandler.handle(userId);
         return ResponseEntity.ok(new ApiResponse<>(true, UserConstant.GET_USER_INFO_SUCCESS, userInfo));
     }
 
