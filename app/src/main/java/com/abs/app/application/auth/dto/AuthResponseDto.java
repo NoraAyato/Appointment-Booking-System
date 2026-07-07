@@ -10,7 +10,6 @@ public class AuthResponseDto {
         this.refreshToken = refreshToken;
     }
 
-    // Getters
     public String getAccessToken() {
         return accessToken;
     }

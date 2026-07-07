@@ -25,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.*;
+import java.time.Duration;
 import java.util.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -48,6 +49,9 @@ public class GoogleCallbackCommandHandler {
 
     @Value("${google.oauth.redirect-uri}")
     private String redirectUri;
+
+    @Value("${security.jwt.refresh-expiration}")
+    private long refreshTokenExpirationMs;
 
     public AuthCallbackResult handle(GoogleCallbackCommand command) {
         try {
@@ -109,15 +113,19 @@ public class GoogleCallbackCommandHandler {
             if (!user.getStatus().equals(UserStatus.ACTIVE)) {
                 return AuthCallbackResult.failure(AuthConstant.PROHIBIT_ACCOUNT_MESSAGE);
             }
-            String accessToken = jwtTokenProvider.generateToken(user.getUserId(),
+            String accessToken = jwtTokenProvider.generateAccessToken(user.getUserId(),
                     user.getRole().getRoleName().toString());
             String refreshToken = jwtTokenProvider.generateRefreshToken(user.getUserId());
-            refreshTokenService.save(user.getUserId(), refreshToken, 60 * 24 * 3);
+            refreshTokenService.save(user.getUserId(), refreshToken, refreshTokenExpirationMinutes());
             // activityLogHelper.logUserLogin(user.getUserName(), user.getUserId());
             return AuthCallbackResult.success(new AuthResponseDto(accessToken, refreshToken));
         } catch (Exception e) {
             return AuthCallbackResult
                     .failure(e.getMessage() != null ? e.getMessage() : AuthConstant.LOGIN_GOOGLE_FAILED);
         }
+    }
+
+    private long refreshTokenExpirationMinutes() {
+        return Math.max(1, Duration.ofMillis(refreshTokenExpirationMs).toMinutes());
     }
 }

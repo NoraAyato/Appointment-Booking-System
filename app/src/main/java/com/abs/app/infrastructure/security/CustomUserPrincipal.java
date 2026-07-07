@@ -1,6 +1,7 @@
 package com.abs.app.infrastructure.security;
 
 import com.abs.app.domain.entity.User;
+import com.abs.app.domain.entity.enums.UserStatus;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,6 +14,7 @@ public class CustomUserPrincipal implements UserDetails {
     private final String userName;
     private final String email;
     private final String password;
+    private final UserStatus status;
     private final Collection<? extends GrantedAuthority> authorities;
 
     public CustomUserPrincipal(User user) {
@@ -20,6 +22,7 @@ public class CustomUserPrincipal implements UserDetails {
         this.userName = user.getUserName();
         this.email = user.getEmail();
         this.password = user.getPassWord();
+        this.status = user.getStatus();
         this.authorities = Collections.singletonList(
                 new SimpleGrantedAuthority("ROLE_" + user.getRole().getRoleName().name()));
     }
@@ -48,7 +51,7 @@ public class CustomUserPrincipal implements UserDetails {
 
     @Override
     public String getUsername() {
-        return userId; // Sử dụng userId làm principal name
+        return userId;
     }
 
     @Override
@@ -58,7 +61,7 @@ public class CustomUserPrincipal implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return UserStatus.ACTIVE.equals(status);
     }
 
     @Override
@@ -68,6 +71,6 @@ public class CustomUserPrincipal implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return "ACTIVE".equalsIgnoreCase("ACTIVE"); // Có thể thêm status check
+        return UserStatus.ACTIVE.equals(status);
     }
 }

@@ -1,5 +1,7 @@
 package com.abs.app.config;
 
+import jakarta.servlet.http.HttpServletResponse;
+
 import org.springframework.context.annotation.*;
 import org.springframework.security.authentication.*;
 import org.springframework.security.config.Customizer;
@@ -21,6 +23,8 @@ import java.util.List;
 @EnableMethodSecurity
 public class SecurityConfig {
 
+    private static final String JSON_CONTENT_TYPE = "application/json;charset=UTF-8";
+
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
@@ -33,10 +37,32 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(Customizer.withDefaults())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint((request, response, authException) ->
+                                writeErrorResponse(
+                                        response,
+                                        HttpServletResponse.SC_UNAUTHORIZED,
+                                        "Authentication required"))
+                        .accessDeniedHandler((request, response, accessDeniedException) ->
+                                writeErrorResponse(
+                                        response,
+                                        HttpServletResponse.SC_FORBIDDEN,
+                                        "Access denied")))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/auth/change-password").authenticated()
                         .requestMatchers(
-                                "/auth/**",
+                                "/auth/login",
+                                "/auth/register",
+                                "/auth/forgot-password",
+                                "/auth/refresh-token",
+                                "/auth/google",
+                                "/auth/google/callback",
+                                "/auth/reset-password",
+                                "/auth/send-otp",
+                                "/auth/verify-otp",
+                                "/auth/logout",
                                 "/public/**",
+                                "/images/**",
                                 // Swagger UI
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
@@ -71,5 +97,30 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
             throws Exception {
         return config.getAuthenticationManager();
+    }
+
+    private static void writeErrorResponse(
+            HttpServletResponse response,
+            int status,
+            String message) throws java.io.IOException {
+        if (response.isCommitted()) {
+            return;
+        }
+
+        response.setStatus(status);
+        response.setContentType(JSON_CONTENT_TYPE);
+        response.getWriter().write(String.format(
+                "{\"success\":false,\"message\":\"%s\",\"data\":null}",
+                escapeJson(message)));
+    }
+
+    private static String escapeJson(String value) {
+        if (value == null) {
+            return "";
+        }
+
+        return value
+                .replace("\\", "\\\\")
+                .replace("\"", "\\\"");
     }
 }

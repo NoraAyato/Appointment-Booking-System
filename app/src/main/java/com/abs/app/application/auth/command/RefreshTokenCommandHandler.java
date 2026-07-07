@@ -6,13 +6,16 @@ import com.abs.app.common.constant.UserConstant;
 import com.abs.app.common.exception.ResourceNotFoundException;
 import com.abs.app.common.exception.UnauthorizedException;
 import com.abs.app.domain.entity.User;
+import com.abs.app.domain.entity.enums.UserStatus;
 import com.abs.app.domain.repository.UserRepository;
 import com.abs.app.domain.service.RefreshTokenService;
 import com.abs.app.infrastructure.security.JwtTokenProvider;
 
 import lombok.RequiredArgsConstructor;
 
-import java.util.Optional;
+import java.time.Duration;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,30 +26,43 @@ public class RefreshTokenCommandHandler {
     private final RefreshTokenService refreshTokenService;
     private final UserRepository userRepository;
 
+    @Value("${security.jwt.refresh-expiration}")
+    private long refreshTokenExpirationMs;
+
     public AuthResponseDto handle(RefreshTokenCommand command) {
         String refreshToken = command.getRefreshToken();
         String userId;
         try {
-            userId = jwtTokenProvider.getUserId(refreshToken);
+            userId = jwtTokenProvider.getUserIdFromRefreshToken(refreshToken);
         } catch (Exception e) {
             throw new UnauthorizedException(AuthConstant.INVALID_TOKEN);
         }
 
-        Optional<User> userRecent = userRepository.findById(userId);
-
-        if (!refreshTokenService.isValid(userRecent.get().getUserId(), refreshToken)) {
+        if (!jwtTokenProvider.validateRefreshToken(refreshToken)) {
             throw new UnauthorizedException(AuthConstant.INVALID_TOKEN);
         }
 
-        String newAccessToken = jwtTokenProvider.generateToken(
-                userId,
-                userRecent.orElseThrow(() -> new ResourceNotFoundException(UserConstant.USER_NOT_EXIST)).getRole()
-                        .getRoleName()
-                        .toString());
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException(UserConstant.USER_NOT_EXIST));
 
-        // refreshTokenService.invalidate(userId);
+        if (!UserStatus.ACTIVE.equals(user.getStatus())) {
+            throw new UnauthorizedException(AuthConstant.PROHIBIT_ACCOUNT_MESSAGE);
+        }
+
+        if (!refreshTokenService.isValid(user.getUserId(), refreshToken)) {
+            throw new UnauthorizedException(AuthConstant.INVALID_TOKEN);
+        }
+
+        String newAccessToken = jwtTokenProvider.generateAccessToken(
+                userId,
+                user.getRole().getRoleName().toString());
+
         String newRefreshToken = jwtTokenProvider.generateRefreshToken(userId);
-        refreshTokenService.save(userId, newRefreshToken, 60 * 24 * 3);
+        refreshTokenService.save(userId, newRefreshToken, refreshTokenExpirationMinutes());
         return new AuthResponseDto(newAccessToken, newRefreshToken);
+    }
+
+    private long refreshTokenExpirationMinutes() {
+        return Math.max(1, Duration.ofMillis(refreshTokenExpirationMs).toMinutes());
     }
 }

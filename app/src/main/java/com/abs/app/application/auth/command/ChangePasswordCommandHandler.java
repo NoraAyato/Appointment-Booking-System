@@ -2,7 +2,6 @@ package com.abs.app.application.auth.command;
 
 import com.abs.app.application.auth.dto.AuthResponseDto;
 import com.abs.app.common.constant.AuthConstant;
-import com.abs.app.common.constant.Messages;
 import com.abs.app.common.constant.UserConstant;
 import com.abs.app.common.exception.ResourceNotFoundException;
 import com.abs.app.common.exception.UnauthorizedException;
@@ -12,10 +11,7 @@ import com.abs.app.infrastructure.security.JwtTokenProvider;
 
 import lombok.RequiredArgsConstructor;
 
-import java.util.Optional;
-
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -39,7 +35,8 @@ public class ChangePasswordCommandHandler {
         }
         user.setPassWord(passwordEncoder.encode(command.getNewPassword()));
         userRepo.save(user);
-        String accessToken = jwtTokenProvider.generateToken(user.getUserId(), user.getRole().getRoleName().toString());
+        String accessToken = jwtTokenProvider.generateAccessToken(user.getUserId(),
+                user.getRole().getRoleName().toString());
         return new AuthResponseDto(accessToken, null);
     }
 }
