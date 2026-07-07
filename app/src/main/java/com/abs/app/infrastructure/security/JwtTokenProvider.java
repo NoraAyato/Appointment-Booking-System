@@ -1,5 +1,4 @@
 package com.abs.app.infrastructure.security;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -14,6 +13,11 @@ import java.util.UUID;
 
 @Component
 public class JwtTokenProvider {
+    private static final String TOKEN_TYPE_CLAIM = "type";
+    private static final String ACCESS_TOKEN_TYPE = "access";
+    private static final String REFRESH_TOKEN_TYPE = "refresh";
+    private static final String RESET_PASSWORD_TOKEN_TYPE = "reset_password";
+
     private final Key accessTokenKey;
     private final Key resetPasswordTokenKey;
     private final long expiration;
@@ -44,12 +48,13 @@ public class JwtTokenProvider {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String generateToken(String userId, String role) {
+    public String generateAccessToken(String userId, String role) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + expiration);
 
         return Jwts.builder()
                 .setSubject(userId)
+                .claim(TOKEN_TYPE_CLAIM, ACCESS_TOKEN_TYPE)
                 .claim("role", role)
                 .setIssuedAt(now)
                 .setExpiration(expiry)
@@ -57,12 +62,13 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+    public String generateToken(String userId, String role) {
+        return generateAccessToken(userId, role);
+    }
+
     public String getUserIdFromResetToken(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(resetPasswordTokenKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        Claims claims = parseClaims(token, resetPasswordTokenKey);
+        validateTokenType(claims, RESET_PASSWORD_TOKEN_TYPE);
 
         return claims.getSubject();
     }
@@ -73,7 +79,7 @@ public class JwtTokenProvider {
 
         return Jwts.builder()
                 .setSubject(userId)
-                .claim("type", "reset_password")
+                .claim(TOKEN_TYPE_CLAIM, RESET_PASSWORD_TOKEN_TYPE)
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(resetPasswordTokenKey)
@@ -86,6 +92,7 @@ public class JwtTokenProvider {
 
         return Jwts.builder()
                 .setSubject(userId)
+                .claim(TOKEN_TYPE_CLAIM, REFRESH_TOKEN_TYPE)
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .setId(UUID.randomUUID().toString())
@@ -94,29 +101,68 @@ public class JwtTokenProvider {
     }
 
     public String getRole(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(accessTokenKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .get("role", String.class);
+        Claims claims = parseAccessTokenClaims(token);
+        return claims.get("role", String.class);
+    }
+
+    public String getUserIdFromAccessToken(String token) {
+        return getUserId(token);
     }
 
     public String getUserId(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(accessTokenKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+        return parseAccessTokenClaims(token).getSubject();
+    }
+
+    public String getUserIdFromRefreshToken(String token) {
+        return parseRefreshTokenClaims(token).getSubject();
     }
 
     public boolean validateToken(String token) {
+        return validateAccessToken(token);
+    }
+
+    public boolean validateAccessToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(accessTokenKey).build().parseClaimsJws(token);
+            parseAccessTokenClaims(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
             return false;
+        }
+    }
+
+    public boolean validateRefreshToken(String token) {
+        try {
+            parseRefreshTokenClaims(token);
+            return true;
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    private Claims parseAccessTokenClaims(String token) {
+        Claims claims = parseClaims(token, accessTokenKey);
+        validateTokenType(claims, ACCESS_TOKEN_TYPE);
+        return claims;
+    }
+
+    private Claims parseRefreshTokenClaims(String token) {
+        Claims claims = parseClaims(token, accessTokenKey);
+        validateTokenType(claims, REFRESH_TOKEN_TYPE);
+        return claims;
+    }
+
+    private Claims parseClaims(String token, Key key) {
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    private void validateTokenType(Claims claims, String expectedType) {
+        String actualType = claims.get(TOKEN_TYPE_CLAIM, String.class);
+        if (!expectedType.equals(actualType)) {
+            throw new JwtException("Invalid token type");
         }
     }
 }

@@ -6,9 +6,6 @@ import lombok.Data;
 
 @Data
 public class ChangePasswordRequestDto {
-    @NotBlank(message = AuthConstant.EMAIL_REQUIRED)
-    private String email;
-
     @NotBlank(message = AuthConstant.CURRENT_PASSWORD_REQUIRED)
     private String currentPassword;
 

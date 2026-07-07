@@ -13,12 +13,14 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.abs.app.application.auth.dto.AuthResponseDto;
 import com.abs.app.common.constant.AuthConstant;
 import com.abs.app.common.exception.UnauthorizedException;
 
+import java.time.Duration;
 import java.util.Optional;
 
 @Service
@@ -31,6 +33,9 @@ public class GoogleLoginCommandHandler {
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenService refreshTokenService;
     // private final ActivityLogHelper activityLogHelper;
+
+    @Value("${security.jwt.refresh-expiration}")
+    private long refreshTokenExpirationMs;
 
     public AuthResponseDto handle(GoogleLoginCommand command) {
         String idTokenStr = command.getIdToken();
@@ -70,10 +75,15 @@ public class GoogleLoginCommandHandler {
         if (!user.getStatus().equals(UserStatus.ACTIVE)) {
             throw new UnauthorizedException(AuthConstant.PROHIBIT_ACCOUNT_MESSAGE);
         }
-        String accessToken = jwtTokenProvider.generateToken(user.getUserId(), user.getRole().getRoleName().toString());
+        String accessToken = jwtTokenProvider.generateAccessToken(user.getUserId(),
+                user.getRole().getRoleName().toString());
         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getUserId());
-        refreshTokenService.save(user.getUserId(), refreshToken, 60 * 24 * 3);
+        refreshTokenService.save(user.getUserId(), refreshToken, refreshTokenExpirationMinutes());
         // activityLogHelper.logUserLogin(user.getUserName(), user.getUserId());
         return new AuthResponseDto(accessToken, refreshToken);
+    }
+
+    private long refreshTokenExpirationMinutes() {
+        return Math.max(1, Duration.ofMillis(refreshTokenExpirationMs).toMinutes());
     }
 }

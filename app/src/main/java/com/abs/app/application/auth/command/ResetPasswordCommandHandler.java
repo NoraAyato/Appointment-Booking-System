@@ -1,6 +1,5 @@
 package com.abs.app.application.auth.command;
 
-import com.abs.app.application.auth.dto.AuthResponseDto;
 import com.abs.app.common.constant.AuthConstant;
 import com.abs.app.common.constant.UserConstant;
 import com.abs.app.common.exception.BusinessException;
@@ -41,11 +40,11 @@ public class ResetPasswordCommandHandler {
         }
 
         User user = userOptional.get();
-        boolean isValid = otpTokenService.verifyOtp(user.getEmail(), command.getToken());
+        boolean isValid = otpTokenService.verifyResetPasswordToken(user.getEmail(), command.getToken());
         if (!isValid) {
             throw new BusinessException(AuthConstant.INVALID_TOKEN);
         }
-        otpTokenService.invalidateOtp(user.getEmail());
+        otpTokenService.invalidateResetPasswordToken(user.getEmail());
         String encodedPassword = passwordEncoder.encode(command.getNewPassword());
         user.setPassWord(encodedPassword);
         userRepository.save(user);

@@ -2,12 +2,12 @@ package com.abs.app.infrastructure.mapper;
 
 import com.abs.app.application.admin.usermanager.dto.UserOptionResponse;
 import com.abs.app.application.admin.usermanager.dto.UserResponseDto;
-import com.abs.app.application.user.info.dto.UserInfoResponeDto;
+import com.abs.app.application.user.info.dto.UserInfoResponseDto;
 import com.abs.app.domain.entity.User;
 
 public class UserMapper {
-    public static UserInfoResponeDto toUserInfoResponseDto(User user) {
-        return new UserInfoResponeDto(
+    public static UserInfoResponseDto toUserInfoResponseDto(User user) {
+        return new UserInfoResponseDto(
                 user.getUserId(),
                 user.getUserName(),
                 user.getEmail(),

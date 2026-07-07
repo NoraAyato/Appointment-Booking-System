@@ -2,7 +2,7 @@ package com.abs.app.application.user.info.query;
 
 import org.springframework.stereotype.Service;
 
-import com.abs.app.application.user.info.dto.UserInfoResponeDto;
+import com.abs.app.application.user.info.dto.UserInfoResponseDto;
 import com.abs.app.common.constant.UserConstant;
 import com.abs.app.common.exception.ResourceNotFoundException;
 import com.abs.app.domain.repository.UserRepository;
@@ -14,10 +14,10 @@ import lombok.RequiredArgsConstructor;
 public class GetCurrentUserQueryHandler {
     private final UserRepository userRepository;
 
-    public UserInfoResponeDto handle(String userId) {
+    public UserInfoResponseDto handle(String userId) {
         var user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(UserConstant.USER_NOT_EXIST));
-        return new UserInfoResponeDto(
+        return new UserInfoResponseDto(
                 user.getUserId(),
                 user.getUserName(),
                 user.getEmail(),

@@ -15,7 +15,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.abs.app.common.response.ErrorResponse;
 import com.abs.app.common.response.ValidationErrorResponse;
 
+import lombok.extern.slf4j.Slf4j;
+
 @RestControllerAdvice
+@Slf4j
 public class GlobalException {
 
         @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -63,9 +66,51 @@ public class GlobalException {
                                                 ex.getMessage()));
         }
 
+        @ExceptionHandler(BusinessException.class)
+        public ResponseEntity<ErrorResponse> handleBusinessException(
+                        BusinessException ex) {
+
+                return ResponseEntity.badRequest()
+                                .body(new ErrorResponse(
+                                                false,
+                                                ex.getMessage()));
+        }
+
+        @ExceptionHandler(UnauthorizedException.class)
+        public ResponseEntity<ErrorResponse> handleUnauthorizedException(
+                        UnauthorizedException ex) {
+
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                                .body(new ErrorResponse(
+                                                false,
+                                                ex.getMessage()));
+        }
+
+        @ExceptionHandler(ResourceNotFoundException.class)
+        public ResponseEntity<ErrorResponse> handleResourceNotFoundException(
+                        ResourceNotFoundException ex) {
+
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                .body(new ErrorResponse(
+                                                false,
+                                                ex.getMessage()));
+        }
+
+        @ExceptionHandler(DuplicateResourceException.class)
+        public ResponseEntity<ErrorResponse> handleDuplicateResourceException(
+                        DuplicateResourceException ex) {
+
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                                .body(new ErrorResponse(
+                                                false,
+                                                ex.getMessage()));
+        }
+
         @ExceptionHandler(RuntimeException.class)
         public ResponseEntity<ErrorResponse> handleRuntimeException(
                         RuntimeException ex) {
+
+                log.error("Unhandled runtime exception", ex);
 
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                                 .body(new ErrorResponse(
@@ -76,6 +121,8 @@ public class GlobalException {
         @ExceptionHandler(Exception.class)
         public ResponseEntity<ErrorResponse> handleException(
                         Exception ex) {
+
+                log.error("Unhandled exception", ex);
 
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                                 .body(new ErrorResponse(

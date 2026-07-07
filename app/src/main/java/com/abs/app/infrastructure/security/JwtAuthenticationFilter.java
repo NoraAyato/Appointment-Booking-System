@@ -1,5 +1,7 @@
 package com.abs.app.infrastructure.security;
 
+import com.abs.app.common.constant.AuthConstant;
+
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import lombok.RequiredArgsConstructor;
@@ -19,18 +21,21 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final Logger log = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
+    private static final String JSON_CONTENT_TYPE = "application/json;charset=UTF-8";
+
     private final JwtTokenProvider jwtTokenProvider;
     private final CustomUserDetailsService userDetailsService;
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        String path = request.getRequestURI().toLowerCase();
-        boolean skip = path.startsWith("/api/auth")
-                || path.startsWith("/api/public/categories")
-                || path.startsWith("/api/swagger-ui")
-                || path.startsWith("/api/v3/api-docs")
-                || path.startsWith("/api/swagger-resources")
-                || path.startsWith("/api/webjars");
+        String path = request.getServletPath().toLowerCase();
+        boolean skip = isPublicAuthPath(path)
+                || path.startsWith("/public/")
+                || path.startsWith("/images/")
+                || path.startsWith("/swagger-ui")
+                || path.startsWith("/v3/api-docs")
+                || path.startsWith("/swagger-resources")
+                || path.startsWith("/webjars");
 
         log.debug("shouldNotFilter? path='{}' -> {}", path, skip);
         return skip;
@@ -42,13 +47,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain)
             throws ServletException, IOException {
 
-        String path = request.getRequestURI().toLowerCase();
+        String path = request.getServletPath().toLowerCase();
         log.debug("doFilterInternal start for path='{}'", path);
 
         // extra safety
-        if (path.startsWith("/api/auth")
-                || path.startsWith("/api/swagger-ui")
-                || path.startsWith("/api/v3/api-docs")) {
+        if (isPublicAuthPath(path)
+                || path.startsWith("/public/")
+                || path.startsWith("/images/")
+                || path.startsWith("/swagger-ui")
+                || path.startsWith("/v3/api-docs")) {
             log.debug("Skipping JWT processing for swagger/auth path '{}'", path);
             filterChain.doFilter(request, response);
             return;
@@ -63,9 +70,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         try {
-            if (jwtTokenProvider.validateToken(token)) {
-                String userId = jwtTokenProvider.getUserId(token);
+            if (jwtTokenProvider.validateAccessToken(token)) {
+                String userId = jwtTokenProvider.getUserIdFromAccessToken(token);
                 UserDetails userDetails = userDetailsService.loadUserByUsername(userId);
+
+                if (!isActiveUser(userDetails)) {
+                    log.debug("Authenticated token belongs to an inactive userId='{}'", userId);
+                    SecurityContextHolder.clearContext();
+                    writeUnauthorizedResponse(response, AuthConstant.PROHIBIT_ACCOUNT_MESSAGE);
+                    return;
+                }
 
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
@@ -76,10 +90,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 log.debug("Authentication set for userId='{}'", userId);
             } else {
                 log.debug("Invalid/expired token");
+                SecurityContextHolder.clearContext();
+                writeUnauthorizedResponse(response, AuthConstant.INVALID_TOKEN);
+                return;
             }
         } catch (Exception e) {
-            // log full stacktrace (safer than System.out.println)
             log.error("JWT error while processing request to '{}': {}", path, e.getMessage(), e);
+            SecurityContextHolder.clearContext();
+            writeUnauthorizedResponse(response, AuthConstant.INVALID_TOKEN);
+            return;
         }
 
         filterChain.doFilter(request, response);
@@ -105,5 +124,47 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         return null;
+    }
+
+    private boolean isActiveUser(UserDetails userDetails) {
+        return userDetails.isEnabled()
+                && userDetails.isAccountNonLocked()
+                && userDetails.isAccountNonExpired()
+                && userDetails.isCredentialsNonExpired();
+    }
+
+    private void writeUnauthorizedResponse(HttpServletResponse response, String message) throws IOException {
+        if (response.isCommitted()) {
+            return;
+        }
+
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType(JSON_CONTENT_TYPE);
+        response.getWriter().write(String.format(
+                "{\"success\":false,\"message\":\"%s\",\"data\":null}",
+                escapeJson(message)));
+    }
+
+    private String escapeJson(String value) {
+        if (value == null) {
+            return "";
+        }
+
+        return value
+                .replace("\\", "\\\\")
+                .replace("\"", "\\\"");
+    }
+
+    private boolean isPublicAuthPath(String path) {
+        return path.equals("/auth/login")
+                || path.equals("/auth/register")
+                || path.equals("/auth/forgot-password")
+                || path.equals("/auth/refresh-token")
+                || path.equals("/auth/google")
+                || path.equals("/auth/google/callback")
+                || path.equals("/auth/reset-password")
+                || path.equals("/auth/send-otp")
+                || path.equals("/auth/verify-otp")
+                || path.equals("/auth/logout");
     }
 }
