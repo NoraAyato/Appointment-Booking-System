@@ -9,6 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.abs.app.domain.entity.User;
+import com.abs.app.domain.entity.enums.RoleEnum;
+import com.abs.app.domain.entity.enums.UserStatus;
 import com.abs.app.domain.repository.UserRepository;
 import com.abs.app.infrastructure.persistence.jpa.UserJpaRepository;
 
@@ -60,9 +62,8 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public Page<User> findBySearchAndRole(String search, Integer roleId, String status, Pageable pageable) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findBySearchAndRole'");
+    public Page<User> findBySearchAndRole(String search, RoleEnum role, UserStatus status, Pageable pageable) {
+        return userJpaRepository.findBySearchAndRole(search, role, status, pageable);
     }
 
 }

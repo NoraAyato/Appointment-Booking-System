@@ -40,4 +40,7 @@ public class ServiceEntity {
 
     @OneToMany(mappedBy = "service", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ServiceImage> serviceImage = new ArrayList<>();
+
+    @OneToMany(mappedBy = "service", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AppointmentDetail> appointmentDetails = new ArrayList<>();
 }

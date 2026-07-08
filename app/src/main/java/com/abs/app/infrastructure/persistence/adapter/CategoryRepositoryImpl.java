@@ -4,6 +4,9 @@ import com.abs.app.domain.entity.Category;
 import com.abs.app.domain.repository.CategoryRepository;
 import com.abs.app.infrastructure.persistence.jpa.CategoryJpaRepository;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,6 +21,11 @@ public class CategoryRepositoryImpl implements CategoryRepository {
     @Override
     public List<Category> findAll() {
         return categoryJpaRepository.findAll();
+    }
+
+    @Override
+    public Page<Category> search(String keyword, Pageable pageable) {
+        return categoryJpaRepository.search(keyword, pageable);
     }
 
     @Override

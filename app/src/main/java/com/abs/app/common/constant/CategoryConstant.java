@@ -15,6 +15,7 @@ public class CategoryConstant {
     // Validation
     public static final String VALID_NAME_NOT_BLANK = "Tên danh mục không được để trống.";
     public static final String VALID_NAME_SIZE = "Tên danh mục phải từ {min} đến {max} ký tự.";
+    public static final String VALID_TAG_COLOR_SIZE = "Màu sắc tag phải từ {min} đến {max} ký tự.";
     public static final String VALID_DESCRIPTION_NOT_BLANK = "Mô tả danh mục không được để trống.";
     public static final String CATEGORY_HAS_SERVICE = "Không thể xóa Category vì vẫn còn Service thuộc Category này.";
 }

@@ -13,6 +13,9 @@ public class CreateCategoryRequestDto {
     @Size(min = 1, max = 100, message = CategoryConstant.VALID_NAME_SIZE)
     private String name;
 
+    @Size(min = 3, max = 20, message = CategoryConstant.VALID_TAG_COLOR_SIZE)
+    private String tagColor;
+
     @NotBlank(message = CategoryConstant.VALID_DESCRIPTION_NOT_BLANK)
     private String description;
 }

@@ -44,14 +44,16 @@ public class UpdateCategoryCommandHandlerTest {
     private static final String ID = "CA-123456";
     private static final String NAME = "Massage";
     private static final String DESCRIPTION = "Description";
+    private static final String TAG_COLOR = "#FF5733";
 
     @BeforeEach
     void setup() {
-        mockCommand = new UpdateCategoryCommand(ID, NAME, DESCRIPTION);
+        mockCommand = new UpdateCategoryCommand(ID, TAG_COLOR, NAME, DESCRIPTION);
         mockCategory = new Category();
         mockCategory.setId(ID);
         mockCategory.setName(NAME);
         mockCategory.setDescription(DESCRIPTION);
+        mockCategory.setTagColor(TAG_COLOR);
     }
 
     @Nested

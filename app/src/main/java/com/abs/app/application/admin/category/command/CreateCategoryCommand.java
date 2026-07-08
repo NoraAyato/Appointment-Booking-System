@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class CreateCategoryCommand {
+    private final String tagColor;
     private final String name;
-
     private final String description;
 }

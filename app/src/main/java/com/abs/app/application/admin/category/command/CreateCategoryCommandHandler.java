@@ -18,8 +18,7 @@ public class CreateCategoryCommandHandler {
     private final CategoryRepository categoryRepository;
 
     public CategoryResponseDto handle(CreateCategoryCommand command) {
-        if(categoryRepository.findByName(command.getName()).isPresent())
-        {
+        if (categoryRepository.findByName(command.getName()).isPresent()) {
             throw new DuplicateResourceException(CategoryConstant.DUPLICATE_RESOURCE);
         }
         Category newCategory = new Category();
@@ -27,7 +26,7 @@ public class CreateCategoryCommandHandler {
         newCategory.setName(command.getName());
         newCategory.setDescription(command.getDescription());
         newCategory.setServices(new ArrayList<>());
-
+        newCategory.setTagColor(command.getTagColor());
         Category saveCategory = categoryRepository.save(newCategory);
 
         return CategoryMapper.toCategoryResponse(saveCategory);
