@@ -25,24 +25,29 @@ public class CategoryManagerController {
     private final UpdateCategoryCommandHandler updateCategoryCommandHandler;
     private final DeleteCategoryCommandHandler deleteCategoryCommandHandler;
 
-
     @GetMapping
-    public ResponseEntity<ApiResponse<PageResponse<CategoryResponseDto>>> getCategories(@RequestParam(required = false) String keyword,
-                                                                           @RequestParam(defaultValue = "1") int page,
-                                                                           @RequestParam(defaultValue = "5") int size) {
-        PageResponse<CategoryResponseDto> pageResponse = getCategoryListQueryHandler.handle(new GetCategoryListQuery(keyword, page, size));
+    public ResponseEntity<ApiResponse<PageResponse<CategoryResponseDto>>> getCategories(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "5") int size) {
+        PageResponse<CategoryResponseDto> pageResponse = getCategoryListQueryHandler
+                .handle(new GetCategoryListQuery(keyword, page, size));
         return ResponseEntity.ok(new ApiResponse<>(true, CategoryConstant.GET_SUCCESS, pageResponse));
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<CategoryResponseDto>> create(@Valid @RequestBody CreateCategoryRequestDto request) {
-        CategoryResponseDto responseDto = createCategoryCommandHandler.handle(new CreateCategoryCommand(request.getName(), request.getDescription()));
+    public ResponseEntity<ApiResponse<CategoryResponseDto>> create(
+            @Valid @RequestBody CreateCategoryRequestDto request) {
+        CategoryResponseDto responseDto = createCategoryCommandHandler
+                .handle(new CreateCategoryCommand(request.getTagColor(), request.getName(), request.getDescription()));
         return ResponseEntity.ok(new ApiResponse<>(true, CategoryConstant.CREATE_SUCCESS, responseDto));
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<ApiResponse<CategoryResponseDto>> update(@PathVariable String id, @Valid @RequestBody UpdateCategoryRequestDto request) {
-        CategoryResponseDto responseDto = updateCategoryCommandHandler.handle(new UpdateCategoryCommand(id, request.getName(), request.getDescription()));
+    public ResponseEntity<ApiResponse<CategoryResponseDto>> update(@PathVariable String id,
+            @Valid @RequestBody UpdateCategoryRequestDto request) {
+        CategoryResponseDto responseDto = updateCategoryCommandHandler.handle(
+                new UpdateCategoryCommand(id, request.getTagColor(), request.getName(), request.getDescription()));
         return ResponseEntity.ok(new ApiResponse<>(true, CategoryConstant.UPDATE_SUCCESS, responseDto));
     }
 

@@ -1,9 +1,13 @@
 package com.abs.app.infrastructure.persistence.adapter;
 
 import com.abs.app.domain.entity.StaffService;
+import com.abs.app.domain.entity.enums.StaffServiceStatus;
 import com.abs.app.domain.repository.StaffServiceRepository;
 import com.abs.app.infrastructure.persistence.jpa.StaffServiceJpaRepository;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,6 +22,11 @@ public class StaffServiceRepositoryImpl implements StaffServiceRepository {
     @Override
     public List<StaffService> findAll() {
         return staffServiceJpaRepository.findAll();
+    }
+
+    @Override
+    public Page<StaffService> search(String keyword, StaffServiceStatus status, Pageable pageable) {
+        return staffServiceJpaRepository.search(keyword, status, pageable);
     }
 
     @Override

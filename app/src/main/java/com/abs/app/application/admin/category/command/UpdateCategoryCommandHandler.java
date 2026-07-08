@@ -27,6 +27,7 @@ public class UpdateCategoryCommandHandler {
 
         categoryEdit.setName(command.getName());
         categoryEdit.setDescription(command.getDescription());
+        categoryEdit.setTagColor(command.getTagColor());
         Category saveCategory = categoryRepository.save(categoryEdit);
 
         return CategoryMapper.toCategoryResponse(saveCategory);

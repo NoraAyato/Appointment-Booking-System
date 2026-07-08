@@ -6,6 +6,7 @@ import lombok.Data;
 public class CategoryResponseDto {
     private String id;
     private String name;
+    private String tagColor;
     private String description;
     private int totalService;
 }

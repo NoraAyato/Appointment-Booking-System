@@ -37,15 +37,17 @@ public class CreateCategoryCommandHandlerTest {
     private static final String ID = "CA_123456";
     private static final String NAME = "Massage";
     private static final String DESCRIPTION = "Giúp giải tỏa căng thẳng";
+    private static final String TAG_COLOR = "#FF5733";
 
     @BeforeEach
     void setup() {
-        mockCommand = new CreateCategoryCommand(NAME, DESCRIPTION);
+        mockCommand = new CreateCategoryCommand(TAG_COLOR, NAME, DESCRIPTION);
 
         mockCategory = new Category();
         mockCategory.setId(ID);
         mockCategory.setName(NAME);
         mockCategory.setDescription(DESCRIPTION);
+        mockCategory.setTagColor(TAG_COLOR);
     }
 
     @Nested

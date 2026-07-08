@@ -1,9 +1,13 @@
 package com.abs.app.infrastructure.persistence.adapter;
 
 import com.abs.app.domain.entity.StaffShift;
+import com.abs.app.domain.entity.enums.StaffShiftStatus;
 import com.abs.app.domain.repository.StaffShiftRepository;
 import com.abs.app.infrastructure.persistence.jpa.StaffShiftJpaRepository;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,6 +22,16 @@ public class StaffShiftRepositoryImpl implements StaffShiftRepository {
     @Override
     public List<StaffShift> findAll() {
         return staffShiftJpaRepository.findAll();
+    }
+
+    @Override
+    public Page<StaffShift> search(String keyword, StaffShiftStatus status, Pageable pageable) {
+        return staffShiftJpaRepository.search(keyword, status, pageable);
+    }
+
+    @Override
+    public Page<StaffShift> searchByStaffId(String staffId, String keyword, StaffShiftStatus status, Pageable pageable) {
+        return staffShiftJpaRepository.searchByStaffId(staffId, keyword, status, pageable);
     }
 
     @Override

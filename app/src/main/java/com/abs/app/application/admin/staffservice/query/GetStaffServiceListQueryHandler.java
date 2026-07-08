@@ -2,14 +2,20 @@ package com.abs.app.application.admin.staffservice.query;
 
 import com.abs.app.application.admin.staffservice.dto.StaffServiceResponseDto;
 import com.abs.app.common.response.PageResponse;
+import com.abs.app.common.util.EnumUtil;
 import com.abs.app.common.util.PaginationUtil;
 import com.abs.app.domain.entity.StaffService;
+import com.abs.app.domain.entity.enums.StaffServiceStatus;
 import com.abs.app.domain.repository.StaffServiceRepository;
 import com.abs.app.infrastructure.mapper.StaffServiceMapper;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -17,21 +23,24 @@ public class GetStaffServiceListQueryHandler {
     private final StaffServiceRepository staffServiceRepository;
 
     public PageResponse<StaffServiceResponseDto> handle(GetStaffServiceListQuery query) {
-        List<StaffService> staffServices = staffServiceRepository.findAll();
-        List<StaffService> filteredStaffService = staffServices.stream()
-                .filter(item -> (query.getKeyword() == null
-                || item.getStaff().getFirstName().toLowerCase().contains(query.getKeyword().toLowerCase())
-                || item.getStaff().getLastName().toLowerCase().contains(query.getKeyword().toLowerCase()))
-                && (query.getStatus() == null || item.getStatus().name().equalsIgnoreCase(query.getStatus())))
-                .toList();
+        Pageable pageable = PaginationUtil.createPageable(
+                query.getPage(),
+                query.getLimit(),
+                Sort.by("id").descending());
+        Optional<StaffServiceStatus> status = EnumUtil.parse(StaffServiceStatus.class, query.getStatus());
+        if (EnumUtil.isInvalidEnumValue(query.getStatus(), status)) {
+            return PaginationUtil.emptyResponse(query.getPage(), query.getLimit());
+        }
 
-        List<StaffService> pageFileterList = PaginationUtil.paginate(filteredStaffService, query.getPage(), query.getLimit());
-        List<StaffServiceResponseDto> items = pageFileterList.stream().map(StaffServiceMapper::toStaffServiceResponse).toList();
+        Page<StaffService> staffServices = staffServiceRepository.search(
+                query.getKeyword(),
+                status.orElse(null),
+                pageable);
 
-        int total = filteredStaffService.size();
-        int page = query.getPage();
-        int limit = query.getLimit();
-
-        return new PageResponse<>(items, total, page, limit);
+        return PaginationUtil.toPageResponse(
+                staffServices,
+                StaffServiceMapper::toStaffServiceResponse,
+                query.getPage(),
+                query.getLimit());
     }
 }
