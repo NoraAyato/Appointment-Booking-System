@@ -9,6 +9,7 @@ public class CategoryMapper {
         CategoryResponseDto Dto = new CategoryResponseDto();
         Dto.setId(category.getId());
         Dto.setName(category.getName());
+        Dto.setTagColor(category.getTagColor());
         Dto.setDescription(category.getDescription());
         Dto.setTotalService(category.getServices() != null ? category.getServices().size() : 0);
         return Dto;
