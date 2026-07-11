@@ -12,11 +12,12 @@ import org.springframework.data.domain.Pageable;
 
 public interface ReviewsRepository {
     List<Reviews> findAll();
+
     Page<Reviews> search(String keyword, ReviewsStatus status, Pageable pageable);
-    
+
     Optional<Reviews> findById(String id);
-    
-    Map<String, Double> findAverageRatingsByStaffIds(List<String> staffIds, ReviewsStatus reviewStatus);
+
+    Map<String, Double> findAverageRatingsByStaffIds(List<String> staffIds, ReviewsStatus reviewStatus  );
 
     void save(Reviews review);
 }

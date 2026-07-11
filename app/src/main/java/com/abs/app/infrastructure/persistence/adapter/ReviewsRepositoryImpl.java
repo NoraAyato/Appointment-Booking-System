@@ -20,13 +20,16 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ReviewsRepositoryImpl implements ReviewsRepository {
     private final ReviewsJpaRepository reviewsJpaRepository;
-    public List<Reviews> findAll(){
+
+    public List<Reviews> findAll() {
         return reviewsJpaRepository.findAll();
     }
+
     public Page<Reviews> search(String keyword, ReviewsStatus status, Pageable pageable) {
         return reviewsJpaRepository.search(keyword, status, pageable);
     }
-    public Optional<Reviews> findById(String id){
+
+    public Optional<Reviews> findById(String id) {
         return reviewsJpaRepository.findById(id);
     }
 
@@ -42,7 +45,7 @@ public class ReviewsRepositoryImpl implements ReviewsRepository {
         return ratings;
     }
 
-    public void save(Reviews reviews){
+    public void save(Reviews reviews) {
         reviewsJpaRepository.save(reviews);
     }
 }
