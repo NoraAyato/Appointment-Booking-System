@@ -25,7 +25,10 @@ public class BlockedSlotMapper {
         responseDto.setBlockedDate(blockedSlot.getBlockedDate());
         responseDto.setStartTime(blockedSlot.getStartTime());
         responseDto.setEndTime(blockedSlot.getEndTime());
+        responseDto.setAppliesEveryDay(blockedSlot.getBlockedDate() == null);
+        responseDto.setAllDay(blockedSlot.getStartTime() == null && blockedSlot.getEndTime() == null);
         var staff = blockedSlot.getStaff();
+        responseDto.setAppliesToAllStaff(staff == null);
         if (staff != null) {
             String staffName = staff != null ? staff.getFirstName() + " " + staff.getLastName() : null;
             responseDto.setStaffName(staffName);

@@ -22,6 +22,7 @@ import com.abs.app.common.constant.BlockedSlotConstant;
 import com.abs.app.common.response.ApiResponse;
 import com.abs.app.common.response.PageResponse;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -53,7 +54,7 @@ public class AdminBlockedSlotManagerController {
 
         @PutMapping("update/{id}")
         public ResponseEntity<ApiResponse<Void>> updateBlockedStatus(@PathVariable Long id,
-                        @RequestBody UpdateBlockedSlotRequestDto request) {
+                        @Valid @RequestBody UpdateBlockedSlotRequestDto request) {
                 updateBlockedSlotCommandHandler.handle(new UpdateBlockedSlotCommand(id,
                                 request.getStatus()));
 
@@ -63,7 +64,7 @@ public class AdminBlockedSlotManagerController {
 
         @PostMapping()
         public ResponseEntity<ApiResponse<Void>> createBlockedSlot(
-                        @RequestBody AdminCreateBlockedSlotRequestDto request) {
+                        @Valid @RequestBody AdminCreateBlockedSlotRequestDto request) {
                 createBlockedSlotCommandHandler.handle(new CreateBlockedSlotCommand(
                                 request.getUserId(),
                                 request.getReason(),

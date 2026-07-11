@@ -18,4 +18,6 @@ public class BlockedSlotConstant {
     public static final String OVERLAP_BLOCKED_SLOT = "Khung giờ bị chặn đã tồn tại trong khoảng thời gian này";
     public static final String STATUS_REQUIRED = "Trạng thái không được để trống";
 
+    public static final String TIME_RANGE_MUST_BE_BOTH_EMPTY_OR_BOTH_PROVIDED = "Start time and end time must both be empty or both be provided";
+    public static final String BLOCKED_DATE_REQUIRED_FOR_ALL_DAY = "Blocked date is required for all-day blocked slot";
 }

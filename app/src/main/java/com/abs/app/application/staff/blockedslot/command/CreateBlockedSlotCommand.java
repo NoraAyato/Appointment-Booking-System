@@ -1,6 +1,5 @@
 package com.abs.app.application.staff.blockedslot.command;
 
-import java.util.Date;
 import java.time.LocalDate;
 import java.time.LocalTime;
 

@@ -1,5 +1,7 @@
 package com.abs.app.infrastructure.persistence.adapter;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,6 +41,47 @@ public class BlockedSlotRepositoryImpl implements BlockedSlotRepository {
     @Override
     public Page<BlockedSlot> searchByStaffId(String staffId, String keyword, BlockedSlotStatus status, Pageable pageable) {
         return blockedSlotJpaRepository.searchByStaffId(staffId, keyword, status, pageable);
+    }
+
+    @Override
+    public boolean existsOverlapping(
+            String staffId,
+            LocalDate blockedDate,
+            LocalTime startTime,
+            LocalTime endTime,
+            BlockedSlotStatus excludedStatus) {
+        return blockedSlotJpaRepository.existsOverlapping(
+                staffId,
+                blockedDate,
+                startTime,
+                endTime,
+                excludedStatus);
+    }
+
+    @Override
+    public boolean existsOverlappingByStatus(
+            String staffId,
+            LocalDate blockedDate,
+            LocalTime startTime,
+            LocalTime endTime,
+            BlockedSlotStatus status) {
+        return blockedSlotJpaRepository.existsOverlappingByStatus(
+                staffId,
+                blockedDate,
+                startTime,
+                endTime,
+                status);
+    }
+
+    @Override
+    public boolean existsAllDayOnDateByStatus(
+            String staffId,
+            LocalDate blockedDate,
+            BlockedSlotStatus status) {
+        return blockedSlotJpaRepository.existsAllDayOnDateByStatus(
+                staffId,
+                blockedDate,
+                status);
     }
 
     @Override

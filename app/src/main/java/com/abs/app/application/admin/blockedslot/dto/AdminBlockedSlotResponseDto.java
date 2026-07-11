@@ -19,4 +19,7 @@ public class AdminBlockedSlotResponseDto {
     private LocalTime endTime;
     private String staffName;
     private String avatarUrl;
+    private boolean appliesToAllStaff;
+    private boolean appliesEveryDay;
+    private boolean allDay;
 }
