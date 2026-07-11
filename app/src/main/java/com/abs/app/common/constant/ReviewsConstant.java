@@ -6,4 +6,8 @@ public class ReviewsConstant {
     public static final String REVIEW_NOT_EXIST = "Đánh giá không tồn tại";
     public static final String UPDATE_REVIEW_SUCCESS = "Cập nhật đánh giá thành công";
 
+    public static final String GET_SERVICE_REVIEWS_SUCCESS = "Get service reviews successfully";
+    public static final String GET_SERVICE_REVIEW_STATS_SUCCESS = "Get service review stats successfully";
+    public static final String GET_TOP_REVIEWS_SUCCESS = "Get top reviews successfully";
+
 }

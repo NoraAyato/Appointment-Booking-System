@@ -1,13 +1,14 @@
 package com.abs.app.infrastructure.persistence.adapter;
 
-import java.util.List;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 import com.abs.app.domain.entity.Reviews;
 import com.abs.app.domain.entity.enums.ReviewsStatus;
@@ -21,14 +22,17 @@ import lombok.RequiredArgsConstructor;
 public class ReviewsRepositoryImpl implements ReviewsRepository {
     private final ReviewsJpaRepository reviewsJpaRepository;
 
+    @Override
     public List<Reviews> findAll() {
         return reviewsJpaRepository.findAll();
     }
 
+    @Override
     public Page<Reviews> search(String keyword, ReviewsStatus status, Pageable pageable) {
         return reviewsJpaRepository.search(keyword, status, pageable);
     }
 
+    @Override
     public Optional<Reviews> findById(String id) {
         return reviewsJpaRepository.findById(id);
     }
@@ -45,7 +49,42 @@ public class ReviewsRepositoryImpl implements ReviewsRepository {
         return ratings;
     }
 
+    @Override
     public void save(Reviews reviews) {
         reviewsJpaRepository.save(reviews);
+    }
+
+    @Override
+    public Page<Reviews> findByServiceId(String serviceId, Pageable pageable) {
+        return reviewsJpaRepository.findByServiceId(serviceId, pageable);
+    }
+
+    @Override
+    public Page<Reviews> findByServiceIdAndStatus(String serviceId, ReviewsStatus status, Pageable pageable) {
+        return reviewsJpaRepository.findByServiceIdAndStatus(serviceId, status, pageable);
+    }
+
+    @Override
+    public double findAverageRatingByServiceIdAndStatus(String serviceId, ReviewsStatus status) {
+        Double averageRating = reviewsJpaRepository.findAverageRatingByServiceIdAndStatus(serviceId, status);
+        return averageRating != null ? averageRating : 0D;
+    }
+
+    @Override
+    public long countByServiceIdAndStatus(String serviceId, ReviewsStatus status) {
+        return reviewsJpaRepository.countByServiceIdAndStatus(serviceId, status);
+    }
+
+    @Override
+    public List<Object[]> findRatingDistributionByServiceIdAndStatus(String serviceId, ReviewsStatus status) {
+        return reviewsJpaRepository.findRatingDistributionByServiceIdAndStatus(serviceId, status);
+    }
+
+    @Override
+    public List<Reviews> findTopByStatus(ReviewsStatus status, int limit) {
+        if (limit < 1) {
+            return List.of();
+        }
+        return reviewsJpaRepository.findTopByStatus(status, PageRequest.of(0, limit));
     }
 }
