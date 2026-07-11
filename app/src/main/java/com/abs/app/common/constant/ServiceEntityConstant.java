@@ -13,6 +13,8 @@ public class ServiceEntityConstant {
     public static final String GET_SERVICE_OPTIONS_SUCCESS = "Thành công danh sách tùy chọn Service";
     public static final String GET_SERVICES_SUCCESS = "Thành công danh sách Service";
     public static final String GET_TOP_RATED_SERVICES_SUCCESS = "Thành công danh sách Service được đánh giá cao";
+    public static final String GET_AVAILABLE_STAFF_SUCCESS = "Get available staff successfully";
+    public static final String GET_AVAILABLE_TIME_SLOTS_SUCCESS = "Get available time slots successfully";
     //
     public static final String SALT_TAG = "ser";
     public static final int STRING_LIMIT = 10;

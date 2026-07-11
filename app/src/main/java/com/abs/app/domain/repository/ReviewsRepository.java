@@ -1,6 +1,7 @@
 package com.abs.app.domain.repository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import com.abs.app.domain.entity.Reviews;
@@ -15,5 +16,7 @@ public interface ReviewsRepository {
     
     Optional<Reviews> findById(String id);
     
+    Map<String, Double> findAverageRatingsByStaffIds(List<String> staffIds, ReviewsStatus reviewStatus);
+
     void save(Reviews review);
 }
