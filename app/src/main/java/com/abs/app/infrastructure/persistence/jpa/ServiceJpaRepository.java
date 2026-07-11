@@ -64,11 +64,16 @@ public interface ServiceJpaRepository extends JpaRepository<ServiceEntity, Strin
                             AND NOT EXISTS (
                                 SELECT 1
                                 FROM blocked_slots bs
-                                WHERE bs.user_id = staff.user_id
+                                WHERE (bs.user_id IS NULL OR bs.user_id = staff.user_id)
                                 AND bs.status = :blockedSlotStatus
-                                AND bs.blocked_date = :date
-                                AND bs.start_time < TIME(TIMESTAMPADD(MINUTE, s.duration_minutes, :requestedStartAt))
-                                AND bs.end_time > :time
+                                AND (bs.blocked_date IS NULL OR bs.blocked_date = :date)
+                                AND (
+                                    (bs.start_time IS NULL AND bs.end_time IS NULL)
+                                    OR (
+                                        bs.start_time < TIME(TIMESTAMPADD(MINUTE, s.duration_minutes, :requestedStartAt))
+                                        AND bs.end_time > :time
+                                    )
+                                )
                             )
                             AND NOT EXISTS (
                                 SELECT 1
@@ -106,11 +111,16 @@ public interface ServiceJpaRepository extends JpaRepository<ServiceEntity, Strin
                             AND NOT EXISTS (
                                 SELECT 1
                                 FROM blocked_slots bs
-                                WHERE bs.user_id = staff.user_id
+                                WHERE (bs.user_id IS NULL OR bs.user_id = staff.user_id)
                                 AND bs.status = :blockedSlotStatus
-                                AND bs.blocked_date = :date
-                                AND bs.start_time < TIME(TIMESTAMPADD(MINUTE, s.duration_minutes, :requestedStartAt))
-                                AND bs.end_time > :time
+                                AND (bs.blocked_date IS NULL OR bs.blocked_date = :date)
+                                AND (
+                                    (bs.start_time IS NULL AND bs.end_time IS NULL)
+                                    OR (
+                                        bs.start_time < TIME(TIMESTAMPADD(MINUTE, s.duration_minutes, :requestedStartAt))
+                                        AND bs.end_time > :time
+                                    )
+                                )
                             )
                             AND NOT EXISTS (
                                 SELECT 1

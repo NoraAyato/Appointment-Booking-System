@@ -1,6 +1,5 @@
 package com.abs.app.domain.entity;
 
-import java.util.Date;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -18,13 +17,13 @@ public class BlockedSlot {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "blocked_date", nullable = false)
+    @Column(name = "blocked_date")
     private LocalDate blockedDate;
 
-    @Column(name = "start_time", nullable = false)
+    @Column(name = "start_time")
     private LocalTime startTime;
 
-    @Column(name = "end_time", nullable = false)
+    @Column(name = "end_time")
     private LocalTime endTime;
 
     @Column(name = "reason", columnDefinition = "TEXT")

@@ -1,6 +1,5 @@
-package com.abs.app.application.staff.blockedslot.command;
+package com.abs.app.application.user.service.dto;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 
 import lombok.AllArgsConstructor;
@@ -10,10 +9,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateBlockedSlotCommand {
-    private String userId;
-    private String reason;
-    private LocalDate blockedDate;
+public class AvailableTimeSlotResponseDto {
     private LocalTime startTime;
     private LocalTime endTime;
+    private int availableStaffCount;
 }
