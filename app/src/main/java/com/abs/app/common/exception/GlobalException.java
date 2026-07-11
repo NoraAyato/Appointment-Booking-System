@@ -1,9 +1,11 @@
 package com.abs.app.common.exception;
 
+import java.sql.SQLException;
 import java.time.format.DateTimeParseException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -15,11 +17,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.abs.app.common.response.ErrorResponse;
 import com.abs.app.common.response.ValidationErrorResponse;
 
+import jakarta.persistence.PersistenceException;
 import lombok.extern.slf4j.Slf4j;
 
 @RestControllerAdvice
 @Slf4j
 public class GlobalException {
+
+        private static final String INTERNAL_SERVER_ERROR_MESSAGE = "Internal server error";
 
         @ExceptionHandler(MethodArgumentNotValidException.class)
         public ResponseEntity<ValidationErrorResponse> handleValidationException(
@@ -106,6 +111,22 @@ public class GlobalException {
                                                 ex.getMessage()));
         }
 
+        @ExceptionHandler({
+                        DataAccessException.class,
+                        PersistenceException.class,
+                        SQLException.class
+        })
+        public ResponseEntity<ErrorResponse> handleDatabaseException(
+                        Exception ex) {
+
+                log.error("Database exception", ex);
+
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                .body(new ErrorResponse(
+                                                false,
+                                                INTERNAL_SERVER_ERROR_MESSAGE));
+        }
+
         @ExceptionHandler(RuntimeException.class)
         public ResponseEntity<ErrorResponse> handleRuntimeException(
                         RuntimeException ex) {
@@ -115,7 +136,7 @@ public class GlobalException {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                                 .body(new ErrorResponse(
                                                 false,
-                                                ex.getMessage()));
+                                                INTERNAL_SERVER_ERROR_MESSAGE));
         }
 
         @ExceptionHandler(Exception.class)
@@ -127,6 +148,6 @@ public class GlobalException {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                                 .body(new ErrorResponse(
                                                 false,
-                                                "Internal server error"));
+                                                INTERNAL_SERVER_ERROR_MESSAGE));
         }
 }
