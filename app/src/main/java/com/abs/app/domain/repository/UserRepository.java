@@ -1,5 +1,7 @@
 package com.abs.app.domain.repository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,4 +30,14 @@ public interface UserRepository {
     Optional<User> findByIdWithRole(String userId);
 
     Page<User> findBySearchAndRole(String search, RoleEnum role, UserStatus status, Pageable pageable);
+
+    long countByRoleAndStatus(RoleEnum role, UserStatus status);
+
+    long countByRoleAndStatusAndCreatedAtBetween(
+            RoleEnum role,
+            UserStatus status,
+            LocalDateTime startAt,
+            LocalDateTime endAt);
+
+    long countActiveStaffWithoutApprovedShiftOnDate(LocalDate date);
 }

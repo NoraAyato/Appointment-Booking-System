@@ -87,4 +87,15 @@ public class ReviewsRepositoryImpl implements ReviewsRepository {
         }
         return reviewsJpaRepository.findTopByStatus(status, PageRequest.of(0, limit));
     }
+
+    @Override
+    public long countByStatus(ReviewsStatus status) {
+        return reviewsJpaRepository.countByStatus(status);
+    }
+
+    @Override
+    public double findAverageRatingByStatus(ReviewsStatus status) {
+        Double averageRating = reviewsJpaRepository.findAverageRatingByStatus(status);
+        return averageRating != null ? averageRating : 0D;
+    }
 }

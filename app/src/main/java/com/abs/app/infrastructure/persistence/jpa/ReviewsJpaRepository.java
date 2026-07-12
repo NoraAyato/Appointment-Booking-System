@@ -135,4 +135,13 @@ public interface ReviewsJpaRepository extends JpaRepository<Reviews, String> {
         List<Object[]> findAverageRatingsByStaffIds(
                         @Param("staffIds") List<String> staffIds,
                         @Param("reviewStatus") ReviewsStatus reviewStatus);
+
+        long countByStatus(ReviewsStatus status);
+
+        @Query("""
+                        SELECT AVG(review.serviceScore)
+                        FROM Reviews review
+                        WHERE review.status = :status
+                        """)
+        Double findAverageRatingByStatus(@Param("status") ReviewsStatus status);
 }

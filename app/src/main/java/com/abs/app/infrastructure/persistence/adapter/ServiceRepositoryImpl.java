@@ -141,4 +141,14 @@ public class ServiceRepositoryImpl implements ServiceRepository {
                 reviewStatus.name(),
                 PageRequest.of(0, limit));
     }
+
+    @Override
+    public long countByStatusValue(ServiceStatus status) {
+        return serviceJapRepository.countByStatus(status);
+    }
+
+    @Override
+    public long countActiveServicesWithoutActiveStaff() {
+        return serviceJapRepository.countActiveServicesWithoutActiveStaff();
+    }
 }

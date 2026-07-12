@@ -56,6 +56,11 @@ public class StaffShiftRepositoryImpl implements StaffShiftRepository {
     }
 
     @Override
+    public long countByStatus(StaffShiftStatus status) {
+        return staffShiftJpaRepository.countByStatus(status);
+    }
+
+    @Override
     public Optional<StaffShift> findById(Long id) {
         return staffShiftJpaRepository.findById(id);
     }

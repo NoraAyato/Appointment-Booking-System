@@ -31,5 +31,9 @@ public interface ReviewsRepository {
 
     Map<String, Double> findAverageRatingsByStaffIds(List<String> staffIds, ReviewsStatus reviewStatus);
 
+    long countByStatus(ReviewsStatus status);
+
+    double findAverageRatingByStatus(ReviewsStatus status);
+
     void save(Reviews review);
 }

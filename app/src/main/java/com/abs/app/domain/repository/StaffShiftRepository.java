@@ -24,6 +24,7 @@ public interface StaffShiftRepository {
             UserStatus staffStatus,
             StaffServiceStatus staffServiceStatus,
             StaffShiftStatus staffShiftStatus);
+    long countByStatus(StaffShiftStatus status);
     Optional<StaffShift> findById(Long id);
     void save(StaffShift staffShift);
     void deleteById(Long id);

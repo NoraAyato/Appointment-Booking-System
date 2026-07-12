@@ -69,4 +69,6 @@ public interface StaffShiftJpaRepository extends JpaRepository<StaffShift, Long>
             @Param("staffStatus") UserStatus staffStatus,
             @Param("staffServiceStatus") StaffServiceStatus staffServiceStatus,
             @Param("staffShiftStatus") StaffShiftStatus staffShiftStatus);
+
+    long countByStatus(StaffShiftStatus status);
 }
