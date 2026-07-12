@@ -1,5 +1,7 @@
 package com.abs.app.infrastructure.persistence.jpa;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -34,4 +36,43 @@ public interface UserJpaRepository extends JpaRepository<User, String> {
             @Param("role") RoleEnum role,
             @Param("status") UserStatus status,
             Pageable pageable);
+
+    @Query("""
+            SELECT COUNT(user)
+            FROM User user
+            WHERE user.role.roleName = :role
+            AND user.status = :status
+            """)
+    long countByRoleAndStatus(
+            @Param("role") RoleEnum role,
+            @Param("status") UserStatus status);
+
+    @Query("""
+            SELECT COUNT(user)
+            FROM User user
+            WHERE user.role.roleName = :role
+            AND user.status = :status
+            AND user.createdAt >= :startAt
+            AND user.createdAt < :endAt
+            """)
+    long countByRoleAndStatusAndCreatedAtBetween(
+            @Param("role") RoleEnum role,
+            @Param("status") UserStatus status,
+            @Param("startAt") LocalDateTime startAt,
+            @Param("endAt") LocalDateTime endAt);
+
+    @Query("""
+            SELECT COUNT(user)
+            FROM User user
+            WHERE user.role.roleName = com.abs.app.domain.entity.enums.RoleEnum.STAFF
+            AND user.status = com.abs.app.domain.entity.enums.UserStatus.ACTIVE
+            AND NOT EXISTS (
+                SELECT 1
+                FROM StaffShift shift
+                WHERE shift.staff = user
+                AND shift.status = com.abs.app.domain.entity.enums.StaffShiftStatus.APPROVED
+                AND shift.workDate = :date
+            )
+            """)
+    long countActiveStaffWithoutApprovedShiftOnDate(@Param("date") LocalDate date);
 }

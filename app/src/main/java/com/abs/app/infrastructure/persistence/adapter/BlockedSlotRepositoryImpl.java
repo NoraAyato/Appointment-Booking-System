@@ -85,6 +85,11 @@ public class BlockedSlotRepositoryImpl implements BlockedSlotRepository {
     }
 
     @Override
+    public long countByStatus(BlockedSlotStatus status) {
+        return blockedSlotJpaRepository.countByStatus(status);
+    }
+
+    @Override
     public void save(BlockedSlot blockedSlot) {
         blockedSlotJpaRepository.save(blockedSlot);
     }

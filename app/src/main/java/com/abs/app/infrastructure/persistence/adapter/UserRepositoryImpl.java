@@ -1,6 +1,8 @@
 package com.abs.app.infrastructure.persistence.adapter;
 
 import com.abs.app.infrastructure.persistence.jpa.JpaUserLoginRepository;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -66,4 +68,22 @@ public class UserRepositoryImpl implements UserRepository {
         return userJpaRepository.findBySearchAndRole(search, role, status, pageable);
     }
 
+    @Override
+    public long countByRoleAndStatus(RoleEnum role, UserStatus status) {
+        return userJpaRepository.countByRoleAndStatus(role, status);
+    }
+
+    @Override
+    public long countByRoleAndStatusAndCreatedAtBetween(
+            RoleEnum role,
+            UserStatus status,
+            LocalDateTime startAt,
+            LocalDateTime endAt) {
+        return userJpaRepository.countByRoleAndStatusAndCreatedAtBetween(role, status, startAt, endAt);
+    }
+
+    @Override
+    public long countActiveStaffWithoutApprovedShiftOnDate(LocalDate date) {
+        return userJpaRepository.countActiveStaffWithoutApprovedShiftOnDate(date);
+    }
 }

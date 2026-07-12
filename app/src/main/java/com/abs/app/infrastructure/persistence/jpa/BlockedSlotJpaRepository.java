@@ -96,4 +96,6 @@ public interface BlockedSlotJpaRepository extends JpaRepository<BlockedSlot, Lon
             @Param("staffId") String staffId,
             @Param("blockedDate") LocalDate blockedDate,
             @Param("status") BlockedSlotStatus status);
+
+    long countByStatus(BlockedSlotStatus status);
 }

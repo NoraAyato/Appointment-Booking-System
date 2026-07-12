@@ -187,4 +187,19 @@ public interface ServiceJpaRepository extends JpaRepository<ServiceEntity, Strin
             @Param("serviceStatus") String serviceStatus,
             @Param("reviewStatus") String reviewStatus,
             Pageable pageable);
+
+    long countByStatus(ServiceStatus status);
+
+    @Query("""
+            SELECT COUNT(service)
+            FROM ServiceEntity service
+            WHERE service.status = com.abs.app.domain.entity.enums.ServiceStatus.ACTIVE
+            AND NOT EXISTS (
+                SELECT 1
+                FROM StaffService staffService
+                WHERE staffService.service = service
+                AND staffService.status = com.abs.app.domain.entity.enums.StaffServiceStatus.ACTIVE
+            )
+            """)
+    long countActiveServicesWithoutActiveStaff();
 }

@@ -34,6 +34,8 @@ public interface BlockedSlotRepository {
             LocalDate blockedDate,
             BlockedSlotStatus status);
 
+    long countByStatus(BlockedSlotStatus status);
+
     void save(BlockedSlot blockedSlot);
 
     void deleteById(Long id);

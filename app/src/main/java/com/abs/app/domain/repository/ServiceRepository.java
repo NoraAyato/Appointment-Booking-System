@@ -46,4 +46,6 @@ public interface ServiceRepository {
     List<ServiceImage> findImagesByServiceIds(List<String> serviceIds);
     Map<String, Double> findAverageRatingsByServiceIds(List<String> serviceIds);
     List<ServiceEntity> findTopRatedServices(ServiceStatus serviceStatus, ReviewsStatus reviewStatus, int limit);
+    long countByStatusValue(ServiceStatus status);
+    long countActiveServicesWithoutActiveStaff();
 }
