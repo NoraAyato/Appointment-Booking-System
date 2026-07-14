@@ -21,6 +21,9 @@ public class AppointmentDetail {
     @Column(name = "end_time")
     private LocalDateTime endTime;
 
+    @Column(name = "picture", columnDefinition = "TEXT")
+    private String picture;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "service_id")
     private ServiceEntity service;
