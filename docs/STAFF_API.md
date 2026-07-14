@@ -201,7 +201,7 @@ Query params:
 Response data la list event. Moi event co `type`:
 
 - `SHIFT`: ca lam viec da duyet.
-- `APPOINTMENT`: lich hen cua staff, khong gom appointment `CANCELLED`.
+- `APPOINTMENT`: lich hen cua staff, chi gom appointment `CONFIRMED` va `COMPLETED`.
 - `BLOCKED_SLOT`: thoi gian staff bi ban/nghi, gom ca global blocked slot.
 
 Response:
@@ -269,16 +269,16 @@ Response:
 ## 6. Lay Danh Sach Lich Hen Cua Staff
 
 ```http
-GET /staff/dashboard/appointments
+GET /staff/appointments
 ```
 
 Query params:
 
 | Param | Type | Required | Default | Mo ta |
 | --- | --- | --- | --- | --- |
-| `fromDate` | `LocalDate` | No | Today | Ngay bat dau, format `yyyy-MM-dd`. |
-| `toDate` | `LocalDate` | No | `fromDate + 6 days` | Ngay ket thuc, format `yyyy-MM-dd`. |
-| `status` | `string` | No | `null` | Loc theo appointment status: `PENDING`, `CONFIRMED`, `CANCELLED`, `COMPLETED`. |
+| `keyWord` | `string` | No | `null` | Tim theo appointment id, ten khach, so dien thoai khach hoac ten service. |
+| `date` | `LocalDate` | No | `null` | Loc theo ngay hen, format `yyyy-MM-dd`. |
+| `status` | `string` | No | `null` | Loc theo appointment status. API chi tra `CONFIRMED` hoac `COMPLETED`; neu truyen `PENDING`/`CANCELLED` thi data rong. |
 | `page` | `number` | No | `1` | Trang hien tai. |
 | `limit` | `number` | No | `10` | So item moi trang. |
 
@@ -297,11 +297,13 @@ Response:
         "serviceName": "Massage body",
         "customerName": "Nguyen Van A",
         "customerPhone": "0900000000",
+        "customerAvatar": "/images/uploads/users/customer.jpg",
         "startTime": "2026-07-14T09:00:00",
         "endTime": "2026-07-14T11:00:00",
         "quantity": 1,
         "status": "CONFIRMED",
-        "note": "Khach muon phong yen tinh"
+        "note": "Khach muon phong yen tinh",
+        "picture": null
       }
     ],
     "total": 1,
@@ -311,7 +313,56 @@ Response:
 }
 ```
 
-## 7. Lay Tong Quan Dashboard Cua Staff
+## 7. Hoan Tat Lich Hen Cua Staff
+
+```http
+PUT /staff/appointments/{appointmentId}/complete
+```
+
+Content-Type:
+
+```http
+multipart/form-data
+```
+
+Path params:
+
+| Param | Type | Required | Mo ta |
+| --- | --- | --- | --- |
+| `appointmentId` | `string` | Yes | Id cua appointment can hoan tat. |
+
+Form data:
+
+```text
+picture: File
+```
+
+Fields:
+
+| Field | Type | Required | Mo ta |
+| --- | --- | --- | --- |
+| `picture` | `MultipartFile` | Yes | Hinh anh ket qua sau khi staff hoan tat lich hen. Ho tro `.jpg`, `.jpeg`, `.png`, `.gif`, toi da 5MB. |
+
+Flow:
+
+- Backend lay `staffId` tu access token/cookie.
+- Backend tim `appointment_details` theo `appointmentId` va staff hien tai.
+- Chi appointment co status `CONFIRMED` moi duoc chuyen sang `COMPLETED`.
+- Backend cap nhat `appointments.status = COMPLETED`.
+- Backend upload file vao `/images/uploads/appointments/`.
+- Backend luu public path cua file vao `appointment_details.picture`.
+
+Response:
+
+```json
+{
+  "success": true,
+  "message": "Complete staff appointment successfully",
+  "data": null
+}
+```
+
+## 8. Lay Tong Quan Dashboard Cua Staff
 
 ```http
 GET /staff/dashboard/overview
@@ -346,7 +397,8 @@ Response:
 
 - FE khong truyen `staffId`; backend lay staff hien tai tu access token/cookie bang `SecurityUtils.getCurrentUserId()`.
 - Lich hen cua staff duoc query tu `appointment_details.staff_id`, khong query tu `appointments.user_id` vi `appointments.user_id` la customer.
-- API `/staff/dashboard/appointments` dung `PageResponse`.
+- API `/staff/appointments` dung `PageResponse`.
+- API `/staff/appointments` va event `APPOINTMENT` trong `/staff/dashboard/schedule` chi lay lich hen co status `CONFIRMED` hoac `COMPLETED`.
 - API `/staff/dashboard/schedule` khong dung pagination vi FE can render toan bo event trong khoang ngay dang calendar.
 - `totalBlockedSlots` chi dem blocked slot `APPROVED` gan truc tiep voi staff hien tai. Khong dem blocked slot `DEFAULT` hoac blocked slot global do admin tao voi `staff = null`.
 - Neu `fromDate > toDate`, backend tu dao lai date range.
