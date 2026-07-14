@@ -176,17 +176,66 @@ public interface AppointmentDetailJpaRepository extends JpaRepository<Appointmen
             SELECT appointmentDetail
             FROM AppointmentDetail appointmentDetail
             JOIN appointmentDetail.appointment appointment
+            JOIN appointment.customer customer
+            LEFT JOIN appointmentDetail.service service
+            WHERE appointmentDetail.staff.userId = :staffId
+            AND (:startAt IS NULL OR appointmentDetail.startTime >= :startAt)
+            AND (:endAt IS NULL OR appointmentDetail.startTime < :endAt)
+            AND appointment.status IN :statuses
+            AND (:keyword IS NULL OR :keyword = ''
+                OR LOWER(appointment.id) LIKE LOWER(CONCAT('%', :keyword, '%'))
+                OR LOWER(customer.firstName) LIKE LOWER(CONCAT('%', :keyword, '%'))
+                OR LOWER(customer.lastName) LIKE LOWER(CONCAT('%', :keyword, '%'))
+                OR LOWER(customer.phoneNumber) LIKE LOWER(CONCAT('%', :keyword, '%'))
+                OR LOWER(service.name) LIKE LOWER(CONCAT('%', :keyword, '%')))
+            ORDER BY appointmentDetail.startTime ASC
+            """)
+    Page<AppointmentDetail> searchStaffAppointments(
+            @Param("staffId") String staffId,
+            @Param("keyword") String keyword,
+            @Param("startAt") LocalDateTime startAt,
+            @Param("endAt") LocalDateTime endAt,
+            @Param("statuses") List<AppointmentStatus> statuses,
+            Pageable pageable);
+
+    @EntityGraph(attributePaths = {
+            "appointment",
+            "appointment.customer",
+            "service",
+            "staff"
+    })
+    @Query("""
+            SELECT appointmentDetail
+            FROM AppointmentDetail appointmentDetail
+            JOIN appointmentDetail.appointment appointment
+            WHERE appointment.id = :appointmentId
+            AND appointmentDetail.staff.userId = :staffId
+            """)
+    List<AppointmentDetail> findByAppointmentIdAndStaffId(
+            @Param("appointmentId") String appointmentId,
+            @Param("staffId") String staffId);
+
+    @EntityGraph(attributePaths = {
+            "appointment",
+            "appointment.customer",
+            "service",
+            "staff"
+    })
+    @Query("""
+            SELECT appointmentDetail
+            FROM AppointmentDetail appointmentDetail
+            JOIN appointmentDetail.appointment appointment
             WHERE appointmentDetail.staff.userId = :staffId
             AND appointmentDetail.startTime >= :startAt
             AND appointmentDetail.startTime < :endAt
-            AND appointment.status <> :excludedStatus
+            AND appointment.status IN :statuses
             ORDER BY appointmentDetail.startTime ASC
             """)
     List<AppointmentDetail> findStaffAppointmentsForSchedule(
             @Param("staffId") String staffId,
             @Param("startAt") LocalDateTime startAt,
             @Param("endAt") LocalDateTime endAt,
-            @Param("excludedStatus") AppointmentStatus excludedStatus);
+            @Param("statuses") List<AppointmentStatus> statuses);
 
     @Query("""
             SELECT appointment.status, COUNT(appointmentDetail.id)

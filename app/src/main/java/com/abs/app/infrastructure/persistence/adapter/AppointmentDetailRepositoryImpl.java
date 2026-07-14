@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -92,16 +93,42 @@ public class AppointmentDetailRepositoryImpl implements AppointmentDetailReposit
     }
 
     @Override
+    public Page<AppointmentDetail> searchStaffAppointments(
+            String staffId,
+            String keyword,
+            LocalDateTime startAt,
+            LocalDateTime endAt,
+            List<AppointmentStatus> statuses,
+            Pageable pageable) {
+        return appointmentDetailJpaRepository.searchStaffAppointments(
+                staffId,
+                keyword,
+                startAt,
+                endAt,
+                statuses,
+                pageable);
+    }
+
+    @Override
+    public Optional<AppointmentDetail> findByAppointmentIdAndStaffId(
+            String appointmentId,
+            String staffId) {
+        return appointmentDetailJpaRepository.findByAppointmentIdAndStaffId(appointmentId, staffId)
+                .stream()
+                .findFirst();
+    }
+
+    @Override
     public List<AppointmentDetail> findStaffAppointmentsForSchedule(
             String staffId,
             LocalDateTime startAt,
             LocalDateTime endAt,
-            AppointmentStatus excludedStatus) {
+            List<AppointmentStatus> statuses) {
         return appointmentDetailJpaRepository.findStaffAppointmentsForSchedule(
                 staffId,
                 startAt,
                 endAt,
-                excludedStatus);
+                statuses);
     }
 
     @Override
@@ -110,5 +137,10 @@ public class AppointmentDetailRepositoryImpl implements AppointmentDetailReposit
             LocalDateTime startAt,
             LocalDateTime endAt) {
         return appointmentDetailJpaRepository.countStaffAppointmentsByStatus(staffId, startAt, endAt);
+    }
+
+    @Override
+    public void save(AppointmentDetail appointmentDetail) {
+        appointmentDetailJpaRepository.save(appointmentDetail);
     }
 }
