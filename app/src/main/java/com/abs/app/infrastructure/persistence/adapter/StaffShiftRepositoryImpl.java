@@ -56,6 +56,18 @@ public class StaffShiftRepositoryImpl implements StaffShiftRepository {
     }
 
     @Override
+    public List<StaffShift> findApprovedByStaffIdAndWorkDateBetween(
+            String staffId,
+            LocalDate fromDate,
+            LocalDate toDate) {
+        return staffShiftJpaRepository.findByStaffIdAndStatusAndWorkDateBetween(
+                staffId,
+                StaffShiftStatus.APPROVED,
+                fromDate,
+                toDate);
+    }
+
+    @Override
     public long countByStatus(StaffShiftStatus status) {
         return staffShiftJpaRepository.countByStatus(status);
     }

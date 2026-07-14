@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -78,5 +79,36 @@ public class AppointmentDetailRepositoryImpl implements AppointmentDetailReposit
             AppointmentStatus excludedStatus,
             Pageable pageable) {
         return appointmentDetailJpaRepository.findUpcomingAppointments(fromTime, excludedStatus, pageable);
+    }
+
+    @Override
+    public Page<AppointmentDetail> findStaffAppointments(
+            String staffId,
+            LocalDateTime startAt,
+            LocalDateTime endAt,
+            AppointmentStatus status,
+            Pageable pageable) {
+        return appointmentDetailJpaRepository.findStaffAppointments(staffId, startAt, endAt, status, pageable);
+    }
+
+    @Override
+    public List<AppointmentDetail> findStaffAppointmentsForSchedule(
+            String staffId,
+            LocalDateTime startAt,
+            LocalDateTime endAt,
+            AppointmentStatus excludedStatus) {
+        return appointmentDetailJpaRepository.findStaffAppointmentsForSchedule(
+                staffId,
+                startAt,
+                endAt,
+                excludedStatus);
+    }
+
+    @Override
+    public List<Object[]> countStaffAppointmentsByStatus(
+            String staffId,
+            LocalDateTime startAt,
+            LocalDateTime endAt) {
+        return appointmentDetailJpaRepository.countStaffAppointmentsByStatus(staffId, startAt, endAt);
     }
 }

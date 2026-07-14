@@ -34,6 +34,16 @@ public interface BlockedSlotRepository {
             LocalDate blockedDate,
             BlockedSlotStatus status);
 
+    List<BlockedSlot> findApprovedVisibleToStaffInDateRange(
+            String staffId,
+            LocalDate fromDate,
+            LocalDate toDate);
+
+    List<BlockedSlot> findApprovedByStaffIdInDateRange(
+            String staffId,
+            LocalDate fromDate,
+            LocalDate toDate);
+
     long countByStatus(BlockedSlotStatus status);
 
     void save(BlockedSlot blockedSlot);

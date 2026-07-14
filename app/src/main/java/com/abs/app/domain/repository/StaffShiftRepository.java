@@ -24,6 +24,10 @@ public interface StaffShiftRepository {
             UserStatus staffStatus,
             StaffServiceStatus staffServiceStatus,
             StaffShiftStatus staffShiftStatus);
+    List<StaffShift> findApprovedByStaffIdAndWorkDateBetween(
+            String staffId,
+            LocalDate fromDate,
+            LocalDate toDate);
     long countByStatus(StaffShiftStatus status);
     Optional<StaffShift> findById(Long id);
     void save(StaffShift staffShift);

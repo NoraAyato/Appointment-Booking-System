@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.abs.app.domain.entity.AppointmentDetail;
@@ -39,4 +40,22 @@ public interface AppointmentDetailRepository {
             LocalDateTime fromTime,
             AppointmentStatus excludedStatus,
             Pageable pageable);
+
+    Page<AppointmentDetail> findStaffAppointments(
+            String staffId,
+            LocalDateTime startAt,
+            LocalDateTime endAt,
+            AppointmentStatus status,
+            Pageable pageable);
+
+    List<AppointmentDetail> findStaffAppointmentsForSchedule(
+            String staffId,
+            LocalDateTime startAt,
+            LocalDateTime endAt,
+            AppointmentStatus excludedStatus);
+
+    List<Object[]> countStaffAppointmentsByStatus(
+            String staffId,
+            LocalDateTime startAt,
+            LocalDateTime endAt);
 }

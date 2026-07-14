@@ -85,6 +85,30 @@ public class BlockedSlotRepositoryImpl implements BlockedSlotRepository {
     }
 
     @Override
+    public List<BlockedSlot> findApprovedVisibleToStaffInDateRange(
+            String staffId,
+            LocalDate fromDate,
+            LocalDate toDate) {
+        return blockedSlotJpaRepository.findVisibleToStaffInDateRangeByStatus(
+                staffId,
+                fromDate,
+                toDate,
+                BlockedSlotStatus.APPROVED);
+    }
+
+    @Override
+    public List<BlockedSlot> findApprovedByStaffIdInDateRange(
+            String staffId,
+            LocalDate fromDate,
+            LocalDate toDate) {
+        return blockedSlotJpaRepository.findByStaffIdInDateRangeByStatus(
+                staffId,
+                fromDate,
+                toDate,
+                BlockedSlotStatus.APPROVED);
+    }
+
+    @Override
     public long countByStatus(BlockedSlotStatus status) {
         return blockedSlotJpaRepository.countByStatus(status);
     }
