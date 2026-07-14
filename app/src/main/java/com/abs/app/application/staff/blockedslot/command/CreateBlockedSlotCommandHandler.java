@@ -12,6 +12,7 @@ import com.abs.app.domain.entity.enums.BlockedSlotStatus;
 import com.abs.app.domain.repository.BlockedSlotRepository;
 import com.abs.app.domain.repository.UserRepository;
 import com.abs.app.domain.service.BlockedSlotService;
+import com.abs.app.domain.service.StaffAuthorizationService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,10 +22,12 @@ public class CreateBlockedSlotCommandHandler {
     private final UserRepository userRepository;
     private final BlockedSlotRepository blockedSlotRepository;
     private final BlockedSlotService blockedSlotService;
+    private final StaffAuthorizationService staffAuthorizationService;
 
     public void handle(CreateBlockedSlotCommand command) {
         User user = userRepository.findById(command.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException(UserConstant.USER_NOT_EXIST));
+        staffAuthorizationService.ensureStaff(user);
 
         blockedSlotService.validateBlockedSlotRule(
                 command.getBlockedDate(),

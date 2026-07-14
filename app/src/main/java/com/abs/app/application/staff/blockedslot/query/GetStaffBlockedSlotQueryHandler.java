@@ -11,6 +11,7 @@ import com.abs.app.domain.entity.User;
 import com.abs.app.domain.entity.enums.BlockedSlotStatus;
 import com.abs.app.domain.repository.BlockedSlotRepository;
 import com.abs.app.domain.repository.UserRepository;
+import com.abs.app.domain.service.StaffAuthorizationService;
 import com.abs.app.infrastructure.mapper.BlockedSlotMapper;
 import lombok.RequiredArgsConstructor;
 
@@ -26,10 +27,12 @@ import java.util.Optional;
 public class GetStaffBlockedSlotQueryHandler {
     private final UserRepository userRepository;
     private final BlockedSlotRepository blockedSlotRepository;
+    private final StaffAuthorizationService staffAuthorizationService;
 
     public PageResponse<BlockedSlotResponseDto> handle(GetStaffBlockedSlotQuery query) {
-        userRepository.findById(query.getUserId())
+        User staff = userRepository.findById(query.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException(UserConstant.USER_NOT_EXIST));
+        staffAuthorizationService.ensureStaff(staff);
 
         Pageable pageable = PaginationUtil.createPageable(
                 query.getPage(),
