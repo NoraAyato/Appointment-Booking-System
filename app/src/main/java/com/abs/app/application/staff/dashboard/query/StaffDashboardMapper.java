@@ -2,7 +2,6 @@ package com.abs.app.application.staff.dashboard.query;
 
 import java.time.LocalDate;
 
-import com.abs.app.application.staff.dashboard.dto.StaffDashboardAppointmentResponseDto;
 import com.abs.app.application.staff.dashboard.dto.StaffScheduleEventResponseDto;
 import com.abs.app.domain.entity.Appointment;
 import com.abs.app.domain.entity.AppointmentDetail;
@@ -19,18 +18,18 @@ public class StaffDashboardMapper {
     private StaffDashboardMapper() {
     }
 
-    public static StaffDashboardAppointmentResponseDto toAppointmentResponse(AppointmentDetail appointmentDetail) {
-        StaffDashboardAppointmentResponseDto dto = new StaffDashboardAppointmentResponseDto();
+    public static StaffScheduleEventResponseDto toAppointmentEvent(AppointmentDetail appointmentDetail) {
+        StaffScheduleEventResponseDto dto = new StaffScheduleEventResponseDto();
+        dto.setType(APPOINTMENT_TYPE);
         dto.setAppointmentDetailId(appointmentDetail.getId());
-        dto.setStartTime(appointmentDetail.getStartTime());
-        dto.setEndTime(appointmentDetail.getEndTime());
-        dto.setQuantity(appointmentDetail.getQuantity());
+        dto.setDate(appointmentDetail.getStartTime() != null ? appointmentDetail.getStartTime().toLocalDate() : null);
+        dto.setStartTime(appointmentDetail.getStartTime() != null ? appointmentDetail.getStartTime().toLocalTime() : null);
+        dto.setEndTime(appointmentDetail.getEndTime() != null ? appointmentDetail.getEndTime().toLocalTime() : null);
 
         Appointment appointment = appointmentDetail.getAppointment();
         if (appointment != null) {
             dto.setAppointmentId(appointment.getId());
             dto.setStatus(appointment.getStatus() != null ? appointment.getStatus().name() : null);
-            dto.setNote(appointment.getNote());
 
             User customer = appointment.getCustomer();
             if (customer != null) {
@@ -41,28 +40,10 @@ public class StaffDashboardMapper {
 
         ServiceEntity service = appointmentDetail.getService();
         if (service != null) {
+            dto.setTitle(service.getName());
             dto.setServiceId(service.getId());
             dto.setServiceName(service.getName());
         }
-
-        return dto;
-    }
-
-    public static StaffScheduleEventResponseDto toAppointmentEvent(AppointmentDetail appointmentDetail) {
-        StaffDashboardAppointmentResponseDto appointment = toAppointmentResponse(appointmentDetail);
-        StaffScheduleEventResponseDto dto = new StaffScheduleEventResponseDto();
-        dto.setType(APPOINTMENT_TYPE);
-        dto.setAppointmentDetailId(appointment.getAppointmentDetailId());
-        dto.setAppointmentId(appointment.getAppointmentId());
-        dto.setDate(appointment.getStartTime() != null ? appointment.getStartTime().toLocalDate() : null);
-        dto.setStartTime(appointment.getStartTime() != null ? appointment.getStartTime().toLocalTime() : null);
-        dto.setEndTime(appointment.getEndTime() != null ? appointment.getEndTime().toLocalTime() : null);
-        dto.setStatus(appointment.getStatus());
-        dto.setTitle(appointment.getServiceName());
-        dto.setServiceId(appointment.getServiceId());
-        dto.setServiceName(appointment.getServiceName());
-        dto.setCustomerName(appointment.getCustomerName());
-        dto.setCustomerPhone(appointment.getCustomerPhone());
         return dto;
     }
 

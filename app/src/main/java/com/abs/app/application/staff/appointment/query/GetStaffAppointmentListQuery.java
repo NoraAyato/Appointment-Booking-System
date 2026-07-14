@@ -1,4 +1,4 @@
-package com.abs.app.application.staff.dashboard.query;
+package com.abs.app.application.staff.appointment.query;
 
 import java.time.LocalDate;
 
@@ -7,10 +7,10 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class GetStaffDashboardAppointmentsQuery {
+public class GetStaffAppointmentListQuery {
     private String staffId;
-    private LocalDate fromDate;
-    private LocalDate toDate;
+    private String keyword;
+    private LocalDate date;
     private String status;
     private int page;
     private int limit;
