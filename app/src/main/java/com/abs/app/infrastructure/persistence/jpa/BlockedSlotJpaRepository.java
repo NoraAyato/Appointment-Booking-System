@@ -12,6 +12,7 @@ import com.abs.app.domain.entity.enums.BlockedSlotStatus;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 public interface BlockedSlotJpaRepository extends JpaRepository<BlockedSlot, Long> {
     @EntityGraph(attributePaths = "staff")
@@ -95,6 +96,38 @@ public interface BlockedSlotJpaRepository extends JpaRepository<BlockedSlot, Lon
     boolean existsAllDayOnDateByStatus(
             @Param("staffId") String staffId,
             @Param("blockedDate") LocalDate blockedDate,
+            @Param("status") BlockedSlotStatus status);
+
+    @EntityGraph(attributePaths = "staff")
+    @Query("""
+            SELECT bs
+            FROM BlockedSlot bs
+            LEFT JOIN bs.staff staff
+            WHERE bs.status = :status
+            AND (staff IS NULL OR staff.userId = :staffId)
+            AND (bs.blockedDate IS NULL OR (bs.blockedDate >= :fromDate AND bs.blockedDate <= :toDate))
+            ORDER BY bs.blockedDate ASC, bs.startTime ASC
+            """)
+    List<BlockedSlot> findVisibleToStaffInDateRangeByStatus(
+            @Param("staffId") String staffId,
+            @Param("fromDate") LocalDate fromDate,
+            @Param("toDate") LocalDate toDate,
+            @Param("status") BlockedSlotStatus status);
+
+    @EntityGraph(attributePaths = "staff")
+    @Query("""
+            SELECT bs
+            FROM BlockedSlot bs
+            JOIN bs.staff staff
+            WHERE staff.userId = :staffId
+            AND bs.status = :status
+            AND (bs.blockedDate IS NULL OR (bs.blockedDate >= :fromDate AND bs.blockedDate <= :toDate))
+            ORDER BY bs.blockedDate ASC, bs.startTime ASC
+            """)
+    List<BlockedSlot> findByStaffIdInDateRangeByStatus(
+            @Param("staffId") String staffId,
+            @Param("fromDate") LocalDate fromDate,
+            @Param("toDate") LocalDate toDate,
             @Param("status") BlockedSlotStatus status);
 
     long countByStatus(BlockedSlotStatus status);

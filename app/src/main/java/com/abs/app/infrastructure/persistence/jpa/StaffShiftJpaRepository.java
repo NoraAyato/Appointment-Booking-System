@@ -70,5 +70,21 @@ public interface StaffShiftJpaRepository extends JpaRepository<StaffShift, Long>
             @Param("staffServiceStatus") StaffServiceStatus staffServiceStatus,
             @Param("staffShiftStatus") StaffShiftStatus staffShiftStatus);
 
+    @EntityGraph(attributePaths = "staff")
+    @Query("""
+            SELECT shift
+            FROM StaffShift shift
+            WHERE shift.staff.userId = :staffId
+            AND shift.status = :status
+            AND shift.workDate >= :fromDate
+            AND shift.workDate <= :toDate
+            ORDER BY shift.workDate ASC, shift.startTime ASC
+            """)
+    List<StaffShift> findByStaffIdAndStatusAndWorkDateBetween(
+            @Param("staffId") String staffId,
+            @Param("status") StaffShiftStatus status,
+            @Param("fromDate") LocalDate fromDate,
+            @Param("toDate") LocalDate toDate);
+
     long countByStatus(StaffShiftStatus status);
 }

@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -141,4 +142,63 @@ public interface AppointmentDetailJpaRepository extends JpaRepository<Appointmen
             @Param("fromTime") LocalDateTime fromTime,
             @Param("excludedStatus") AppointmentStatus excludedStatus,
             Pageable pageable);
+
+    @EntityGraph(attributePaths = {
+            "appointment",
+            "appointment.customer",
+            "service",
+            "staff"
+    })
+    @Query("""
+            SELECT appointmentDetail
+            FROM AppointmentDetail appointmentDetail
+            JOIN appointmentDetail.appointment appointment
+            WHERE appointmentDetail.staff.userId = :staffId
+            AND appointmentDetail.startTime >= :startAt
+            AND appointmentDetail.startTime < :endAt
+            AND (:status IS NULL OR appointment.status = :status)
+            ORDER BY appointmentDetail.startTime ASC
+            """)
+    Page<AppointmentDetail> findStaffAppointments(
+            @Param("staffId") String staffId,
+            @Param("startAt") LocalDateTime startAt,
+            @Param("endAt") LocalDateTime endAt,
+            @Param("status") AppointmentStatus status,
+            Pageable pageable);
+
+    @EntityGraph(attributePaths = {
+            "appointment",
+            "appointment.customer",
+            "service",
+            "staff"
+    })
+    @Query("""
+            SELECT appointmentDetail
+            FROM AppointmentDetail appointmentDetail
+            JOIN appointmentDetail.appointment appointment
+            WHERE appointmentDetail.staff.userId = :staffId
+            AND appointmentDetail.startTime >= :startAt
+            AND appointmentDetail.startTime < :endAt
+            AND appointment.status <> :excludedStatus
+            ORDER BY appointmentDetail.startTime ASC
+            """)
+    List<AppointmentDetail> findStaffAppointmentsForSchedule(
+            @Param("staffId") String staffId,
+            @Param("startAt") LocalDateTime startAt,
+            @Param("endAt") LocalDateTime endAt,
+            @Param("excludedStatus") AppointmentStatus excludedStatus);
+
+    @Query("""
+            SELECT appointment.status, COUNT(appointmentDetail.id)
+            FROM AppointmentDetail appointmentDetail
+            JOIN appointmentDetail.appointment appointment
+            WHERE appointmentDetail.staff.userId = :staffId
+            AND appointmentDetail.startTime >= :startAt
+            AND appointmentDetail.startTime < :endAt
+            GROUP BY appointment.status
+            """)
+    List<Object[]> countStaffAppointmentsByStatus(
+            @Param("staffId") String staffId,
+            @Param("startAt") LocalDateTime startAt,
+            @Param("endAt") LocalDateTime endAt);
 }
