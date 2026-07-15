@@ -2,9 +2,11 @@ package com.abs.app.infrastructure.persistence.adapter;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.abs.app.domain.entity.Invoice;
 import com.abs.app.domain.entity.enums.InvoiceStatus;
 import com.abs.app.domain.repository.InvoiceRepository;
 import com.abs.app.infrastructure.persistence.jpa.InvoiceJpaRepository;
@@ -15,6 +17,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class InvoiceRepositoryImpl implements InvoiceRepository {
     private final InvoiceJpaRepository invoiceJpaRepository;
+
+    @Override
+    public Optional<Invoice> findByIdAndCustomerId(String invoiceId, String customerId) {
+        return invoiceJpaRepository.findByIdAndCustomerId(invoiceId, customerId);
+    }
 
     @Override
     public double sumAmountByStatusAndCreatedAtBetween(
