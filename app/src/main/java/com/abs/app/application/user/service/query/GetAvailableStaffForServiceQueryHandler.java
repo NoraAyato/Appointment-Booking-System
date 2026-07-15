@@ -24,6 +24,7 @@ import com.abs.app.domain.repository.AppointmentDetailRepository;
 import com.abs.app.domain.repository.ReviewsRepository;
 import com.abs.app.domain.repository.ServiceRepository;
 import com.abs.app.domain.repository.StaffServiceRepository;
+import com.abs.app.domain.service.AppointmentHoldService;
 import com.abs.app.infrastructure.mapper.StaffServiceMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -36,6 +37,7 @@ public class GetAvailableStaffForServiceQueryHandler {
     private final StaffServiceRepository staffServiceRepository;
     private final ReviewsRepository reviewsRepository;
     private final AppointmentDetailRepository appointmentDetailRepository;
+    private final AppointmentHoldService appointmentHoldService;
 
     @Transactional(readOnly = true)
     public List<StaffServiceResponseDto> handle(GetAvailableStaffForServiceQuery query) {
@@ -63,6 +65,17 @@ public class GetAvailableStaffForServiceQueryHandler {
                 StaffShiftStatus.APPROVED,
                 BlockedSlotStatus.APPROVED,
                 AppointmentStatus.CANCELLED);
+
+        availableStaffServices = availableStaffServices.stream()
+                .filter(staffService -> !appointmentHoldService.isSlotHeld(
+                        query.getServiceId(),
+                        staffService.getStaff().getUserId(),
+                        requestedStartAt))
+                .toList();
+
+        if (availableStaffServices.isEmpty()) {
+            return List.of();
+        }
 
         List<String> staffIds = availableStaffServices.stream()
                 .map(staffService -> staffService.getStaff().getUserId())

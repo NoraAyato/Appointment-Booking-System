@@ -36,4 +36,8 @@ public class DateTimeService {
             LocalDateTime endTime2) {
         return !startTime1.isAfter(endTime2) && !startTime2.isAfter(endTime1);
     }
+
+    public boolean isValidFutureDateTimeRange(LocalDateTime startTime, LocalDateTime endTime) {
+        return endTime.isAfter(startTime) && !startTime.isBefore(LocalDateTime.now());
+    }
 }
