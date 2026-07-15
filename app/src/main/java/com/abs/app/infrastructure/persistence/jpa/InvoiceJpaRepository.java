@@ -2,6 +2,7 @@ package com.abs.app.infrastructure.persistence.jpa;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -11,6 +12,22 @@ import com.abs.app.domain.entity.Invoice;
 import com.abs.app.domain.entity.enums.InvoiceStatus;
 
 public interface InvoiceJpaRepository extends JpaRepository<Invoice, String> {
+    @Query("""
+            SELECT DISTINCT invoice
+            FROM Invoice invoice
+            JOIN FETCH invoice.appointment appointment
+            JOIN FETCH appointment.customer customer
+            LEFT JOIN FETCH appointment.appointmentDetails detail
+            LEFT JOIN FETCH detail.service service
+            LEFT JOIN FETCH service.category category
+            LEFT JOIN FETCH detail.staff staff
+            WHERE invoice.id = :invoiceId
+            AND customer.userId = :customerId
+            """)
+    Optional<Invoice> findByIdAndCustomerId(
+            @Param("invoiceId") String invoiceId,
+            @Param("customerId") String customerId);
+
     @Query("""
             SELECT COALESCE(SUM(invoice.amount), 0)
             FROM Invoice invoice
