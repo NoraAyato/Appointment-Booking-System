@@ -4,7 +4,9 @@ import com.abs.app.application.user.service.dto.AvailableTimeSlotResponseDto;
 import com.abs.app.application.user.service.query.GetAvailableTimeSlotsQuery;
 import com.abs.app.application.user.service.query.GetAvailableTimeSlotsQueryHandler;
 import com.abs.app.domain.entity.ServiceEntity;
+import com.abs.app.domain.entity.StaffService;
 import com.abs.app.domain.entity.StaffShift;
+import com.abs.app.domain.entity.User;
 import com.abs.app.domain.entity.enums.AppointmentStatus;
 import com.abs.app.domain.entity.enums.BlockedSlotStatus;
 import com.abs.app.domain.entity.enums.ServiceStatus;
@@ -14,6 +16,7 @@ import com.abs.app.domain.entity.enums.UserStatus;
 import com.abs.app.domain.repository.ServiceRepository;
 import com.abs.app.domain.repository.StaffServiceRepository;
 import com.abs.app.domain.repository.StaffShiftRepository;
+import com.abs.app.domain.service.AppointmentHoldService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,6 +31,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -47,6 +52,9 @@ class GetAvailableTimeSlotsQueryHandlerTest {
 
     @Mock
     private StaffServiceRepository staffServiceRepository;
+
+    @Mock
+    private AppointmentHoldService appointmentHoldService;
 
     @InjectMocks
     private GetAvailableTimeSlotsQueryHandler handler;
@@ -79,9 +87,15 @@ class GetAvailableTimeSlotsQueryHandlerTest {
                 StaffShiftStatus.APPROVED))
                 .thenReturn(List.of(shift));
 
-        stubAvailableStaffCount(LocalTime.of(9, 0), LocalTime.of(10, 0), 2L);
-        stubAvailableStaffCount(LocalTime.of(9, 30), LocalTime.of(10, 30), 0L);
-        stubAvailableStaffCount(LocalTime.of(10, 0), LocalTime.of(11, 0), 1L);
+        StaffService staffOne = buildStaffService("u_staff_001");
+        StaffService staffTwo = buildStaffService("u_staff_002");
+
+        stubAvailableStaff(LocalTime.of(9, 0), LocalTime.of(10, 0), List.of(staffOne, staffTwo));
+        stubAvailableStaff(LocalTime.of(9, 30), LocalTime.of(10, 30), List.of());
+        stubAvailableStaff(LocalTime.of(10, 0), LocalTime.of(11, 0), List.of(staffOne));
+        when(appointmentHoldService.isSlotHeld(eq(SERVICE_ID), anyString(), any(LocalDateTime.class)))
+                .thenAnswer(invocation -> "u_staff_002".equals(invocation.getArgument(1))
+                        && DATE.atTime(LocalTime.of(9, 0)).equals(invocation.getArgument(2)));
 
         List<AvailableTimeSlotResponseDto> slots = handler.handle(new GetAvailableTimeSlotsQuery(SERVICE_ID, DATE));
 
@@ -89,7 +103,7 @@ class GetAvailableTimeSlotsQueryHandlerTest {
         assertThat(slots).extracting(AvailableTimeSlotResponseDto::getStartTime)
                 .containsExactly(LocalTime.of(9, 0), LocalTime.of(10, 0));
         assertThat(slots).extracting(AvailableTimeSlotResponseDto::getAvailableStaffCount)
-                .containsExactly(2, 1);
+                .containsExactly(1, 1);
     }
 
     @Test
@@ -109,10 +123,10 @@ class GetAvailableTimeSlotsQueryHandlerTest {
                 eq(StaffShiftStatus.APPROVED));
     }
 
-    private void stubAvailableStaffCount(LocalTime startTime, LocalTime endTime, long count) {
+    private void stubAvailableStaff(LocalTime startTime, LocalTime endTime, List<StaffService> staffServices) {
         LocalDateTime startAt = DATE.atTime(startTime);
         LocalDateTime endAt = DATE.atTime(endTime);
-        when(staffServiceRepository.countAvailableStaffForService(
+        when(staffServiceRepository.findAvailableStaffForService(
                 SERVICE_ID,
                 DATE,
                 startTime,
@@ -125,6 +139,15 @@ class GetAvailableTimeSlotsQueryHandlerTest {
                 StaffShiftStatus.APPROVED,
                 BlockedSlotStatus.APPROVED,
                 AppointmentStatus.CANCELLED))
-                .thenReturn(count);
+                .thenReturn(staffServices);
+    }
+
+    private StaffService buildStaffService(String staffId) {
+        User staff = new User();
+        staff.setUserId(staffId);
+
+        StaffService staffService = new StaffService();
+        staffService.setStaff(staff);
+        return staffService;
     }
 }
