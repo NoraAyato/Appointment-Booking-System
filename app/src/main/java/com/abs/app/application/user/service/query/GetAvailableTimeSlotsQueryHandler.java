@@ -15,6 +15,7 @@ import com.abs.app.application.user.service.dto.AvailableTimeSlotResponseDto;
 import com.abs.app.common.constant.ServiceEntityConstant;
 import com.abs.app.common.exception.ResourceNotFoundException;
 import com.abs.app.domain.entity.ServiceEntity;
+import com.abs.app.domain.entity.StaffService;
 import com.abs.app.domain.entity.StaffShift;
 import com.abs.app.domain.entity.enums.AppointmentStatus;
 import com.abs.app.domain.entity.enums.BlockedSlotStatus;
@@ -25,6 +26,7 @@ import com.abs.app.domain.entity.enums.UserStatus;
 import com.abs.app.domain.repository.ServiceRepository;
 import com.abs.app.domain.repository.StaffServiceRepository;
 import com.abs.app.domain.repository.StaffShiftRepository;
+import com.abs.app.domain.service.AppointmentHoldService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -37,6 +39,7 @@ public class GetAvailableTimeSlotsQueryHandler {
     private final ServiceRepository serviceRepository;
     private final StaffShiftRepository staffShiftRepository;
     private final StaffServiceRepository staffServiceRepository;
+    private final AppointmentHoldService appointmentHoldService;
 
     @Transactional(readOnly = true)
     public List<AvailableTimeSlotResponseDto> handle(GetAvailableTimeSlotsQuery query) {
@@ -66,7 +69,7 @@ public class GetAvailableTimeSlotsQueryHandler {
             LocalDateTime requestedEndAt = requestedStartAt.plusMinutes(service.getDurationMinutes());
             LocalTime requestedEndTime = requestedEndAt.toLocalTime();
 
-            long availableStaffCount = staffServiceRepository.countAvailableStaffForService(
+            List<StaffService> availableStaffServices = staffServiceRepository.findAvailableStaffForService(
                     query.getServiceId(),
                     query.getDate(),
                     startTime,
@@ -79,6 +82,13 @@ public class GetAvailableTimeSlotsQueryHandler {
                     StaffShiftStatus.APPROVED,
                     BlockedSlotStatus.APPROVED,
                     AppointmentStatus.CANCELLED);
+
+            long availableStaffCount = availableStaffServices.stream()
+                    .filter(staffService -> !appointmentHoldService.isSlotHeld(
+                            query.getServiceId(),
+                            staffService.getStaff().getUserId(),
+                            requestedStartAt))
+                    .count();
 
             if (availableStaffCount > 0) {
                 availableSlots.add(new AvailableTimeSlotResponseDto(
