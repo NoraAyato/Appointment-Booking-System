@@ -46,6 +46,19 @@ public class PromotionRepositoryImpl implements PromotionRepository {
     }
 
     @Override
+    public List<Promotion> findAvailablePromotions(PromotionStatus status, LocalDate currentDate) {
+        return promotionJpaRepository.findAvailablePromotions(status, currentDate);
+    }
+
+    @Override
+    public Page<Promotion> findAvailablePromotions(
+            PromotionStatus status,
+            LocalDate currentDate,
+            Pageable pageable) {
+        return promotionJpaRepository.findAvailablePromotions(status, currentDate, pageable);
+    }
+
+    @Override
     public Page<Promotion> search(
             String keyword,
             PromotionStatus status,

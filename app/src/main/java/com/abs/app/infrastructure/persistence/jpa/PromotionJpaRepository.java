@@ -12,11 +12,36 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface PromotionJpaRepository extends JpaRepository<Promotion, String> {
     Optional<Promotion> findByCode(String code);
+
+    @Query("""
+            SELECT p
+            FROM Promotion p
+            WHERE p.status = :status
+            AND p.startDate <= :currentDate
+            AND p.endDate >= :currentDate
+            ORDER BY p.endDate ASC, p.startDate ASC, p.code ASC
+            """)
+    List<Promotion> findAvailablePromotions(
+            @Param("status") PromotionStatus status,
+            @Param("currentDate") LocalDate currentDate);
+
+    @Query("""
+            SELECT p
+            FROM Promotion p
+            WHERE p.status = :status
+            AND p.startDate <= :currentDate
+            AND p.endDate >= :currentDate
+            """)
+    Page<Promotion> findAvailablePromotions(
+            @Param("status") PromotionStatus status,
+            @Param("currentDate") LocalDate currentDate,
+            Pageable pageable);
 
     @Query("""
             SELECT p

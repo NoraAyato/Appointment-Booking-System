@@ -25,6 +25,8 @@ public class InvoiceResponseDto {
     private LocalTime startTime;
     private String appointmentStatus;
     private LocalTime endTime;
+    private String promotionCode;
+    private String discountValue;
     private int duration;
     private String note;
     private String serviceImage;

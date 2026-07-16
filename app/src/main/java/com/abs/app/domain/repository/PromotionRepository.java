@@ -23,6 +23,10 @@ public interface PromotionRepository {
 
     Optional<Promotion> findByCode(String code);
 
+    List<Promotion> findAvailablePromotions(PromotionStatus status, LocalDate currentDate);
+
+    Page<Promotion> findAvailablePromotions(PromotionStatus status, LocalDate currentDate, Pageable pageable);
+
     Page<Promotion> search(
             String keyword,
             PromotionStatus status,

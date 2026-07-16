@@ -19,15 +19,20 @@ public class InvoiceMapper {
             Invoice invoice,
             AppointmentDetail detail,
             String serviceImage,
-            List<String> staffSpecializations) {
+            List<String> staffSpecializations,
+            String discountValue) {
         InvoiceResponseDto dto = new InvoiceResponseDto();
         dto.setInvoiceId(invoice.getId());
-        dto.setTotalPrice(invoice.getAmount() != null ? invoice.getAmount().toString() : "0");
+
         dto.setCreatedAt(invoice.getCreatedAt());
         dto.setInvoiceStatus(invoice.getStatus() != null ? invoice.getStatus().name() : null);
         dto.setServiceImage(serviceImage);
         dto.setStaffSpecializations(staffSpecializations != null ? staffSpecializations : List.of());
 
+        if (invoice.getPromotion() != null) {
+            dto.setPromotionCode(invoice.getPromotion().getCode());
+            dto.setDiscountValue(discountValue);
+        }
         mapAppointment(dto, invoice.getAppointment());
         mapAppointmentDetail(dto, detail);
 
@@ -66,7 +71,7 @@ public class InvoiceMapper {
         if (service == null) {
             return;
         }
-
+        dto.setTotalPrice(service.getPrice() != null ? String.valueOf(service.getPrice()) : "0");
         dto.setServiceName(service.getName());
         dto.setServiceDescription(service.getDescription());
         dto.setDuration(service.getDurationMinutes());

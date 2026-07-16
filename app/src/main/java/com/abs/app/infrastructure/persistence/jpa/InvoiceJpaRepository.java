@@ -17,6 +17,7 @@ public interface InvoiceJpaRepository extends JpaRepository<Invoice, String> {
             FROM Invoice invoice
             JOIN FETCH invoice.appointment appointment
             JOIN FETCH appointment.customer customer
+            LEFT JOIN FETCH invoice.promotion promotion
             LEFT JOIN FETCH appointment.appointmentDetails detail
             LEFT JOIN FETCH detail.service service
             LEFT JOIN FETCH service.category category

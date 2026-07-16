@@ -3,9 +3,11 @@ package com.abs.app.domain.service;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.abs.app.domain.entity.AppointmentDetail;
+import com.abs.app.domain.entity.Invoice;
 import com.abs.app.domain.entity.Promotion;
+import com.abs.app.domain.entity.ServiceEntity;
 import com.abs.app.domain.entity.enums.DiscountType;
-import com.abs.app.domain.repository.PromotionRepository;
 import org.springframework.stereotype.Service;
 
 import com.abs.app.common.constant.Messages;
@@ -60,5 +62,36 @@ public class PromotionService {
             case "FIXED_AMOUNT" -> DiscountType.FIXED_AMOUNT;
             default -> throw new BusinessException(PromotionConstant.INVALID_PROMOTION_STATUS);
         };
+    }
+
+    public String calculateInvoiceDiscountValue(Invoice invoice) {
+        if (invoice == null || invoice.getPromotion() == null) {
+            return null;
+        }
+
+        Promotion promotion = invoice.getPromotion();
+        double invoiceAmount = calculateInvoiceSubtotal(invoice);
+        double promotionValue = promotion.getDiscountAmount() != null ? promotion.getDiscountAmount() : 0D;
+        double discountValue = promotion.getDiscountType() == DiscountType.PERCENTAGE
+                ? invoiceAmount * promotionValue / 100D
+                : promotionValue;
+
+        return Double.toString(Math.min(discountValue, invoiceAmount));
+    }
+
+    private double calculateInvoiceSubtotal(Invoice invoice) {
+        if (invoice.getAppointment() == null || invoice.getAppointment().getAppointmentDetails() == null) {
+            return invoice.getAmount() != null ? invoice.getAmount() : 0D;
+        }
+
+        return invoice.getAppointment().getAppointmentDetails().stream()
+                .mapToDouble(this::calculateAppointmentDetailAmount)
+                .sum();
+    }
+
+    private double calculateAppointmentDetailAmount(AppointmentDetail detail) {
+        ServiceEntity service = detail.getService();
+        double price = service != null && service.getPrice() != null ? service.getPrice() : 0D;
+        return price * detail.getQuantity();
     }
 }
