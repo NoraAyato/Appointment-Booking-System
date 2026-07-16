@@ -18,6 +18,7 @@ import com.abs.app.domain.repository.InvoiceRepository;
 import com.abs.app.domain.repository.ServiceRepository;
 import com.abs.app.domain.repository.StaffServiceRepository;
 import com.abs.app.domain.service.InvoiceDetailService;
+import com.abs.app.domain.service.PromotionService;
 import com.abs.app.infrastructure.mapper.InvoiceMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ public class GetInvoiceByIdQueryHandler {
     private final ServiceRepository serviceRepository;
     private final StaffServiceRepository staffServiceRepository;
     private final InvoiceDetailService invoiceDetailService;
+    private final PromotionService promotionService;
 
     @Transactional(readOnly = true)
     public InvoiceResponseDto handle(GetInvoiceByIdQuery query) {
@@ -58,7 +60,8 @@ public class GetInvoiceByIdQueryHandler {
         List<String> staffSpecializations = invoiceDetailService.getStaffSpecializations(
                 detail,
                 specializationsByStaffId);
+        String discountValue = promotionService.calculateInvoiceDiscountValue(invoice);
 
-        return InvoiceMapper.toInvoiceResponse(invoice, detail, serviceImage, staffSpecializations);
+        return InvoiceMapper.toInvoiceResponse(invoice, detail, serviceImage, staffSpecializations, discountValue);
     }
 }
