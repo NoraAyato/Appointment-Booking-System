@@ -26,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/invoices")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('CUSTOMER')")
+@PreAuthorize("isAuthenticated()")
 public class InvoiceController {
     private final GetInvoiceByIdQueryHandler getInvoiceByIdQueryHandler;
     private final ApplyPromotionCommandHandler applyPromotionCommandHandler;
