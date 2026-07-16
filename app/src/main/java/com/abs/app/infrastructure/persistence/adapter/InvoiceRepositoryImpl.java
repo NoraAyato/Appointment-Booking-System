@@ -24,6 +24,11 @@ public class InvoiceRepositoryImpl implements InvoiceRepository {
     }
 
     @Override
+    public Invoice save(Invoice invoice) {
+        return invoiceJpaRepository.save(invoice);
+    }
+
+    @Override
     public double sumAmountByStatusAndCreatedAtBetween(
             InvoiceStatus status,
             LocalDateTime startAt,

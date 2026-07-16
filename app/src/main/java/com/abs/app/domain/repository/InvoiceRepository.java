@@ -10,6 +10,8 @@ import com.abs.app.domain.entity.enums.InvoiceStatus;
 public interface InvoiceRepository {
     Optional<Invoice> findByIdAndCustomerId(String invoiceId, String customerId);
 
+    Invoice save(Invoice invoice);
+
     double sumAmountByStatusAndCreatedAtBetween(
             InvoiceStatus status,
             LocalDateTime startAt,
