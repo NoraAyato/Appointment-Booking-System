@@ -24,3 +24,12 @@ google:
     client-id: test-google-client-id
     client-secret: test-google-client-secret
     redirect-uri: http://localhost/test/oauth/callback
+
+momo:
+  endpoint: https://test-payment.momo.vn/v2/gateway/api/create
+  partner-code: MOMO
+  access-key: test-access-key
+  secret-key: test-secret-key
+  redirect-url: http://localhost/test/payment/result
+  ipn-url: http://localhost/test/payments/momo/ipn
+  request-type: captureWallet

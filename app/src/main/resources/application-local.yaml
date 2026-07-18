@@ -5,6 +5,12 @@ spring:
     password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+  data:
+    redis:
+      host: ${SPRING_DATA_REDIS_HOST:localhost}
+      port: ${SPRING_DATA_REDIS_PORT:6379}
+      password: ${SPRING_DATA_REDIS_PASSWORD:}
+
   jpa:
     hibernate:
       ddl-auto: update
@@ -41,6 +47,15 @@ google:
     client-id: ${GOOGLE_OAUTH_CLIENT_ID}
     client-secret: ${GOOGLE_OAUTH_CLIENT_SECRET}
     redirect-uri: ${GOOGLE_OAUTH_REDIRECT_URI}
+
+momo:
+  endpoint: ${MOMO_ENDPOINT:https://test-payment.momo.vn/v2/gateway/api/create}
+  partner-code: ${MOMO_PARTNER_CODE:MOMO}
+  access-key: ${MOMO_ACCESS_KEY:F8BBA842ECF85}
+  secret-key: ${MOMO_SECRET_KEY:K951B6PE1waDMi640xX08PD3vg6EkVlz}
+  redirect-url: ${MOMO_REDIRECT_URL:http://localhost:5173/payment/result}
+  ipn-url: ${MOMO_IPN_URL:https://suffering-slider-anybody.ngrok-free.dev/api/payments/momo/ipn}
+  request-type: ${MOMO_REQUEST_TYPE:captureWallet}
 
 springdoc:
   api-docs:

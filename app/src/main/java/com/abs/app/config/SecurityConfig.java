@@ -61,6 +61,7 @@ public class SecurityConfig {
                                 "/auth/send-otp",
                                 "/auth/verify-otp",
                                 "/auth/logout",
+                                "/payments/momo/ipn",
                                 "/public/**",
                                 "/images/**",
                                 // Swagger UI
