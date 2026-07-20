@@ -23,6 +23,7 @@ import java.util.Optional;
 
 public interface StaffServiceJpaRepository extends JpaRepository<StaffService, Long> {
     Optional<StaffService> findByStaffUserIdAndServiceId(String staffId, String staffServiceId);
+    boolean existsByStaffUserIdAndStatus(String staffId, StaffServiceStatus status);
 
     @EntityGraph(attributePaths = { "staff", "service" })
     @Query("""

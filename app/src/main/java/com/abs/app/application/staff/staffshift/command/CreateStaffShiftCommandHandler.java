@@ -1,14 +1,15 @@
 package com.abs.app.application.staff.staffshift.command;
 
-import com.abs.app.common.constant.BlockedSlotConstant;
-import com.abs.app.common.constant.Messages;
+import com.abs.app.common.constant.StaffShiftConstant;
 import com.abs.app.common.constant.UserConstant;
+import com.abs.app.common.exception.BusinessException;
 import com.abs.app.common.exception.ResourceNotFoundException;
 import com.abs.app.domain.entity.StaffShift;
 import com.abs.app.domain.entity.User;
+import com.abs.app.domain.entity.enums.StaffServiceStatus;
+import com.abs.app.domain.repository.StaffServiceRepository;
 import com.abs.app.domain.repository.StaffShiftRepository;
 import com.abs.app.domain.repository.UserRepository;
-import com.abs.app.domain.service.DateTimeService;
 import com.abs.app.domain.service.StaffAuthorizationService;
 import com.abs.app.domain.service.StaffShiftService;
 import lombok.RequiredArgsConstructor;
@@ -16,17 +17,22 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class CreateStaffShiftCommandHandler {
+    public class CreateStaffShiftCommandHandler {
     private final StaffShiftRepository staffShiftRepository;
     private final UserRepository userRepository;
     private final StaffShiftService staffShiftService;
-    private final DateTimeService dateTimeService;
     private final StaffAuthorizationService staffAuthorizationService;
+    private final StaffServiceRepository staffServiceRepository;
 
     public void handle(CreateStaffShiftCommand command) {
         User staff = userRepository.findById(command.getUserId())
                         .orElseThrow(() -> new ResourceNotFoundException(UserConstant.USER_NOT_EXIST));
         staffAuthorizationService.ensureStaff(staff);
+
+        if (!staffServiceRepository.existsByStaffUserIdAndStatus(command.getUserId(), StaffServiceStatus.ACTIVE))
+        {
+            throw new BusinessException(StaffShiftConstant.STAFF_NOT_ASSIGNED_SERVICE);
+        }
 
         staffShiftService.customValidateStaffShiftTime(
                 staff,

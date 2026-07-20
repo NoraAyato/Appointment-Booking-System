@@ -9,6 +9,7 @@ public class StaffShiftConstant {
     public static final String CREATE_SUCCESS = "Tạo ca làm việc thành công";
     public static final String UPDATE_SUCCESS = "Cập nhật ca làm việc thành công";
     public static final String INVALID_BLOCKED_SLOT_STATUS = "Trạng thái ca làm việc không hợp lệ";
+    public static final String STAFF_NOT_ASSIGNED_SERVICE = "Không thể đăng ký ca làm khi chưa được phân công dịch vụ";
 
     public static final String VALID_WORK_DATE = "Ngày làm việc không hợp lệ";
     public static final String VALID_START_TIME = "Thời gian bắt đầu ca làm không hợp lệ";

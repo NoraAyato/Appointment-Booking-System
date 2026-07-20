@@ -51,6 +51,11 @@ public class StaffServiceRepositoryImpl implements StaffServiceRepository {
     }
 
     @Override
+    public boolean existsByStaffUserIdAndStatus(String staffId, StaffServiceStatus status) {
+        return staffServiceJpaRepository.existsByStaffUserIdAndStatus(staffId, status);
+    }
+
+    @Override
     public List<StaffService> findAvailableStaffForService(
             String serviceId,
             LocalDate date,
