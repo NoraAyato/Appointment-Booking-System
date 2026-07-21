@@ -31,6 +31,8 @@ public interface UserRepository {
 
     Page<User> findBySearchAndRole(String search, RoleEnum role, UserStatus status, Pageable pageable);
 
+    List<User> findAllByRoleRoleNameAndStatus(RoleEnum role, UserStatus status);
+
     long countByRoleAndStatus(RoleEnum role, UserStatus status);
 
     long countByRoleAndStatusAndCreatedAtBetween(

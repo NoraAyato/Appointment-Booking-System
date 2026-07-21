@@ -69,6 +69,11 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public List<User> findAllByRoleRoleNameAndStatus(RoleEnum role, UserStatus status) {
+        return userJpaRepository.findAllByRoleRoleNameAndStatus(role, status);
+    }
+
+    @Override
     public long countByRoleAndStatus(RoleEnum role, UserStatus status) {
         return userJpaRepository.countByRoleAndStatus(role, status);
     }
