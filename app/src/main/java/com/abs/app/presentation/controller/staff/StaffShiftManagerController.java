@@ -1,10 +1,7 @@
 package com.abs.app.presentation.controller.staff;
 
-import com.abs.app.application.staff.staffshift.command.CreateBulkStaffShiftCommand;
-import com.abs.app.application.staff.staffshift.command.CreateBulkStaffShiftCommandHandler;
 import com.abs.app.application.staff.staffshift.command.CreateStaffShiftCommand;
 import com.abs.app.application.staff.staffshift.command.CreateStaffShiftCommandHandler;
-import com.abs.app.application.staff.staffshift.dto.CreateBulkStaffShiftRequestDto;
 import com.abs.app.application.staff.staffshift.dto.CreateStaffShiftRequestDto;
 import com.abs.app.application.staff.staffshift.dto.StaffShiftResponseDto;
 import com.abs.app.application.staff.staffshift.query.GetStaffShiftListQuery;
@@ -25,7 +22,6 @@ import org.springframework.web.bind.annotation.*;
 public class StaffShiftManagerController {
     private final GetStaffShiftListQueryHandler getStaffShiftListQueryHandler;
     private final CreateStaffShiftCommandHandler createStaffShiftCommandHandler;
-    private final CreateBulkStaffShiftCommandHandler createBulkStaffShiftCommandHandler;
 
     @GetMapping()
     public ResponseEntity<ApiResponse<PageResponse<StaffShiftResponseDto>>> getStaffShift(
@@ -51,21 +47,6 @@ public class StaffShiftManagerController {
         createStaffShiftCommandHandler.handle(new CreateStaffShiftCommand(
                 userId,
                 request.getWorkDate(),
-                request.getStartTime(),
-                request.getEndTime()
-        ));
-
-        return ResponseEntity.ok(new ApiResponse<>(true, StaffShiftConstant.CREATE_SUCCESS, null));
-    }
-
-    @PostMapping("/bulk")
-    public ResponseEntity<ApiResponse<Void>> createWorkWeek(@Valid @RequestBody CreateBulkStaffShiftRequestDto request) {
-        String userId = SecurityUtils.getCurrentUserId();
-        createBulkStaffShiftCommandHandler.handle(new CreateBulkStaffShiftCommand(
-                userId,
-                request.getStartDate(),
-                request.getEndDate(),
-                request.getWorkingDays(),
                 request.getStartTime(),
                 request.getEndTime()
         ));
