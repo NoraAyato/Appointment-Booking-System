@@ -31,5 +31,6 @@ public interface StaffShiftRepository {
     long countByStatus(StaffShiftStatus status);
     Optional<StaffShift> findById(Long id);
     void save(StaffShift staffShift);
+    void saveAll(List<StaffShift> staffShifts);
     void deleteById(Long id);
 }
