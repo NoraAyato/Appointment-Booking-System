@@ -110,8 +110,20 @@ public class StaffShiftService {
 
         while (dateTimeService.isValidDateRange(currentDate, endDate)) {
             int currentDayOfWeek = currentDate.getDayOfWeek().getValue();
+
             if (workingDays.contains(currentDayOfWeek)) {
-                this.customValidateStaffShiftTime(staff, currentDate, startTime, endTime, null);
+                boolean isOverlapped = this.isOverlapWorkDate(
+                        staff.getStaffShifts(),
+                        currentDate,
+                        startTime,
+                        endTime,
+                        null
+                );
+
+                if (isOverlapped) {
+                    currentDate = currentDate.plusDays(1);
+                    continue;
+                }
 
                 StaffShift staffShift = new StaffShift();
                 staffShift.setWorkDate(currentDate);
