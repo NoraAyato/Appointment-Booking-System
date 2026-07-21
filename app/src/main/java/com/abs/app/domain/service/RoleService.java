@@ -11,7 +11,7 @@ public class RoleService {
     public RoleEnum handleRole(String role) {
         return switch (role) {
             case "ADMIN" -> RoleEnum.ADMIN;
-            case "USER" -> RoleEnum.CUSTOMER;
+            case "CUSTOMER" -> RoleEnum.CUSTOMER;
             case "STAFF" -> RoleEnum.STAFF;
             default -> throw new BusinessException(RoleConstant.INVALID_USER_ROLE);
         };
