@@ -52,6 +52,13 @@ momo:
   ipn-url: ${MOMO_IPN_URL}
   request-type: ${MOMO_REQUEST_TYPE:captureWallet}
 
+payment:
+  expiration:
+    fixed-delay-ms: ${PAYMENT_EXPIRATION_FIXED_DELAY_MS:60000}       # 1 phút
+    initial-delay-ms: ${PAYMENT_EXPIRATION_INITIAL_DELAY_MS:60000}    # 1 phút
+    unpaid-invoice-minutes: ${PAYMENT_EXPIRATION_MINUTES:15}          # 15 phút
+    batch-size: ${PAYMENT_EXPIRATION_BATCH_SIZE:500}
+
 security:
   jwt:
     secret: ${SECURITY_JWT_SECRET}
