@@ -2,23 +2,27 @@ package com.abs.app.presentation.controller.user;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.abs.app.application.user.appointment.command.CreateAppointmentCommand;
 import com.abs.app.application.user.appointment.command.CreateAppointmentCommandHandler;
 import com.abs.app.application.user.appointment.command.HoldAppointmentCommand;
 import com.abs.app.application.user.appointment.command.HoldAppointmentCommandHandler;
+import com.abs.app.application.user.appointment.dto.BookingHistoryResponseDto;
 import com.abs.app.application.user.appointment.dto.CreateAppointmentRequestDto;
 import com.abs.app.application.user.appointment.dto.CreateAppointmentResponseDto;
 import com.abs.app.application.user.appointment.dto.HoldAppointmentRequestDto;
 import com.abs.app.application.user.appointment.dto.HoldAppointmentResponseDto;
-import com.abs.app.common.constant.AuthConstant;
+import com.abs.app.application.user.appointment.query.GetBookingHistoryQuery;
+import com.abs.app.application.user.appointment.query.GetBookingHistoryQueryHandler;
 import com.abs.app.common.constant.AppointmentConstant;
-import com.abs.app.common.exception.UnauthorizedException;
 import com.abs.app.common.response.ApiResponse;
+import com.abs.app.common.response.PageResponse;
 import com.abs.app.infrastructure.security.SecurityUtils;
 
 import jakarta.validation.Valid;
@@ -31,6 +35,21 @@ import lombok.RequiredArgsConstructor;
 public class AppointmentController {
         private final CreateAppointmentCommandHandler createAppointmentCommandHandler;
         private final HoldAppointmentCommandHandler holdAppointmentCommandHandler;
+        private final GetBookingHistoryQueryHandler getBookingHistoryQueryHandler;
+
+        @GetMapping("/history")
+        public ResponseEntity<ApiResponse<PageResponse<BookingHistoryResponseDto>>> getBookingHistory(
+                        @RequestParam(defaultValue = "1") int page,
+                        @RequestParam(defaultValue = "10") int limit) {
+                String customerId = SecurityUtils.getCurrentUserId();
+                PageResponse<BookingHistoryResponseDto> bookingHistory = getBookingHistoryQueryHandler.handle(
+                                new GetBookingHistoryQuery(customerId, page, limit));
+
+                return ResponseEntity.ok(new ApiResponse<>(
+                                true,
+                                AppointmentConstant.GET_HISTORY_SUCCESS,
+                                bookingHistory));
+        }
 
         @PostMapping("/holds")
         public ResponseEntity<ApiResponse<HoldAppointmentResponseDto>> holdAppointment(

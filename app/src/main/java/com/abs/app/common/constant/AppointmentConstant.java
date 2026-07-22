@@ -3,6 +3,7 @@ package com.abs.app.common.constant;
 public class AppointmentConstant {
     public static final String CREATE_SUCCESS = "Create appointment successfully";
     public static final String HOLD_SUCCESS = "Hold appointment slot successfully";
+    public static final String GET_HISTORY_SUCCESS = "Get booking history successfully";
     public static final String STAFF_NOT_AVAILABLE = "Staff is not available for this service and time";
     public static final String INVALID_APPOINTMENT_TIME = "Appointment time is invalid";
     public static final String SLOT_ALREADY_HELD = "Appointment slot is being held by another customer";

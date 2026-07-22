@@ -110,6 +110,13 @@ public class AppointmentDetailRepositoryImpl implements AppointmentDetailReposit
     }
 
     @Override
+    public Page<AppointmentDetail> findBookingHistoryByCustomerId(
+            String customerId,
+            Pageable pageable) {
+        return appointmentDetailJpaRepository.findBookingHistoryByCustomerId(customerId, pageable);
+    }
+
+    @Override
     public Optional<AppointmentDetail> findByAppointmentIdAndStaffId(
             String appointmentId,
             String staffId) {
