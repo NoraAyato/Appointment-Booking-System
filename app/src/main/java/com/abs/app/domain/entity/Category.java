@@ -17,9 +17,12 @@ public class Category {
     @Column(name = "name", nullable = false, columnDefinition = "VARCHAR(100)")
     private String name;
 
+    @Column(name = "tag_color", nullable = true, columnDefinition = "VARCHAR(20)")
+    private String tagColor;
+
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Services> services;
+    private List<ServiceEntity> services;
 }

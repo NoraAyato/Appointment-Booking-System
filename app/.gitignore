@@ -31,6 +31,10 @@ build/
 
 #Configuration Files (Environment-specific)
 .env
-
+.env.docker
 ### VS Code ###
 .vscode/
+
+
+### images ###
+images/

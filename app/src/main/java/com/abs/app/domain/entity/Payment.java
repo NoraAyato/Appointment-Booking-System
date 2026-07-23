@@ -3,6 +3,7 @@ package com.abs.app.domain.entity;
 import java.time.LocalDateTime;
 
 import com.abs.app.domain.entity.enums.PaymentMethod;
+import com.abs.app.domain.entity.enums.PaymentStatus;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -22,6 +23,16 @@ public class Payment {
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_method", nullable = false)
     private PaymentMethod paymentMethod = PaymentMethod.CASH; // e.g., Credit Card, PayPal, Cash
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private PaymentStatus status = PaymentStatus.UNPAID;
+
+    @Column(name = "order_id", columnDefinition = "VARCHAR(50)")
+    private String orderId;
+
+    @Column(name = "request_id", columnDefinition = "VARCHAR(50)")
+    private String requestId;
 
     @Column(name = "payment_date", nullable = false)
     private LocalDateTime paymentDate;

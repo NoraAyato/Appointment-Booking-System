@@ -1,7 +1,9 @@
 package com.abs.app.domain.entity;
 
-import java.sql.Date;
+import java.time.LocalDate;
 import java.time.LocalTime;
+
+import com.abs.app.domain.entity.enums.BlockedSlotStatus;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -15,17 +17,21 @@ public class BlockedSlot {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "blocked_date", nullable = false)
-    private Date blockedDate;
+    @Column(name = "blocked_date")
+    private LocalDate blockedDate;
 
-    @Column(name = "start_time", nullable = false)
+    @Column(name = "start_time")
     private LocalTime startTime;
 
-    @Column(name = "end_time", nullable = false)
+    @Column(name = "end_time")
     private LocalTime endTime;
 
     @Column(name = "reason", columnDefinition = "TEXT")
     private String reason;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private BlockedSlotStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

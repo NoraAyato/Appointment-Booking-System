@@ -3,13 +3,17 @@ package com.abs.app.domain.entity;
 import com.abs.app.domain.entity.enums.LoginProvider;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "user_logins")
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserLogin {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

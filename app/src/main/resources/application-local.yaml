@@ -1,22 +1,73 @@
 spring:
-    datasource:
-        url: ${SPRING_DATASOURCE_URL}
-        username: ${SPRING_DATASOURCE_USERNAME}
-        password: 
-        driver-class-name: com.mysql.cj.jdbc.Driver
-    jpa:
-        hibernate:
-            ddl-auto: validate
-        show-sql: true
-        properties:
-            hibernate:
-                format_sql: true
-                dialect: org.hibernate.dialect.MySQLDialect
-        database-platform: org.hibernate.dialect.MySQLDialect
-    devtools:
-        restart:
-            enabled: true
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  data:
+    redis:
+      host: ${SPRING_DATA_REDIS_HOST:localhost}
+      port: ${SPRING_DATA_REDIS_PORT:6379}
+      password: ${SPRING_DATA_REDIS_PASSWORD:}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+    database-platform: org.hibernate.dialect.MySQLDialect
+
+  devtools:
+    restart:
+      enabled: true
+
+  mail:
+    host: ${SPRING_MAIL_HOST}
+    port: 587
+    username: ${SPRING_MAIL_USERNAME}
+    password: ${SPRING_MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
 server:
-    port: 8080
-    servlet:
-        context-path: /api
+  port: 8083
+  servlet:
+    context-path: /api
+
+google:
+  oauth:
+    client-id: ${GOOGLE_OAUTH_CLIENT_ID}
+    client-secret: ${GOOGLE_OAUTH_CLIENT_SECRET}
+    redirect-uri: ${GOOGLE_OAUTH_REDIRECT_URI}
+
+momo:
+  endpoint: ${MOMO_ENDPOINT:https://test-payment.momo.vn/v2/gateway/api/create}
+  partner-code: ${MOMO_PARTNER_CODE:MOMO}
+  access-key: ${MOMO_ACCESS_KEY:F8BBA842ECF85}
+  secret-key: ${MOMO_SECRET_KEY:K951B6PE1waDMi640xX08PD3vg6EkVlz}
+  redirect-url: ${MOMO_REDIRECT_URL:http://localhost:5173/payment/result}
+  ipn-url: ${MOMO_IPN_URL:https://suffering-slider-anybody.ngrok-free.dev/api/payments/momo/ipn}
+  request-type: ${MOMO_REQUEST_TYPE:captureWallet}
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+
+payment:
+  expiration:
+    fixed-delay-ms: 60000      # 1 phút – chạy lại sau mỗi lần xử lý xong
+    initial-delay-ms: 30000    # 30 giây – chờ sau khi app khởi động mới bắt đầu
+    unpaid-invoice-minutes: 15 # hủy hóa đơn chưa thanh toán sau 15 phút
+    batch-size: 100            # xử lý tối đa 100 hóa đơn mỗi lần (nhỏ hơn prod)

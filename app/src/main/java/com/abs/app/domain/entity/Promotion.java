@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.abs.app.domain.entity.enums.DiscountType;
+import com.abs.app.domain.entity.enums.PromotionStatus;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -16,7 +17,8 @@ public class Promotion {
     @Id
     @Column(name = "promotion_id", nullable = false, columnDefinition = "VARCHAR(20)")
     private String id;
-
+    @Column(name = "promotion_code", nullable = false, columnDefinition = "VARCHAR(20)")
+    private String code;
     @Column(name = "description", nullable = false, columnDefinition = "TEXT")
     private String description;
 
@@ -27,8 +29,8 @@ public class Promotion {
     @Column(name = "discount_type", nullable = false)
     private DiscountType discountType;
 
-    @Column(name = "active", nullable = false)
-    private Boolean active = true;
+    @Enumerated(EnumType.STRING)
+    private PromotionStatus status = PromotionStatus.ACTIVE;
 
     @Column(name = "image", columnDefinition = "TEXT")
     private String image;
