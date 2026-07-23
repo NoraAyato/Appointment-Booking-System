@@ -9,8 +9,10 @@ import com.abs.app.common.exception.ResourceNotFoundException;
 import com.abs.app.domain.entity.Role;
 import com.abs.app.domain.entity.StaffShift;
 import com.abs.app.domain.entity.User;
+import com.abs.app.domain.entity.enums.BlockedSlotStatus;
 import com.abs.app.domain.entity.enums.RoleEnum;
 import com.abs.app.domain.entity.enums.StaffShiftStatus;
+import com.abs.app.domain.repository.BlockedSlotRepository;
 import com.abs.app.domain.repository.RoleRepository;
 import com.abs.app.domain.repository.StaffShiftRepository;
 import com.abs.app.domain.repository.UserRepository;
@@ -26,6 +28,7 @@ public class UpdateStaffShiftCommandHandler {
     private final UserRepository userRepository;
     private final DateTimeService dateTimeService;
     private final StaffShiftService staffShiftService;
+    private final BlockedSlotRepository blockedSlotRepository;
 
     public void handle(UpdateStaffShiftCommand command) {
         StaffShift staffShiftEdit = staffShiftRepository.findById(command.getId())
@@ -34,12 +37,18 @@ public class UpdateStaffShiftCommandHandler {
         User staff = userRepository.findById(command.getStaffId())
                 .orElseThrow(() -> new ResourceNotFoundException(UserConstant.USER_NOT_EXIST));
 
+        boolean isAllDayBlocked = blockedSlotRepository.existsAllDayOnDateByStatus(
+                staff.getUserId(),
+                command.getWorkDate(),
+                BlockedSlotStatus.APPROVED);
+
         staffShiftService.customValidateStaffShiftTime(
                 staff,
                 command.getWorkDate(),
                 command.getStartTime(),
                 command.getEndTime(),
-                staffShiftEdit.getId()
+                staffShiftEdit.getId(),
+                isAllDayBlocked
         );
 
         StaffShiftStatus staffShiftStatus = staffShiftService.handleStaffShiftStatus(command.getStatus());

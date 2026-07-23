@@ -1,10 +1,12 @@
 package com.abs.app.application.admin.staffshift.command;
 
+import com.abs.app.domain.entity.StaffShift;
 import com.abs.app.domain.entity.User;
 import com.abs.app.domain.entity.enums.RoleEnum;
 import com.abs.app.domain.entity.enums.StaffServiceStatus;
 import com.abs.app.domain.entity.enums.UserStatus;
 import com.abs.app.domain.repository.StaffServiceRepository;
+import com.abs.app.domain.repository.StaffShiftRepository;
 import com.abs.app.domain.repository.UserRepository;
 import com.abs.app.domain.service.StaffShiftService;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,7 @@ public class CreateBulkStaffShiftCommandHandler {
     private final UserRepository userRepository;
     private final StaffShiftService staffShiftService;
     private final StaffServiceRepository staffServiceRepository;
+    private final StaffShiftRepository staffShiftRepository;
 
     @Transactional
     public void handle(CreateBulkStaffShiftCommand command) {
@@ -30,7 +33,7 @@ public class CreateBulkStaffShiftCommandHandler {
                 .filter(staff -> staffServiceRepository.existsByStaffUserIdAndStatus(staff.getUserId(), StaffServiceStatus.ACTIVE))
                 .forEach(staff -> {
                     try {
-                        staffShiftService.generateWeeklyShiftsForSingleStaff(
+                        List<StaffShift> shiftsToSave = staffShiftService.generateWeeklyShiftsForSingleStaff(
                                 staff,
                                 command.getStartDate(),
                                 command.getEndDate(),
@@ -38,6 +41,9 @@ public class CreateBulkStaffShiftCommandHandler {
                                 command.getStartTime(),
                                 command.getEndTime()
                         );
+                        if (shiftsToSave != null && !shiftsToSave.isEmpty()) {
+                            staffShiftRepository.saveAll(shiftsToSave);
+                        }
                     } catch (Exception e) {
                         log.error("Lỗi tạo ca cho staff {}: {}", staff.getUserId(), e.getMessage());
                     }
