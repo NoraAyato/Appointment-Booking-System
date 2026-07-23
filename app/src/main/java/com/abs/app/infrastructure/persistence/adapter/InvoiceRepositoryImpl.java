@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.abs.app.domain.entity.Invoice;
@@ -26,6 +27,28 @@ public class InvoiceRepositoryImpl implements InvoiceRepository {
     @Override
     public Invoice save(Invoice invoice) {
         return invoiceJpaRepository.save(invoice);
+    }
+
+    @Override
+    public List<String> findExpiredUnpaidInvoiceIds(
+            InvoiceStatus unpaidStatus,
+            LocalDateTime expiredBefore,
+            int limit) {
+        return invoiceJpaRepository.findExpiredUnpaidInvoiceIds(
+                unpaidStatus,
+                expiredBefore,
+                PageRequest.of(0, limit));
+    }
+
+    @Override
+    public int cancelUnpaidInvoicesByIds(
+            List<String> invoiceIds,
+            InvoiceStatus unpaidStatus,
+            InvoiceStatus cancelledStatus) {
+        if (invoiceIds == null || invoiceIds.isEmpty()) {
+            return 0;
+        }
+        return invoiceJpaRepository.cancelUnpaidInvoicesByIds(invoiceIds, unpaidStatus, cancelledStatus);
     }
 
     @Override

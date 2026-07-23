@@ -24,3 +24,10 @@ google:
     client-id: test-google-client-id
     client-secret: test-google-client-secret
     redirect-uri: http://localhost/test/oauth/callback
+
+payment:
+  expiration:
+    fixed-delay-ms: 60000
+    initial-delay-ms: 60000
+    unpaid-invoice-minutes: 15
+    batch-size: 100

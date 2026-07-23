@@ -18,6 +18,7 @@ import com.abs.app.domain.entity.enums.PaymentMethod;
 import com.abs.app.domain.entity.enums.PaymentStatus;
 import com.abs.app.domain.repository.InvoiceRepository;
 import com.abs.app.domain.repository.PaymentRepository;
+import com.abs.app.domain.service.PaymentService;
 import com.abs.app.infrastructure.mapper.PaymentMapper;
 import com.abs.app.infrastructure.payment.momo.MomoPaymentClient;
 import com.abs.app.infrastructure.payment.momo.dto.MomoCreatePaymentResponse;
@@ -32,6 +33,7 @@ public class CreateMomoPaymentCommandHandler {
     private final InvoiceRepository invoiceRepository;
     private final PaymentRepository paymentRepository;
     private final MomoPaymentClient momoPaymentClient;
+    private final PaymentService paymentService;
 
     @Transactional
     public CreateMomoPaymentResponseDto handle(CreateMomoPaymentCommand command) {
@@ -40,12 +42,9 @@ public class CreateMomoPaymentCommandHandler {
                 command.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException(InvoiceConstant.NOT_FOUND));
 
-        if (invoice.getStatus() != InvoiceStatus.UNPAID) {
-            throw new BusinessException(PaymentConstant.INVOICE_ALREADY_PAID);
-        }
-
-        long amount = toMomoAmount(invoice.getAmount());
-        Payment payment = createPendingMomoPayment(invoice, amount);
+        paymentService.validateInvoiceStatus(invoice);
+        long amount = paymentService.toMomoAmount(invoice.getAmount());
+        Payment payment = PaymentMapper.createPendingMomoPayment(invoice, amount);
         String orderInfo = "Thanh toan hoa don " + invoice.getId();
 
         MomoCreatePaymentResponse momoResponse = momoPaymentClient.createPayment(
@@ -61,29 +60,5 @@ public class CreateMomoPaymentCommandHandler {
         payment.setDescription(orderInfo);
         Payment savedPayment = paymentRepository.save(payment);
         return PaymentMapper.toCreateMomoPaymentResponse(savedPayment, momoResponse);
-    }
-
-    private long toMomoAmount(Double amount) {
-        if (amount == null || amount <= 0D) {
-            throw new BusinessException(PaymentConstant.INVALID_PAYMENT_AMOUNT);
-        }
-        return Math.round(amount);
-    }
-
-    private Payment createPendingMomoPayment(Invoice invoice, long amount) {
-        Payment payment = new Payment();
-        payment.setId(GenerateIdUtil.GenerateId(
-                PaymentConstant.SALT_TAG,
-                PaymentConstant.STRING_LIMIT));
-        payment.setAmount((double) amount);
-        payment.setPaymentMethod(PaymentMethod.MOMO);
-        payment.setStatus(PaymentStatus.PENDING);
-        payment.setPaymentDate(LocalDateTime.now());
-        payment.setInvoice(invoice);
-        payment.setOrderId(payment.getId());
-        payment.setRequestId(GenerateIdUtil.GenerateId(
-                PaymentConstant.REQUEST_SALT_TAG,
-                PaymentConstant.STRING_LIMIT));
-        return payment;
     }
 }

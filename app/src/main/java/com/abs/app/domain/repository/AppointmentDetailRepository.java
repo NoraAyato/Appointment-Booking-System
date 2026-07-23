@@ -57,6 +57,10 @@ public interface AppointmentDetailRepository {
             List<AppointmentStatus> statuses,
             Pageable pageable);
 
+    Page<AppointmentDetail> findBookingHistoryByCustomerId(
+            String customerId,
+            Pageable pageable);
+
     Optional<AppointmentDetail> findByAppointmentIdAndStaffId(
             String appointmentId,
             String staffId);

@@ -14,13 +14,21 @@ public class FileStorageService {
     private static final String AVATAR_PUBLIC_PATH = "/images/uploads/avatars/";
     private static final String SERVICE_IMAGE_UPLOAD_DIR = System.getProperty("user.dir") + "/images/uploads/services/";
     private static final String SERVICE_IMAGE_PUBLIC_PATH = "/images/uploads/services/";
-    private static final String PROMOTION_IMAGE_UPLOAD_DIR = System.getProperty("user.dir") + "/images/uploads/promotions/";
+    private static final String PROMOTION_IMAGE_UPLOAD_DIR = System.getProperty("user.dir")
+            + "/images/uploads/promotions/";
     private static final String PROMOTION_IMAGE_PUBLIC_PATH = "/images/uploads/promotions/";
-    private static final String APPOINTMENT_IMAGE_UPLOAD_DIR = System.getProperty("user.dir") + "/images/uploads/appointments/";
+    private static final String APPOINTMENT_IMAGE_UPLOAD_DIR = System.getProperty("user.dir")
+            + "/images/uploads/appointments/";
     private static final String APPOINTMENT_IMAGE_PUBLIC_PATH = "/images/uploads/appointments/";
+    public static final String REVIEW_IMAGE_UPLOAD_DIR = System.getProperty("user.dir") + "/images/uploads/reviews/";
+    public static final String REVIEW_IMAGE_PUBLIC_PATH = "/images/uploads/reviews/";
 
     public String storeAvatar(MultipartFile file, String userId) {
         return storeImage(file, userId, AVATAR_UPLOAD_DIR, AVATAR_PUBLIC_PATH);
+    }
+
+    public String storeReview(MultipartFile file, String headString) {
+        return storeImage(file, headString, REVIEW_IMAGE_UPLOAD_DIR, REVIEW_IMAGE_PUBLIC_PATH);
     }
 
     public String storeService(MultipartFile file, String headString) {

@@ -48,6 +48,14 @@ public class HandleMomoIpnCommandHandler {
 
         Invoice invoice = payment.getInvoice();
         Appointment appointment = invoice.getAppointment();
+        if (invoice.getStatus() == InvoiceStatus.CANCELLED || appointment.getStatus() == AppointmentStatus.CANCELLED) {
+            if (payment.getStatus() == PaymentStatus.PENDING) {
+                payment.setStatus(PaymentStatus.FAILED);
+                paymentRepository.save(payment);
+            }
+            return;
+        }
+
         if (request.getResultCode() != null && request.getResultCode() == MOMO_SUCCESS_CODE) {
             payment.setStatus(PaymentStatus.PAID);
             invoice.setStatus(InvoiceStatus.PAID);

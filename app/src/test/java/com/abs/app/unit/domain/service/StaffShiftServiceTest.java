@@ -21,8 +21,8 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 class StaffShiftServiceTest {
 
-    private static final String STAFF_ID = "u_staff_001";
-    private static final LocalDate WORK_DATE = LocalDate.now().plusDays(1);
+        private static final String STAFF_ID = "u_staff_001";
+        private static final LocalDate WORK_DATE = LocalDate.now().plusDays(1);
 
     private StaffShiftService staffShiftService;
     private User staff;
