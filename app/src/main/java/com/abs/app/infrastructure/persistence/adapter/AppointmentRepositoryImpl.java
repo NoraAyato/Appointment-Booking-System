@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -49,5 +50,10 @@ public class AppointmentRepositoryImpl implements AppointmentRepository {
         appointmentJpaRepository.countAppointmentsByStatus(startAt, endAt)
                 .forEach(row -> totals.put((AppointmentStatus) row[0], ((Number) row[1]).longValue()));
         return totals;
+    }
+
+    @Override
+    public Optional<Appointment> findById(String id) {
+        return appointmentJpaRepository.findById(id);
     }
 }

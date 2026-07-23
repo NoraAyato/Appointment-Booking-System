@@ -16,8 +16,9 @@ public class AppointmentConstant {
     public static final String VALID_DATE = "Date is required";
     public static final String VALID_TIME = "Time is required";
     public static final String VALID_NOTE_SIZE = "Note must be at most {max} characters";
-
+    public static final String APPOINTMENT_NOT_EXIST = "Cuộc hẹn không tồn tại";
     public static final String SALT_TAG = "apt";
+    public static final String INVALID_STATUS = "Trạng thái cuộc hẹn không hợp lệ";
     public static final String INVOICE_SALT_TAG = "inv";
     public static final int STRING_LIMIT = 10;
     public static final long HOLD_EXPIRATION_MINUTES = 10;
