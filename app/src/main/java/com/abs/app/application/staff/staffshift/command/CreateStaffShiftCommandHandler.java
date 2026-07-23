@@ -6,7 +6,9 @@ import com.abs.app.common.exception.BusinessException;
 import com.abs.app.common.exception.ResourceNotFoundException;
 import com.abs.app.domain.entity.StaffShift;
 import com.abs.app.domain.entity.User;
+import com.abs.app.domain.entity.enums.BlockedSlotStatus;
 import com.abs.app.domain.entity.enums.StaffServiceStatus;
+import com.abs.app.domain.repository.BlockedSlotRepository;
 import com.abs.app.domain.repository.StaffServiceRepository;
 import com.abs.app.domain.repository.StaffShiftRepository;
 import com.abs.app.domain.repository.UserRepository;
@@ -23,6 +25,7 @@ import org.springframework.stereotype.Service;
     private final StaffShiftService staffShiftService;
     private final StaffAuthorizationService staffAuthorizationService;
     private final StaffServiceRepository staffServiceRepository;
+    private final BlockedSlotRepository blockedSlotRepository;
 
     public void handle(CreateStaffShiftCommand command) {
         User staff = userRepository.findById(command.getUserId())
@@ -34,12 +37,18 @@ import org.springframework.stereotype.Service;
             throw new BusinessException(StaffShiftConstant.STAFF_NOT_ASSIGNED_SERVICE);
         }
 
+        boolean isAllDayBlocked = blockedSlotRepository.existsAllDayOnDateByStatus(
+                staff.getUserId(),
+                command.getWorkDate(),
+                BlockedSlotStatus.APPROVED);
+
         staffShiftService.customValidateStaffShiftTime(
                 staff,
                 command.getWorkDate(),
                 command.getStartTime(),
                 command.getEndTime(),
-                null
+                null,
+                isAllDayBlocked
         );
 
         StaffShift staffShift = new StaffShift();

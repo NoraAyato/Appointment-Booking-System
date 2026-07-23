@@ -8,11 +8,8 @@ import com.abs.app.domain.entity.StaffShift;
 import com.abs.app.domain.entity.User;
 import com.abs.app.domain.entity.enums.BlockedSlotStatus;
 import com.abs.app.domain.entity.enums.StaffShiftStatus;
-import com.abs.app.domain.repository.BlockedSlotRepository;
-import com.abs.app.domain.repository.StaffShiftRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -24,8 +21,6 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class StaffShiftService {
     private final DateTimeService dateTimeService;
-    private final BlockedSlotRepository blockedSlotRepository;
-    private final StaffShiftRepository staffShiftRepository;
 
     public StaffShiftStatus handleStaffShiftStatus(String status) {
         return switch (status) {
@@ -71,7 +66,7 @@ public class StaffShiftService {
     }
 
     public void customValidateStaffShiftTime(User staff, LocalDate workDate, LocalTime startTime, LocalTime endTime,
-            Long excludeShiftId) {
+            Long excludeShiftId, boolean isAllDayBlocked) {
         if (!dateTimeService.isValidTimeRange(startTime, endTime)) {
             throw new BusinessException(Messages.INVALID_TIME);
         }
@@ -80,10 +75,7 @@ public class StaffShiftService {
             throw new BusinessException(Messages.INVALID_DATE);
         }
 
-        if (blockedSlotRepository.existsAllDayOnDateByStatus(
-                staff.getUserId(),
-                workDate,
-                BlockedSlotStatus.APPROVED)) {
+        if (isAllDayBlocked) {
             throw new BusinessException(StaffShiftConstant.WORK_TIME_BLOCKED);
         }
 
@@ -96,8 +88,7 @@ public class StaffShiftService {
         return slot.getStartTime() == null || slot.getEndTime() == null;
     }
 
-    @Transactional
-    public void generateWeeklyShiftsForSingleStaff(
+    public List<StaffShift> generateWeeklyShiftsForSingleStaff(
             User staff,
             LocalDate startDate,
             LocalDate endDate,
@@ -136,8 +127,6 @@ public class StaffShiftService {
             }
             currentDate = currentDate.plusDays(1);
         }
-        if (!shiftsToSave.isEmpty()) {
-            staffShiftRepository.saveAll(shiftsToSave);
-        }
+        return shiftsToSave;
     }
 }
