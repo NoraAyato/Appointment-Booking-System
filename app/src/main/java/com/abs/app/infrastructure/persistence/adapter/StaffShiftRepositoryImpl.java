@@ -83,6 +83,11 @@ public class StaffShiftRepositoryImpl implements StaffShiftRepository {
     }
 
     @Override
+    public void saveAll(List<StaffShift> staffShifts) {
+        staffShiftJpaRepository.saveAll(staffShifts);
+    }
+
+    @Override
     public void deleteById(Long id) {
         staffShiftJpaRepository.deleteById(id);
     }

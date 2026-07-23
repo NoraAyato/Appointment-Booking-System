@@ -1,10 +1,8 @@
 package com.abs.app.presentation.controller.admin;
 
-import com.abs.app.application.admin.staffshift.command.CreateStaffShiftCommand;
-import com.abs.app.application.admin.staffshift.command.CreateStaffShiftCommandHandler;
-import com.abs.app.application.admin.staffshift.command.UpdateStaffShiftCommand;
-import com.abs.app.application.admin.staffshift.command.UpdateStaffShiftCommandHandler;
+import com.abs.app.application.admin.staffshift.command.*;
 import com.abs.app.application.admin.staffshift.dto.AdminStaffShiftResponseDto;
+import com.abs.app.application.admin.staffshift.dto.CreateBulkStaffShiftRequestDto;
 import com.abs.app.application.admin.staffshift.dto.CreateStaffShiftRequestDto;
 import com.abs.app.application.admin.staffshift.dto.UpdateStaffShiftRequestDto;
 import com.abs.app.application.admin.staffshift.query.GetStaffShiftListQuery;
@@ -26,6 +24,7 @@ public class AdminStaffShiftMangerController {
     private final CreateStaffShiftCommandHandler createStaffShiftCommandHandler;
     private final UpdateStaffShiftCommandHandler updateStaffShiftCommandHandler;
     private final GetStaffShiftListQueryHandler getStaffShiftListQueryHandler;
+    private final CreateBulkStaffShiftCommandHandler createBulkStaffShiftCommandHandler;
 
     @GetMapping()
     public ResponseEntity<ApiResponse<PageResponse<AdminStaffShiftResponseDto>>> getStaffShift(
@@ -48,6 +47,19 @@ public class AdminStaffShiftMangerController {
         createStaffShiftCommandHandler.handle(new CreateStaffShiftCommand(
                 request.getStaffId(),
                 request.getWorkDate(),
+                request.getStartTime(),
+                request.getEndTime()
+        ));
+
+        return ResponseEntity.ok(new ApiResponse<>(true, StaffShiftConstant.CREATE_SUCCESS, null));
+    }
+
+    @PostMapping("/bulk")
+    public ResponseEntity<ApiResponse<Void>> createWorkWeek(@Valid @RequestBody CreateBulkStaffShiftRequestDto request) {
+        createBulkStaffShiftCommandHandler.handle(new CreateBulkStaffShiftCommand(
+                request.getStartDate(),
+                request.getEndDate(),
+                request.getWorkingDays(),
                 request.getStartTime(),
                 request.getEndTime()
         ));

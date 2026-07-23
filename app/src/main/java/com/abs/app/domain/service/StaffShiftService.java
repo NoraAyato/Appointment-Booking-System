@@ -9,11 +9,14 @@ import com.abs.app.domain.entity.User;
 import com.abs.app.domain.entity.enums.BlockedSlotStatus;
 import com.abs.app.domain.entity.enums.StaffShiftStatus;
 import com.abs.app.domain.repository.BlockedSlotRepository;
+import com.abs.app.domain.repository.StaffShiftRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -22,6 +25,7 @@ import java.util.Objects;
 public class StaffShiftService {
     private final DateTimeService dateTimeService;
     private final BlockedSlotRepository blockedSlotRepository;
+    private final StaffShiftRepository staffShiftRepository;
 
     public StaffShiftStatus handleStaffShiftStatus(String status) {
         return switch (status) {
@@ -90,5 +94,50 @@ public class StaffShiftService {
 
     private boolean isAllDayBlockedSlot(BlockedSlot slot) {
         return slot.getStartTime() == null || slot.getEndTime() == null;
+    }
+
+    @Transactional
+    public void generateWeeklyShiftsForSingleStaff(
+            User staff,
+            LocalDate startDate,
+            LocalDate endDate,
+            List<Integer> workingDays,
+            LocalTime startTime,
+            LocalTime endTime) {
+
+        List<StaffShift> shiftsToSave = new ArrayList<>();
+        LocalDate currentDate = startDate;
+
+        while (dateTimeService.isValidDateRange(currentDate, endDate)) {
+            int currentDayOfWeek = currentDate.getDayOfWeek().getValue();
+
+            if (workingDays.contains(currentDayOfWeek)) {
+                boolean isOverlapped = this.isOverlapWorkDate(
+                        staff.getStaffShifts(),
+                        currentDate,
+                        startTime,
+                        endTime,
+                        null
+                );
+
+                if (isOverlapped) {
+                    currentDate = currentDate.plusDays(1);
+                    continue;
+                }
+
+                StaffShift staffShift = new StaffShift();
+                staffShift.setWorkDate(currentDate);
+                staffShift.setStartTime(startTime);
+                staffShift.setEndTime(endTime);
+                staffShift.setStaff(staff);
+                staffShift.setStatus(StaffShiftStatus.APPROVED);
+
+                shiftsToSave.add(staffShift);
+            }
+            currentDate = currentDate.plusDays(1);
+        }
+        if (!shiftsToSave.isEmpty()) {
+            staffShiftRepository.saveAll(shiftsToSave);
+        }
     }
 }

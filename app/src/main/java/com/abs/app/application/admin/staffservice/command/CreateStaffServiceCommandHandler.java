@@ -1,18 +1,16 @@
 package com.abs.app.application.admin.staffservice.command;
 
-import com.abs.app.common.constant.RoleConstant;
 import com.abs.app.common.constant.ServiceEntityConstant;
 import com.abs.app.common.constant.StaffServiceConstant;
 import com.abs.app.common.constant.UserConstant;
 import com.abs.app.common.exception.BusinessException;
 import com.abs.app.common.exception.ResourceNotFoundException;
-import com.abs.app.domain.entity.Role;
 import com.abs.app.domain.entity.ServiceEntity;
 import com.abs.app.domain.entity.StaffService;
 import com.abs.app.domain.entity.User;
 import com.abs.app.domain.entity.enums.RoleEnum;
+import com.abs.app.domain.entity.enums.ServiceStatus;
 import com.abs.app.domain.entity.enums.StaffServiceStatus;
-import com.abs.app.domain.repository.RoleRepository;
 import com.abs.app.domain.repository.ServiceRepository;
 import com.abs.app.domain.repository.StaffServiceRepository;
 import com.abs.app.domain.repository.UserRepository;
@@ -35,6 +33,11 @@ public class CreateStaffServiceCommandHandler {
         if (!staff.getRole().getRoleName().equals(RoleEnum.STAFF)) {
             throw new BusinessException(StaffServiceConstant.USER_NOT_STAFF);
         }
+        ServiceEntity serviceEntity = serviceRepository.findById(command.getServiceId())
+                .orElseThrow(() -> new ResourceNotFoundException(ServiceEntityConstant.NOT_EXIST));
+        if (serviceEntity.getStatus() != ServiceStatus.ACTIVE) {
+            throw new BusinessException(StaffServiceConstant.NOT_RESPONSIBLE_INACTIVE_SERVICE);
+        }
 
         Optional<StaffService> existingStaffService = staffServiceRepository.findByStaffUserIdAndServiceId(command.getStaffId(), command.getServiceId());
 
@@ -47,9 +50,6 @@ public class CreateStaffServiceCommandHandler {
                 staffServiceRepository.save(staffService);
             }
         } else {
-            ServiceEntity serviceEntity = serviceRepository.findById(command.getServiceId())
-                    .orElseThrow(() -> new ResourceNotFoundException(ServiceEntityConstant.NOT_EXIST));
-
             StaffService newStaffService = new StaffService();
             newStaffService.setStaff(staff);
             newStaffService.setService(serviceEntity);

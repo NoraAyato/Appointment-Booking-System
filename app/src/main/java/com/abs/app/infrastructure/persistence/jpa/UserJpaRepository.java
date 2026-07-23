@@ -2,6 +2,7 @@ package com.abs.app.infrastructure.persistence.jpa;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -19,6 +20,8 @@ public interface UserJpaRepository extends JpaRepository<User, String> {
     Optional<User> findByEmail(String email);
 
     Optional<User> findByUserName(String userName);
+
+    List<User> findAllByRoleRoleNameAndStatus(RoleEnum role, UserStatus status);
 
     @EntityGraph(attributePaths = "role")
     @Query("""

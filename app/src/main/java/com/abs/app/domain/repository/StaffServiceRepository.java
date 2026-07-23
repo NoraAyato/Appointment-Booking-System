@@ -23,6 +23,7 @@ public interface StaffServiceRepository {
     Page<StaffService> search(String keyword, StaffServiceStatus status, Pageable pageable);
     Optional<StaffService> findById(Long id);
     Optional<StaffService> findByStaffUserIdAndServiceId(String staffId, String staffServiceId);
+    boolean existsByStaffUserIdAndStatus(String staffId, StaffServiceStatus status);
     List<StaffService> findAvailableStaffForService(
             String serviceId,
             LocalDate date,
