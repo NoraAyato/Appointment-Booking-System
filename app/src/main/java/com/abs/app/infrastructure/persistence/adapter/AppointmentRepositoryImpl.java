@@ -2,6 +2,7 @@ package com.abs.app.infrastructure.persistence.adapter;
 
 import java.time.LocalDateTime;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
@@ -21,6 +22,20 @@ public class AppointmentRepositoryImpl implements AppointmentRepository {
     @Override
     public Appointment save(Appointment appointment) {
         return appointmentJpaRepository.save(appointment);
+    }
+
+    @Override
+    public int cancelPendingAppointmentsByInvoiceIds(
+            List<String> invoiceIds,
+            AppointmentStatus pendingStatus,
+            AppointmentStatus cancelledStatus) {
+        if (invoiceIds == null || invoiceIds.isEmpty()) {
+            return 0;
+        }
+        return appointmentJpaRepository.cancelPendingAppointmentsByInvoiceIds(
+                invoiceIds,
+                pendingStatus,
+                cancelledStatus);
     }
 
     @Override

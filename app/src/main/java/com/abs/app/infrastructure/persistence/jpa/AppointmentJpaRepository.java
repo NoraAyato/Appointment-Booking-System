@@ -4,12 +4,30 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.abs.app.domain.entity.Appointment;
+import com.abs.app.domain.entity.enums.AppointmentStatus;
 
 public interface AppointmentJpaRepository extends JpaRepository<Appointment, String> {
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("""
+            UPDATE Appointment appointment
+            SET appointment.status = :cancelledStatus
+            WHERE appointment.status = :pendingStatus
+            AND appointment.id IN (
+                SELECT invoice.appointment.id
+                FROM Invoice invoice
+                WHERE invoice.id IN :invoiceIds
+            )
+            """)
+    int cancelPendingAppointmentsByInvoiceIds(
+            @Param("invoiceIds") List<String> invoiceIds,
+            @Param("pendingStatus") AppointmentStatus pendingStatus,
+            @Param("cancelledStatus") AppointmentStatus cancelledStatus);
+
     @Query("""
             SELECT COUNT(DISTINCT appointment.id)
             FROM AppointmentDetail appointmentDetail

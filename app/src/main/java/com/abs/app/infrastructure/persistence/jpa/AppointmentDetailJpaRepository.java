@@ -198,6 +198,32 @@ public interface AppointmentDetailJpaRepository extends JpaRepository<Appointmen
             @Param("statuses") List<AppointmentStatus> statuses,
             Pageable pageable);
 
+    @Query(
+            value = """
+                    SELECT appointmentDetail
+                    FROM AppointmentDetail appointmentDetail
+                    JOIN FETCH appointmentDetail.appointment appointment
+                    JOIN FETCH appointment.customer customer
+                    LEFT JOIN FETCH appointment.invoice invoice
+                    LEFT JOIN FETCH invoice.promotion promotion
+                    LEFT JOIN FETCH appointment.reviews reviews
+                    LEFT JOIN FETCH appointmentDetail.service service
+                    LEFT JOIN FETCH service.category category
+                    LEFT JOIN FETCH appointmentDetail.staff staff
+                    WHERE customer.userId = :customerId
+                    ORDER BY appointmentDetail.startTime DESC, appointmentDetail.id DESC
+                    """,
+            countQuery = """
+                    SELECT COUNT(appointmentDetail.id)
+                    FROM AppointmentDetail appointmentDetail
+                    JOIN appointmentDetail.appointment appointment
+                    JOIN appointment.customer customer
+                    WHERE customer.userId = :customerId
+                    """)
+    Page<AppointmentDetail> findBookingHistoryByCustomerId(
+            @Param("customerId") String customerId,
+            Pageable pageable);
+
     @EntityGraph(attributePaths = {
             "appointment",
             "appointment.customer",

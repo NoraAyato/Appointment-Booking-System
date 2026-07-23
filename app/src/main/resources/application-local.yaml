@@ -64,3 +64,10 @@ springdoc:
     path: /swagger-ui.html
     operations-sorter: method
     tags-sorter: alpha
+
+payment:
+  expiration:
+    fixed-delay-ms: 60000      # 1 phút – chạy lại sau mỗi lần xử lý xong
+    initial-delay-ms: 30000    # 30 giây – chờ sau khi app khởi động mới bắt đầu
+    unpaid-invoice-minutes: 15 # hủy hóa đơn chưa thanh toán sau 15 phút
+    batch-size: 100            # xử lý tối đa 100 hóa đơn mỗi lần (nhỏ hơn prod)

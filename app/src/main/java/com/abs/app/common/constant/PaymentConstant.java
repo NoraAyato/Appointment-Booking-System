@@ -13,6 +13,7 @@ public class PaymentConstant {
     public static final String SALT_TAG = "pay";
     public static final String REQUEST_SALT_TAG = "req";
     public static final int STRING_LIMIT = 10;
+    public static final String INVOICE_ALREADY_CANCELLED = "Invoice has already been cancelled";
 
     private PaymentConstant() {
     }

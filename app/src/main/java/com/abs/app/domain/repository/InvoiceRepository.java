@@ -12,6 +12,16 @@ public interface InvoiceRepository {
 
     Invoice save(Invoice invoice);
 
+    List<String> findExpiredUnpaidInvoiceIds(
+            InvoiceStatus unpaidStatus,
+            LocalDateTime expiredBefore,
+            int limit);
+
+    int cancelUnpaidInvoicesByIds(
+            List<String> invoiceIds,
+            InvoiceStatus unpaidStatus,
+            InvoiceStatus cancelledStatus);
+
     double sumAmountByStatusAndCreatedAtBetween(
             InvoiceStatus status,
             LocalDateTime startAt,
